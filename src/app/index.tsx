@@ -1,15 +1,25 @@
 import 'react-native-gesture-handler';
+import React, { useLayoutEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
+import { useDispatch } from 'react-redux'
 import { SafeAreaView, StatusBar, useColorScheme } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
+
 import { Navigation } from './Navigation';
+import { AppDispatch } from '../redux/configure-store';
+import { checkAuthStatus } from '../redux/authSlice';
 
 export default function AppContainer() {
-    const isDarkMode = useColorScheme() === 'dark';
-
+    const dispatch: AppDispatch = useDispatch();
+    const isDarkMode = useColorScheme() === 'light';
     const backgroundStyle = {
         backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
     };
+
+    useLayoutEffect(() => {
+        dispatch(checkAuthStatus());
+    }, [dispatch]);
+
     return (
         <NavigationContainer>
             <SafeAreaView
@@ -19,7 +29,7 @@ export default function AppContainer() {
                 ]}>
                 <StatusBar
                     barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-                    backgroundColor="#669bbc"
+                    backgroundColor="#353535"
                 />
                 <Navigation />
             </SafeAreaView>

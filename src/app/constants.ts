@@ -1,16 +1,35 @@
 import { StackNavigationOptions } from '@react-navigation/stack';
 
 export enum AppRoutes {
-    HOME_SCREEN = 'HomeScreen',
+    MAIN_SCREEN = 'MainScreen',
     LOGIN_SCREEN = 'LoginScreen',
+    LOGIN_AUTH_SCREEN = 'LoginAuth',
+    LOGIN_REGISTRATION_SCREEN = 'LoginRegistration',
 };
 
 export const defaultScreenOptions: StackNavigationOptions = {
     headerTitle: () => null,
     headerTitleAlign: 'center',
     headerShadowVisible: false,
+    headerLeftContainerStyle: {
+        paddingLeft: 16,
+      },
+      headerRightContainerStyle: {
+        paddingRight: 16,
+      },
+      cardOverlayEnabled: true,
+};
 
-    cardOverlayEnabled: false,
+export const config = {
+    animation: 'spring',
+    config: {
+        stiffness: 1000,
+        damping: 500,
+        mass: 3,
+        overshootClamping: true,
+        restDisplacementThreshold: 0.01,
+        restSpeedThreshold: 0.01,
+    },
 };
 
 export const withoutHeader: StackNavigationOptions = {
@@ -21,7 +40,28 @@ export const withHeader: StackNavigationOptions = {
     headerShown: true,
 };
 
+const animationConfig = {
+    animation: 'spring',
+    config: {
+        stiffness: 1380,
+        damping: 100,
+        mass: 3,
+        overshootClamping: true,
+        restDisplacementThreshold: 0.05,
+        restSpeedThreshold: 0.05,
+        useNativeDriver: true,
+    },
+};
+
+export const animationOptions: any = {
+    transitionSpec: {
+        open: animationConfig,
+        close: animationConfig,
+    },
+};
+
 export type RootStackParamList = {
-    HomeScreen: undefined;
+    MainScreen: undefined;
     LoginScreen: undefined;
+    LoginAuth: undefined;
 };
