@@ -151,7 +151,7 @@ export const LoginScreen = () => {
                             justifyContent: 'center',
                         }
                     ]}
-                    onPress={() => navigation.navigate('LoginAuth')}
+                    onPress={() => navigation.navigate('LoginRegistration')}
                 >
                     <Text style={{
                         color: '#FFF',

@@ -3,8 +3,8 @@ import { StackNavigationOptions } from '@react-navigation/stack';
 export enum AppRoutes {
     MAIN_SCREEN = 'MainScreen',
     LOGIN_SCREEN = 'LoginScreen',
-    LOGIN_AUTH_SCREEN = 'LoginAuth',
     LOGIN_REGISTRATION_SCREEN = 'LoginRegistration',
+    LOGIN_AUTH_SCREEN = 'LoginAuth',
 };
 
 export const defaultScreenOptions: StackNavigationOptions = {
@@ -64,4 +64,5 @@ export type RootStackParamList = {
     MainScreen: undefined;
     LoginScreen: undefined;
     LoginAuth: undefined;
+    LoginRegistration: undefined;
 };
