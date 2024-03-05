@@ -84,7 +84,7 @@ export const Input: FC<InputProps> = ({
                 style={{
                     ...(isFocused && styles.focused),
                     ...(!isInputValid && styles.error),
-                    ...((type === 'confirm' && !isConfirm) ? styles.error : null),
+                    ...((type === 'confirm' && !isConfirm && value.length) ? styles.error : null),
                     backgroundColor: '#595959',
                     borderRadius: 5,
                     width: windowWidth - 32,
@@ -166,7 +166,7 @@ export const Input: FC<InputProps> = ({
                     </Text>
                 ))
             }
-            {type === 'confirm' && !isConfirm ? 
+            {(type === 'confirm' && !isConfirm && value.length) ? 
             <Text key={textError} style={styles.errorText}>
                 {textError as string}
             </Text> : null}
