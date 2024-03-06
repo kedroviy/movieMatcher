@@ -1,17 +1,13 @@
-import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { StyleSheet, Dimensions, Text, TouchableOpacity } from "react-native";
-import {
-    GoogleSignin,
-    User,
-} from '@react-native-google-signin/google-signin';
 import { useNavigation } from "@react-navigation/native";
 import { View } from 'react-native-ui-lib';
 
-import { AppDispatch } from "../../redux/configure-store";
-import { authenticateWithGoogle, saveGoogleAuthCode } from "../../redux/authSlice";
 import StartLogotype from '../../../assets/startLogo.svg';
 import GoogleIcon from '../../../assets/google.svg'
+
+import { AppDispatch } from "../../redux/configure-store";
+import { authenticateWithGoogle } from "../../redux/authSlice";
 import { Loader } from "../../shared";
 
 export const LoginScreen = () => {
@@ -19,67 +15,9 @@ export const LoginScreen = () => {
     const { loading } = useSelector((state: any) => state.authSlice);
     const navigation: any = useNavigation();
     const windowWidth = Dimensions.get('window').width;
-    const [user, setUser] = useState<User | undefined>();
 
-
-    // useEffect(() => {
-    //     GoogleSignin.configure({
-    //         webClientId: '277043180680-ugnrupqacuchkhpklb1qhv8kaueh4eks.apps.googleusercontent.com',
-    //         offlineAccess: true,
-    //         forceCodeForRefreshToken: true,
-    //     });
-    //     isSignedIn();
-    // }, [user]);
-
-    // const signIn = async () => {
-    //     try {
-    //         await GoogleSignin.hasPlayServices();
-    //         const userInfo: User = await GoogleSignin.signIn();
-    //         console.log('__due__ :', userInfo);
-    //         dispatch(saveGoogleAuthCode(userInfo?.idToken as string));
-    //         setUser(userInfo);
-
-    //     } catch (error) {
-    //         if (error) {
-    //             console.log(error)
-    //         }
-    //     }
-    // };
-
-    // const isSignedIn = async () => {
-    //     const isSignedIn = await GoogleSignin.isSignedIn();
-    //     if (!!isSignedIn) {
-
-    //         getCurrentUserInfo()
-    //     } else {
-    //         console.log('please login')
-    //     }
-    // };
-
-    // const getCurrentUserInfo = async () => {
-    //     try {
-    //         const userInfo: User = await GoogleSignin.signInSilently();
-    //         console.log('currentUserInfo: ', userInfo)
-
-    //         setUser(userInfo);
-    //     } catch (error) {
-    //         if (error) {
-    //             console.log('Get current user info Error message: ', error)
-    //         }
-    //     }
-    // };
-
-    // const signOut = async () => {
-    //     try {
-    //         await GoogleSignin.signOut();
-    //         setUser({ user: null } as unknown as User);
-    //     } catch (error) {
-    //         console.error(error);
-    //     }
-    // };
-
-    const onAuthWithGoogle = async() => {
-        await dispatch(authenticateWithGoogle(user));
+    const onAuthWithGoogle = async () => {
+        await dispatch(authenticateWithGoogle());
     };
 
     return (
@@ -101,7 +39,7 @@ export const LoginScreen = () => {
                     fontWeight: '400',
                     lineHeight: 21.6,
                     textAlign: 'center'
-                }}>Сделай подбор фильм самостоятельно или в компании друзей</Text>
+                }}>Сделай подбор фильмов самостоятельно или в компании друзей</Text>
             </View>
             <View style={{ width: '100%', alignItems: 'center', gap: 16, marginTop: 52, }}>
                 <TouchableOpacity
@@ -186,14 +124,5 @@ const styles = StyleSheet.create({
         height: 44,
         gap: 10,
         borderRadius: 5,
-    },
-    text: {
-        color: '#F9F9F9',
-        fontWeight: '500'
-    },
-    headerText: {
-        fontSize: 24,
-        fontWeight: '700',
-        lineHeight: 28.8
     },
 });

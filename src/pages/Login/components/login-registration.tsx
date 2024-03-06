@@ -1,19 +1,28 @@
 import { FC, useEffect, useState } from "react"
-import { View, Text, StyleSheet, Dimensions, TouchableOpacity, Platform, KeyboardAvoidingView, Keyboard, Alert } from "react-native"
+import {
+    View,
+    Text,
+    StyleSheet,
+    Dimensions,
+    TouchableOpacity,
+    KeyboardAvoidingView,
+    Keyboard,
+    Alert,
+} from "react-native"
 import { useNavigation } from "@react-navigation/native";
 
 import BackIcon from '../../../../assets/backArrow.svg';
 import { Input } from "../ui";
 import { authRegistrationUser } from "../../../redux/authSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch } from "../../../redux/configure-store";
+import { AppDispatch, RootState } from "../../../redux/configure-store";
 import { Loader } from "../../../shared";
 
 export const LoginRegistration: FC = () => {
     const windowWidth = Dimensions.get('window').width;
     const navigation = useNavigation();
     const dispatch: AppDispatch = useDispatch();
-    const { loading } = useSelector((state: any) => state.authSlice);
+    const { loading } = useSelector((state: RootState) => state.authSlice);
     const [email, onChangeEmail] = useState<string>('');
     const [password, onChangePassword] = useState<string>('');
     const [confirmPassword, setConfirmPassword] = useState<string>('');
@@ -31,9 +40,6 @@ export const LoginRegistration: FC = () => {
 
         try {
             if (authRegistrationUser.fulfilled.match(actionResult)) {
-                // Alert.alert('Успех!', 'Вы успешно зарегистрировались', [
-                //     { text: 'OK', onPress: () => console.log('OK Pressed') },
-                // ]);
                 console.log(actionResult)
             } else if (authRegistrationUser.rejected.match(actionResult)) {
                 Alert.alert('Неудачно!', 'Что-то пошло не так', [
@@ -123,7 +129,7 @@ export const LoginRegistration: FC = () => {
                     <TouchableOpacity
                         style={[styles.button, { backgroundColor: '#DF0A1E', width: windowWidth - 32, height: 48 }]
                         }
-                        onPress={() => onSubmitForm({email, password})}
+                        onPress={() => onSubmitForm({ email, password })}
                     >
                         <Text style={styles.text}>Создать аккаунт</Text>
                     </TouchableOpacity>

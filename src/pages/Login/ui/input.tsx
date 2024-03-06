@@ -156,7 +156,7 @@ export const Input: FC<InputProps> = ({
                     }}
                     onPress={() => onChangeText('')}
                 >
-                    {isFocused && <RemoveIcon />}
+                    {(isFocused )&& <RemoveIcon />}
                 </TouchableOpacity>
             )}
             {

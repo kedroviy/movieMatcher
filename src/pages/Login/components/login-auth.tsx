@@ -11,7 +11,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 
 import BackIcon from '../../../../assets/backArrow.svg';
-import { AppDispatch } from "../../../redux/configure-store";
+import { AppDispatch, RootState } from "../../../redux/configure-store";
 import { authUser } from "../../../redux/authSlice";
 import { Loader } from "../../../shared";
 import { Input } from "../ui";
@@ -20,7 +20,7 @@ export const LoginAuth: FC = () => {
     const windowWidth = Dimensions.get('window').width;
     const navigation = useNavigation();
     const dispatch: AppDispatch = useDispatch()
-    const { loading } = useSelector((state: any) => state.authSlice);
+    const { loading } = useSelector((state: RootState) => state.authSlice);
     const [email, onChangeEmail] = useState<string>('');
     const [password, onChangePassword] = useState<string>('');
     const [isFormValidEmail, setIsFormValidEmail] = useState<boolean>(false);
@@ -28,12 +28,7 @@ export const LoginAuth: FC = () => {
 
     const onLoginUser = async (user: { email: string; password: string }) => {
         Keyboard.dismiss();
-        const actionResult = await dispatch(authUser(user));
-
-        if (authUser.fulfilled.match(actionResult)) {
-        } else if (authUser.rejected.match(actionResult)) {
-            console.log(actionResult)
-        }
+        await dispatch(authUser(user));
     }
 
     const handleValidationEmail = (isValid: boolean) => {

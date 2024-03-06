@@ -47,7 +47,6 @@ export const sendGoogleCodeToServer = async (idToken: string) => {
             return { success: false, error: response.problem || 'Ошибка аутентификации' };
         }
     } catch (error) {
-        console.error(error);
         return { success: false, error: 'Ошибка сети' };
     }
 }
@@ -61,13 +60,12 @@ export const loginUser = async (body: IUserFields) => {
             return { success: false, error: response.problem || 'Ошибка аутентификации' };
         }
     } catch (error) {
-        console.error(error);
         return { success: false, error: 'Ошибка сети' };
     }
 }
 
 export const registrationUser = async (body: IUserFields) => {
-    const response = await api.post<any>(`/auth/register`, body);
+    const response = await api.post<Response<{ message: string }>>(`/auth/register`, body);
     try {
         if (response.ok && response.data) {
             console.log('api: ', response)

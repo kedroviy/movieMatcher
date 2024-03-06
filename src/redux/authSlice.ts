@@ -40,9 +40,7 @@ export const authUser = createAsyncThunk(
             const response = await loginUser(userData);
             if (response.success) {
                 saveToken(response.token as string);
-                console.log('token succeess: ', response)
             }
-            console.log('token basic: ', response)
             return response;
         } catch (error) {
             return rejectWithValue(error);
@@ -55,20 +53,15 @@ export const authenticateWithGoogle = createAsyncThunk('auth/GOOGLE', async (_, 
         await GoogleSignin.hasPlayServices();
         const userInfo = await GoogleSignin.signIn();
         const idToken = userInfo.idToken;
-        console.log('idToken: ', idToken);
         
         const response = await sendGoogleCodeToServer(idToken);
 
         if (response.success) {
             saveToken(response.token as string);
-            console.log('token succeess: ', response)
-        } else {
-            console.log('else: ', response)
         }
 
         return response;
     } catch (error) {
-        console.error('error: ', error);
         return rejectWithValue(error || 'An error occurred');
     }
 });
@@ -98,7 +91,6 @@ export const checkAuthStatus = createAsyncThunk('auth/checkStatus',
             }
             return { isAuthenticated: false };
         } catch (error) {
-            console.error("Не удалось извлечь токен:", error);
             return { isAuthenticated: false };
         }
     }
@@ -159,10 +151,8 @@ const authSlice = createSlice({
             })
             .addCase(authenticateWithGoogle.fulfilled, (state, action) => {
                 state.loading = false;
-                state.token = action.payload.token as string;
 
                 if (action.payload.success) {
-                    state.token = action.payload.token as string;
                     state.isAuthenticated = true;
                 } else {
                     state.isAuthenticated = false;
