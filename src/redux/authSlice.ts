@@ -54,7 +54,7 @@ export const authenticateWithGoogle = createAsyncThunk('auth/GOOGLE', async (_, 
         const userInfo = await GoogleSignin.signIn();
         const idToken = userInfo.idToken;
         
-        const response = await sendGoogleCodeToServer(idToken);
+        const response = await sendGoogleCodeToServer(idToken as string);
 
         if (response.success) {
             saveToken(response.token as string);
