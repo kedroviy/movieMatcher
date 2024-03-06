@@ -111,7 +111,7 @@ export const LoginRegistration: FC = () => {
                     placeholder='Повторите ваш пароль'
                     textError='Пароли не совпадают'
                 />
-                {!isFormValidPassword || !isFormValidConfirmPassword || !isFormValidEmail ?
+                {!isFormValidPassword || !isFormValidConfirmPassword || (!isFormValidEmail && !email.length) ?
                     <TouchableOpacity
                         style={[styles.button, { backgroundColor: '#940C0C', width: windowWidth - 32, height: 48 }]
                         }

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { StyleSheet, Dimensions, Text, TouchableOpacity } from "react-native";
 import {
     GoogleSignin,
@@ -8,71 +8,78 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { View } from 'react-native-ui-lib';
 
-import { saveGoogleAuthCode } from "../../redux/authSlice";
+import { AppDispatch } from "../../redux/configure-store";
+import { authenticateWithGoogle, saveGoogleAuthCode } from "../../redux/authSlice";
 import StartLogotype from '../../../assets/startLogo.svg';
 import GoogleIcon from '../../../assets/google.svg'
+import { Loader } from "../../shared";
 
 export const LoginScreen = () => {
-    const dispatch = useDispatch();
+    const dispatch: AppDispatch = useDispatch();
+    const { loading } = useSelector((state: any) => state.authSlice);
     const navigation: any = useNavigation();
     const windowWidth = Dimensions.get('window').width;
     const [user, setUser] = useState<User | undefined>();
 
 
-    useEffect(() => {
-        GoogleSignin.configure({
-            webClientId: '277043180680-ugnrupqacuchkhpklb1qhv8kaueh4eks.apps.googleusercontent.com',
-            offlineAccess: true,
-            forceCodeForRefreshToken: true,
-        });
-        isSignedIn();
-    }, [user]);
+    // useEffect(() => {
+    //     GoogleSignin.configure({
+    //         webClientId: '277043180680-ugnrupqacuchkhpklb1qhv8kaueh4eks.apps.googleusercontent.com',
+    //         offlineAccess: true,
+    //         forceCodeForRefreshToken: true,
+    //     });
+    //     isSignedIn();
+    // }, [user]);
 
-    const signIn = async () => {
-        try {
-            await GoogleSignin.hasPlayServices();
-            const userInfo: User = await GoogleSignin.signIn();
-            console.log('__due__ :', userInfo);
-            dispatch(saveGoogleAuthCode(userInfo?.idToken as string));
-            setUser(userInfo);
+    // const signIn = async () => {
+    //     try {
+    //         await GoogleSignin.hasPlayServices();
+    //         const userInfo: User = await GoogleSignin.signIn();
+    //         console.log('__due__ :', userInfo);
+    //         dispatch(saveGoogleAuthCode(userInfo?.idToken as string));
+    //         setUser(userInfo);
 
-        } catch (error) {
-            if (error) {
-                console.log(error)
-            }
-        }
-    };
+    //     } catch (error) {
+    //         if (error) {
+    //             console.log(error)
+    //         }
+    //     }
+    // };
 
-    const isSignedIn = async () => {
-        const isSignedIn = await GoogleSignin.isSignedIn();
-        if (!!isSignedIn) {
+    // const isSignedIn = async () => {
+    //     const isSignedIn = await GoogleSignin.isSignedIn();
+    //     if (!!isSignedIn) {
 
-            getCurrentUserInfo()
-        } else {
-            console.log('please login')
-        }
-    };
+    //         getCurrentUserInfo()
+    //     } else {
+    //         console.log('please login')
+    //     }
+    // };
 
-    const getCurrentUserInfo = async () => {
-        try {
-            const userInfo: User = await GoogleSignin.signInSilently();
-            console.log('currentUserInfo: ', userInfo)
+    // const getCurrentUserInfo = async () => {
+    //     try {
+    //         const userInfo: User = await GoogleSignin.signInSilently();
+    //         console.log('currentUserInfo: ', userInfo)
 
-            setUser(userInfo);
-        } catch (error) {
-            if (error) {
-                console.log('Get current user info Error message: ', error)
-            }
-        }
-    };
+    //         setUser(userInfo);
+    //     } catch (error) {
+    //         if (error) {
+    //             console.log('Get current user info Error message: ', error)
+    //         }
+    //     }
+    // };
 
-    const signOut = async () => {
-        try {
-            await GoogleSignin.signOut();
-            setUser({ user: null } as unknown as User);
-        } catch (error) {
-            console.error(error);
-        }
+    // const signOut = async () => {
+    //     try {
+    //         await GoogleSignin.signOut();
+    //         setUser({ user: null } as unknown as User);
+    //     } catch (error) {
+    //         console.error(error);
+    //     }
+    // };
+
+    const onAuthWithGoogle = async() => {
+        await dispatch(authenticateWithGoogle(user));
     };
 
     return (
@@ -129,7 +136,7 @@ export const LoginScreen = () => {
                             justifyContent: 'flex-start',
                         }
                     ]}
-                    onPress={signIn}
+                    onPress={onAuthWithGoogle}
                 >
                     <GoogleIcon width={36} height={36} />
                     <Text style={{
@@ -160,6 +167,7 @@ export const LoginScreen = () => {
                     }}>Зарегистрироваться</Text>
                 </TouchableOpacity>
             </View>
+            {loading ? <Loader /> : null}
         </View>
     )
 };

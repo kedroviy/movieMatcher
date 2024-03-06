@@ -15,7 +15,7 @@ type Response<T> = {
     token: any;
     message: any;
     success: boolean;
-    data: T; 
+    data: T;
 };
 
 const api = create({
@@ -31,9 +31,16 @@ export const setAuthToken = (token: string) => {
     apiGoogleAuth.setHeader('Authorization', `Bearer ${token}`);
 };
 
-export const sendAuthCodeToServer = async (idToken: IGoogleAuthCodeToServer) => {
+export const sendGoogleCodeToServer = async (idToken: string) => {
     try {
-        const response = await api.post<Response<{ token: string }>>(`/auth/google`, idToken);
+        const formData = new URLSearchParams();
+        formData.append('idToken', idToken);
+
+        const response = await api.post<Response<{ token: string }>>(`/auth/verify-id-token`, formData.toString(), {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+        });
         if (response.ok && response.data) {
             return { success: true, token: response.data.token };
         } else {
@@ -60,11 +67,13 @@ export const loginUser = async (body: IUserFields) => {
 }
 
 export const registrationUser = async (body: IUserFields) => {
+    const response = await api.post<any>(`/auth/register`, body);
     try {
-        const response = await api.post<Response<{ message: string }>>(`/auth/register`, body);
         if (response.ok && response.data) {
+            console.log('api: ', response)
             return { success: true, message: response.data.message };
         } else {
+            console.log('api: ', response)
             return { success: false, error: response.problem || 'Ошибка аутентификации' };
         }
     } catch (error) {

@@ -1,7 +1,7 @@
 import { createAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import * as Keychain from 'react-native-keychain';
 
-import { IGoogleAuthCodeToServer, loginUser, registrationUser, sendAuthCodeToServer } from '../features/auth/authAPI';
+import { loginUser, registrationUser, sendGoogleCodeToServer } from '../features/auth/authAPI';
 import { removeToken, saveToken } from '../shared';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
@@ -50,23 +50,26 @@ export const authUser = createAsyncThunk(
     }
 );
 
-export const authenticateWithGoogle = createAsyncThunk('auth/GOOGLE', async () => {
+export const authenticateWithGoogle = createAsyncThunk('auth/GOOGLE', async (_, { rejectWithValue }) => {
     try {
         await GoogleSignin.hasPlayServices();
         const userInfo = await GoogleSignin.signIn();
-        const idToken = userInfo.idToken as unknown as IGoogleAuthCodeToServer;
+        const idToken = userInfo.idToken;
+        console.log('idToken: ', idToken);
+        
+        const response = await sendGoogleCodeToServer(idToken);
 
-        try {
-            const response = await sendAuthCodeToServer(idToken);
-            if (!response?.ok) throw new Error('Ошибка сервера');
-
-            return response?.data?.idToken;
-        } catch (error) {
-            throw new Error(error);
-
+        if (response.success) {
+            saveToken(response.token as string);
+            console.log('token succeess: ', response)
+        } else {
+            console.log('else: ', response)
         }
+
+        return response;
     } catch (error) {
-        throw new Error(error);
+        console.error('error: ', error);
+        return rejectWithValue(error || 'An error occurred');
     }
 });
 
@@ -78,9 +81,8 @@ export const authRegistrationUser = createAsyncThunk(
             if (!response.success) {
                 console.log(response)
                 return rejectWithValue(response?.error);
-            } 
-                return response
-            
+            }
+            return response
         } catch (error) {
             return rejectWithValue(error);
         }
@@ -149,6 +151,25 @@ const authSlice = createSlice({
                 }
             })
             .addCase(authUser.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload as string;
+            })
+            .addCase(authenticateWithGoogle.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(authenticateWithGoogle.fulfilled, (state, action) => {
+                state.loading = false;
+                state.token = action.payload.token as string;
+
+                if (action.payload.success) {
+                    state.token = action.payload.token as string;
+                    state.isAuthenticated = true;
+                } else {
+                    state.isAuthenticated = false;
+                    state.token = null;
+                }
+            })
+            .addCase(authenticateWithGoogle.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload as string;
             })
