@@ -2,12 +2,14 @@ import { FC, useState } from "react"
 import {
     Dimensions,
     Keyboard,
+    KeyboardAvoidingView,
+    Platform,
     StyleSheet,
     Text,
     TouchableOpacity,
     View,
 } from "react-native"
-import { useNavigation } from "@react-navigation/native";
+import { NavigationProp, ParamListBase, useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 
 import BackIcon from '../../../../assets/backArrow.svg';
@@ -18,7 +20,7 @@ import { Input } from "../ui";
 
 export const LoginAuth: FC = () => {
     const windowWidth = Dimensions.get('window').width;
-    const navigation = useNavigation();
+    const navigation: NavigationProp<ParamListBase> = useNavigation();
     const dispatch: AppDispatch = useDispatch()
     const { loading } = useSelector((state: RootState) => state.authSlice);
     const [email, onChangeEmail] = useState<string>('');
@@ -40,8 +42,12 @@ export const LoginAuth: FC = () => {
     };
 
     return (
-        <View style={[styles.container, { width: windowWidth }]}>
-            <View style={{ width: '100%', gap: 16 }}>
+        <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={[styles.container,
+            { width: windowWidth }]}
+        >
+            <View style={{ width: '100%', gap: 16, top: 10, flex: 0.1, }}>
                 <TouchableOpacity
                     style={{
                         left: 16,
@@ -60,8 +66,10 @@ export const LoginAuth: FC = () => {
                 alignItems: 'flex-start',
                 width: windowWidth,
                 paddingHorizontal: 16,
+                marginBottom: 30,
                 gap: 16,
-                top: 30,
+                bottom: '10%',
+                flex: 0.6,
             }}>
                 <Text style={[styles.text, styles.headerText, { marginBottom: 24 }]}>Войти в аккаунт</Text>
 
@@ -72,7 +80,7 @@ export const LoginAuth: FC = () => {
                     value={email}
                     onValidationChange={handleValidationEmail}
                     placeholder='Введите ваш email'
-                    textError='Email не соответствует формату name@mail.com'
+                    textError='формат почты name@mail.com'
                 />
                 <Input
                     type='password'
@@ -102,26 +110,27 @@ export const LoginAuth: FC = () => {
                     </TouchableOpacity>
                 }
             </View>
-            <TouchableOpacity
-                style={
-                    {
-                        top: '40%',
-                        width: windowWidth - 32,
-                        height: 44,
-                        gap: 10,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        borderWidth: 1,
-                        borderColor: '#FFF',
-                        borderRadius: 5,
+            <View style={{ width: windowWidth - 32, bottom: 20,  }}>
+                <TouchableOpacity
+                    style={
+                        {
+                            width: windowWidth - 32,
+                            height: 44,
+                            gap: 10,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            borderWidth: 1,
+                            borderColor: '#FFF',
+                            borderRadius: 5,
+                        }
                     }
-                }
-                onPress={() => { console.log('restore password') }}
-            >
-                <Text style={styles.text}>Забыли пароль? Восстановить</Text>
-            </TouchableOpacity>
+                    onPress={() => navigation.navigate('LoginAccRecovery')}
+                >
+                    <Text style={styles.text}>Забыли пароль? Восстановить</Text>
+                </TouchableOpacity>
+            </View>
             {loading ? <Loader /> : null}
-        </View>
+        </KeyboardAvoidingView>
     )
 };
 
@@ -130,6 +139,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#353535',
         flex: 1,
         alignItems: 'center',
+        justifyContent: 'space-between',
     },
     button: {
         alignItems: 'center',

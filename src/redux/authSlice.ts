@@ -5,8 +5,7 @@ import { loginUser, registrationUser, sendGoogleCodeToServer } from '../features
 import { removeToken, saveToken } from '../shared';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
-type UserState = {
-    user: null | object;
+type AuthState = {
     token: string | null;
     isAuthenticated: boolean;
     googleAuthCode: string | null;
@@ -16,8 +15,7 @@ type UserState = {
     success: boolean;
 }
 
-const initialState: UserState = {
-    user: null,
+const initialState: AuthState = {
     token: null,
     isAuthenticated: false,
     googleAuthCode: null,
@@ -168,7 +166,6 @@ const authSlice = createSlice({
             })
             .addCase(authRegistrationUser.fulfilled, (state, action) => {
                 state.loading = false;
-                state.user = action.payload;
             })
             .addCase(authRegistrationUser.rejected, (state, action) => {
                 state.loading = false;

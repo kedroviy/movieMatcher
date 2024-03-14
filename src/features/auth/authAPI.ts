@@ -1,11 +1,10 @@
 import { create } from 'apisauce'
+import { API } from '../../shared';
 
 type IUserFields = {
     email: string;
     password: string;
 }
-
-// "idToken": "1q2w2e3e32e23d323rfwf"
 
 export type IGoogleAuthCodeToServer = {
     idToken: string;
@@ -19,17 +18,17 @@ type Response<T> = {
 };
 
 const api = create({
-    baseURL: 'https://movie-match-v435.onrender.com',
+    baseURL: API.BASE_URL,
     headers: { Accept: 'application/vnd.github.v3+json' },
 });
 
-const apiGoogleAuth = create({
-    baseURL: 'https://movie-match-v435.onrender.com',
-});
+// const apiGoogleAuth = create({
+//     baseURL: API.BASE_URL,
+// });
 
-export const setAuthToken = (token: string) => {
-    apiGoogleAuth.setHeader('Authorization', `Bearer ${token}`);
-};
+// export const setAuthToken = (token: string) => {
+//     apiGoogleAuth.setHeader('Authorization', `Bearer ${token}`);
+// };
 
 export const sendGoogleCodeToServer = async (idToken: string) => {
     try {
@@ -53,7 +52,7 @@ export const sendGoogleCodeToServer = async (idToken: string) => {
 
 export const loginUser = async (body: IUserFields) => {
     try {
-        const response = await api.post<Response<{ token: string }>>(`/auth/login`, body);
+        const response = await api.post<Response<{ token: string }>>(API.LOGIN, body);
         if (response.ok && response.data) {
             return { success: true, token: response.data?.token };
         } else {
@@ -65,7 +64,12 @@ export const loginUser = async (body: IUserFields) => {
 }
 
 export const registrationUser = async (body: IUserFields) => {
-    const response = await api.post<Response<{ message: string }>>(`/auth/register`, body);
+
+    const response = await api.post<Response<{ message: string }>>(`/auth/register`, body, {
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
     try {
         if (response.ok && response.data) {
             console.log('api: ', response)

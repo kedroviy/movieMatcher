@@ -83,7 +83,7 @@ export const Input: FC<InputProps> = ({
             <TextInput
                 style={{
                     ...(isFocused && styles.focused),
-                    ...(!isInputValid && styles.error),
+                    // ...(!isInputValid && styles.error),
                     ...((type === 'confirm' && !isConfirm && value.length) ? styles.error : null),
                     backgroundColor: '#595959',
                     borderRadius: 5,
@@ -156,7 +156,6 @@ export const Input: FC<InputProps> = ({
                     }}
                     onPress={() => onChangeText('')}
                 >
-                    {(isFocused )&& <RemoveIcon />}
                 </TouchableOpacity>
             )}
             {

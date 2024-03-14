@@ -5,6 +5,7 @@ export enum AppRoutes {
     LOGIN_SCREEN = 'LoginScreen',
     LOGIN_REGISTRATION_SCREEN = 'LoginRegistration',
     LOGIN_AUTH_SCREEN = 'LoginAuth',
+    LOGIN_ACC_RECOVERY = 'LoginAccRecovery',
 };
 
 export const defaultScreenOptions: StackNavigationOptions = {
@@ -65,4 +66,5 @@ export type RootStackParamList = {
     LoginScreen: undefined;
     LoginAuth: undefined;
     LoginRegistration: undefined;
+    LoginAccRecovery: undefined;
 };

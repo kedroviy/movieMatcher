@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { StyleSheet, Dimensions, Text, TouchableOpacity } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { NavigationProp, ParamListBase, useNavigation } from "@react-navigation/native";
 import { View } from 'react-native-ui-lib';
 
 import StartLogotype from '../../../assets/startLogo.svg';
@@ -13,7 +13,7 @@ import { Loader } from "../../shared";
 export const LoginScreen = () => {
     const dispatch: AppDispatch = useDispatch();
     const { loading } = useSelector((state: any) => state.authSlice);
-    const navigation: any = useNavigation();
+    const navigation: NavigationProp<ParamListBase> = useNavigation();
     const windowWidth = Dimensions.get('window').width;
 
     const onAuthWithGoogle = async () => {

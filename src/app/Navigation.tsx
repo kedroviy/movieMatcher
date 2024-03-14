@@ -3,7 +3,7 @@ import { Text, View } from 'react-native';
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
 import { useSelector } from 'react-redux';
 
-import { LoginAuth, LoginRegistration, LoginScreen, MainScreen } from '../pages/index';
+import { LoginAccRecovery, LoginAuth, LoginRegistration, LoginScreen, MainScreen } from '../pages/index';
 import {
   AppRoutes,
   RootStackParamList,
@@ -62,7 +62,17 @@ const Navigation: React.FC = () => {
             }}
             key={AppRoutes.LOGIN_REGISTRATION_SCREEN}
           />
-  
+          <Stack.Screen
+            name={AppRoutes.LOGIN_ACC_RECOVERY}
+            component={LoginAccRecovery}
+            options={{
+              ...withoutHeader,
+              cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+              ...animationOptions
+            }}
+            key={AppRoutes.LOGIN_ACC_RECOVERY}
+          />
+
         </Stack.Group> :
         <Stack.Group>
 

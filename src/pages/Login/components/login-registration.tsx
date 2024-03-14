@@ -97,7 +97,7 @@ export const LoginRegistration: FC = () => {
                     value={email}
                     onValidationChange={handleValidationEmail}
                     placeholder='Введите ваш email'
-                    textError='Email не соответствует формату name@mail.com'
+                    textError='формат почты name@mail.com'
                 />
                 <Input
                     type='password'
