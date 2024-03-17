@@ -3,7 +3,7 @@ import { Dimensions, StyleSheet, Text, TextInput, TouchableOpacity, View } from 
 
 import VisibilityEye from '../../../../assets/visibility.svg';
 import NotVisibilityEye from '../../../../assets/visibility-no.svg';
-import RemoveIcon from '../../../../assets/remove.svg';
+import { AppConstants } from "shared";
 
 type InputProps = {
     label?: string;
@@ -28,7 +28,7 @@ export const Input: FC<InputProps> = ({
 }) => {
     const windowWidth = Dimensions.get('window').width;
     const [inputErrors, setInputErrors] = useState({});
-    const [isInputValid, setIsInputValid] = useState<boolean>(true);
+    const [isInputValid, setIsInputValid] = useState<boolean>(false);
     const [hidePass, setHidePass] = useState<boolean>(true);
     const [isFocused, setIsFocused] = useState<boolean>(false);
 
@@ -38,19 +38,19 @@ export const Input: FC<InputProps> = ({
 
     const validateInput = () => {
         let inputErrors = {};
-        
+        let isValid = true;
 
         switch (type) {
             case 'email':
-                if (value.length && !/\S+@\S+\.\S+/.test(value)) {
-                    inputErrors.value = `${textError}`;
-                    setIsInputValid(false);
+                if (!/\S+@\S+\.\S+/.test(value)) {
+                    inputErrors = { value: `${textError}` };
+                    isValid = false;
                 }
                 break;
             case 'password':
-                if (value.length < 6 && value.length) {
-                    inputErrors.value = `${textError}`;
-                    setIsInputValid(false);
+                if (value.length < 6) {
+                    inputErrors = { value: `${textError}` };
+                    isValid = false;
                 }
                 break;
             default:
@@ -59,8 +59,8 @@ export const Input: FC<InputProps> = ({
         }
 
         setInputErrors(inputErrors);
-        const isValid = Object.keys(inputErrors).length === 0;
         setIsInputValid(isValid);
+
         if (onValidationChange) {
             onValidationChange(isValid);
         }
@@ -83,7 +83,6 @@ export const Input: FC<InputProps> = ({
             <TextInput
                 style={{
                     ...(isFocused && styles.focused),
-                    // ...(!isInputValid && styles.error),
                     ...((type === 'confirm' && !isConfirm && value.length) ? styles.error : null),
                     backgroundColor: '#595959',
                     borderRadius: 5,
@@ -140,35 +139,17 @@ export const Input: FC<InputProps> = ({
                     {hidePass ? <VisibilityEye /> : <NotVisibilityEye />}
                 </TouchableOpacity>
             )}
-            {type === 'email' && (
-                <TouchableOpacity
-                    style={{
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        position: 'absolute',
-                        right: 3,
-                        top: 40,
-                        height: 32,
-                        width: 32,
-                        backgroundColor: '#595959',
-                        borderBottomRightRadius: 5,
-                        borderTopRightRadius: 5,
-                    }}
-                    onPress={() => onChangeText('')}
-                >
-                </TouchableOpacity>
-            )}
             {
-                Object.values(inputErrors).map((error, index) => (
+                value.length > 1 && Object.values(inputErrors).map((error, index) => (
                     <Text key={index} style={styles.errorText}>
                         {error as string}
                     </Text>
                 ))
             }
-            {(type === 'confirm' && !isConfirm && value.length) ? 
-            <Text key={textError} style={styles.errorText}>
-                {textError as string}
-            </Text> : null}
+            {(type === 'confirm' && !isConfirm && value.length) ?
+                <Text key={textError} style={styles.errorText}>
+                    {textError as string}
+                </Text> : null}
         </View>
     );
 };

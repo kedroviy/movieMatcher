@@ -1,2 +1,2 @@
-export * from './Login/index';
+export * from './Login';
 export * from './Main';

@@ -3,7 +3,7 @@ import { Text, View } from 'react-native';
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
 import { useSelector } from 'react-redux';
 
-import { LoginAccRecovery, LoginAuth, LoginRegistration, LoginScreen, MainScreen } from '../pages/index';
+import { LoginAccRecovery, LoginAuth, LoginRegistration, LoginScreen, MainScreen } from '@pages';
 import {
   AppRoutes,
   RootStackParamList,

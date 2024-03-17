@@ -15,7 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import BackIcon from '../../../../assets/backArrow.svg';
 import { AppDispatch, RootState } from "../../../redux/configure-store";
 import { authUser } from "../../../redux/authSlice";
-import { Loader } from "../../../shared";
+import { AppConstants, Loader } from "@shared/index";
 import { Input } from "../ui";
 
 export const LoginAuth: FC = () => {
@@ -23,8 +23,8 @@ export const LoginAuth: FC = () => {
     const navigation: NavigationProp<ParamListBase> = useNavigation();
     const dispatch: AppDispatch = useDispatch()
     const { loading } = useSelector((state: RootState) => state.authSlice);
-    const [email, onChangeEmail] = useState<string>('');
-    const [password, onChangePassword] = useState<string>('');
+    const [email, onChangeEmail] = useState<string>(AppConstants.EMPTY_VALUE);
+    const [password, onChangePassword] = useState<string>(AppConstants.EMPTY_VALUE);
     const [isFormValidEmail, setIsFormValidEmail] = useState<boolean>(false);
     const [isFormValidPassword, setIsFormValidPassword] = useState<boolean>(false);
 
@@ -80,7 +80,7 @@ export const LoginAuth: FC = () => {
                     value={email}
                     onValidationChange={handleValidationEmail}
                     placeholder='Введите ваш email'
-                    textError='формат почты name@mail.com'
+                    textError='Формат почты name@mail.com'
                 />
                 <Input
                     type='password'
@@ -92,25 +92,20 @@ export const LoginAuth: FC = () => {
                     textError='Пароль должен быть от 6 символов'
                 />
 
-                {!isFormValidPassword || !isFormValidEmail ?
-                    <TouchableOpacity
-                        style={[styles.button, { backgroundColor: '#940C0C', width: windowWidth - 32, height: 48 }]
-                        }
-                        disabled={true}
-                    >
-                        <Text style={styles.text}>Войти</Text>
-                    </TouchableOpacity>
-                    :
-                    <TouchableOpacity
-                        style={[styles.button, { backgroundColor: '#DF0A1E', width: windowWidth - 32, height: 48 }]
-                        }
-                        onPress={() => onLoginUser({ email, password })}
-                    >
-                        <Text style={styles.text}>Войти</Text>
-                    </TouchableOpacity>
-                }
+                <TouchableOpacity
+                    style={[styles.button,
+                    (isFormValidPassword && isFormValidEmail) ?
+                        { backgroundColor: '#ED0E0E', width: windowWidth - 32, height: 48 } :
+                        { backgroundColor: '#940C0C', width: windowWidth - 32, height: 48 }
+                    ]}
+                    disabled={(isFormValidPassword && isFormValidEmail) ? false : true}
+                    onPress={() => onLoginUser({ email, password })}
+                >
+                    <Text style={styles.text}>Войти</Text>
+                </TouchableOpacity>
+
             </View>
-            <View style={{ width: windowWidth - 32, bottom: 20,  }}>
+            <View style={{ width: windowWidth - 32, bottom: 20, }}>
                 <TouchableOpacity
                     style={
                         {

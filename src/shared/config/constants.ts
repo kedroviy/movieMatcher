@@ -4,4 +4,8 @@ const API = {
     GET_USER_PROFILE_INFO: '/user/me',
 };
 
-export { API }
+const AppConstants = {
+    EMPTY_VALUE: '',
+}
+
+export { API, AppConstants }

@@ -1,3 +1,3 @@
-export { Loader } from './ui/loader'
+export * from './ui'
 export * from './utils/tokenHandle';
 export * from './config';

@@ -8,7 +8,7 @@ import GoogleIcon from '../../../assets/google.svg'
 
 import { AppDispatch } from "../../redux/configure-store";
 import { authenticateWithGoogle } from "../../redux/authSlice";
-import { Loader } from "../../shared";
+import { Loader } from "@shared/index";
 
 export const LoginScreen = () => {
     const dispatch: AppDispatch = useDispatch();
@@ -22,7 +22,7 @@ export const LoginScreen = () => {
 
     return (
         <View style={[styles.container, { width: windowWidth }]}>
-            <View style={{ width: 328, height: 328, marginVertical: 25, }}>
+            <View style={{ alignItems: 'center', width: windowWidth, height: 328, marginVertical: 25, }}>
                 <StartLogotype />
             </View>
             <View style={{ width: 328, gap: 12, alignItems: 'center', marginTop: 20 }}>
@@ -49,7 +49,7 @@ export const LoginScreen = () => {
                             flexDirection: 'row',
                             width: windowWidth - 32,
                             height: 48,
-                            backgroundColor: '#DF0A1E',
+                            backgroundColor: '#ED0E0E',
                             alignItems: 'center',
                             justifyContent: 'center',
                         }

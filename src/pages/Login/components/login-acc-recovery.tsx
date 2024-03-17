@@ -6,13 +6,13 @@ import { useSelector } from "react-redux";
 import BackIcon from '../../../../assets/backArrow.svg';
 import { Input } from "../ui";
 import { RootState } from "../../../redux/configure-store";
-import { Loader } from "../../../shared";
+import { AppConstants, Loader } from "../../../shared";
 
 export const LoginAccRecovery: FC = () => {
     const windowWidth = Dimensions.get('window').width;
     const navigation = useNavigation();
     const { loading } = useSelector((state: RootState) => state.authSlice);
-    const [email, onChangeEmail] = useState<string>('');
+    const [email, onChangeEmail] = useState<string>(AppConstants.EMPTY_VALUE);
     const [isFormValidEmail, setIsFormValidEmail] = useState<boolean>(false);
 
     const handleValidationEmail = (isValid: boolean) => {
