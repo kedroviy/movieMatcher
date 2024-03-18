@@ -4,6 +4,7 @@ import {
     Keyboard,
     KeyboardAvoidingView,
     Platform,
+    ScrollView,
     StyleSheet,
     Text,
     TouchableOpacity,
@@ -47,71 +48,60 @@ export const LoginAuth: FC = () => {
             style={[styles.container,
             { width: windowWidth }]}
         >
-            <View style={{ width: '100%', gap: 16, top: 10, flex: 0.1, }}>
-                <TouchableOpacity
-                    style={{
-                        left: 16,
-                        width: 24,
-                        height: 44,
-                        gap: 10,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                    }}
-                    onPress={() => { navigation.goBack() }}
-                >
-                    <BackIcon />
-                </TouchableOpacity>
-            </View>
-            <View style={{
-                alignItems: 'flex-start',
-                width: windowWidth,
-                paddingHorizontal: 16,
-                marginBottom: 30,
-                gap: 16,
-                bottom: '10%',
-                flex: 0.6,
-            }}>
-                <Text style={[styles.text, styles.headerText, { marginBottom: 24 }]}>Войти в аккаунт</Text>
+            <ScrollView
+                keyboardShouldPersistTaps="handled"
+                contentContainerStyle={{ flexGrow: 1, justifyContent: 'space-between', alignItems: 'center' }}
+            >
+                <View style={{
+                    alignItems: 'flex-start',
+                    width: windowWidth,
+                    paddingHorizontal: 16,
+                    gap: 16,
+                    flex: 0.7,
+                    top: 24,
+                }}>
+                    <Text style={[styles.text, styles.headerText, { marginBottom: 24 }]}>Войти в аккаунт</Text>
 
-                <Input
-                    type='email'
-                    label='Почта'
-                    onChangeText={onChangeEmail}
-                    value={email}
-                    onValidationChange={handleValidationEmail}
-                    placeholder='Введите ваш email'
-                    textError='Формат почты name@mail.com'
-                />
-                <Input
-                    type='password'
-                    label='Пароль'
-                    onChangeText={onChangePassword}
-                    onValidationChange={handleValidationPassword}
-                    value={password}
-                    placeholder='Введите ваш пароль'
-                    textError='Пароль должен быть от 6 символов'
-                />
+                    <Input
+                        type='email'
+                        label='Почта'
+                        onChangeText={onChangeEmail}
+                        value={email}
+                        onValidationChange={handleValidationEmail}
+                        placeholder='Введите ваш email'
+                        textError='Формат почты name@mail.com'
+                    />
+                    <Input
+                        type='password'
+                        label='Пароль'
+                        onChangeText={onChangePassword}
+                        onValidationChange={handleValidationPassword}
+                        value={password}
+                        placeholder='Введите ваш пароль'
+                        textError='Пароль должен быть от 6 символов'
+                    />
 
-                <TouchableOpacity
-                    style={[styles.button,
-                    (isFormValidPassword && isFormValidEmail) ?
-                        { backgroundColor: '#ED0E0E', width: windowWidth - 32, height: 48 } :
-                        { backgroundColor: '#940C0C', width: windowWidth - 32, height: 48 }
-                    ]}
-                    disabled={(isFormValidPassword && isFormValidEmail) ? false : true}
-                    onPress={() => onLoginUser({ email, password })}
-                >
-                    <Text style={styles.text}>Войти</Text>
-                </TouchableOpacity>
+                    <TouchableOpacity
+                        style={[styles.button,
+                        (isFormValidPassword && isFormValidEmail) ?
+                            { backgroundColor: '#ED0E0E', width: windowWidth - 32, height: 48 } :
+                            { backgroundColor: '#940C0C', width: windowWidth - 32, height: 48 }
+                        ]}
+                        disabled={(isFormValidPassword && isFormValidEmail) ? false : true}
+                        onPress={() => onLoginUser({ email, password })}
+                    >
+                        <Text style={styles.text}>Войти</Text>
+                    </TouchableOpacity>
 
-            </View>
-            <View style={{ width: windowWidth - 32, bottom: 20, }}>
+                </View>
+
                 <TouchableOpacity
                     style={
                         {
                             width: windowWidth - 32,
-                            height: 44,
+                            height: 48,
                             gap: 10,
+                            bottom: 32,
                             alignItems: 'center',
                             justifyContent: 'center',
                             borderWidth: 1,
@@ -123,9 +113,9 @@ export const LoginAuth: FC = () => {
                 >
                     <Text style={styles.text}>Забыли пароль? Восстановить</Text>
                 </TouchableOpacity>
-            </View>
+            </ScrollView>
             {loading ? <Loader /> : null}
-        </KeyboardAvoidingView>
+        </KeyboardAvoidingView >
     )
 };
 
@@ -139,10 +129,11 @@ const styles = StyleSheet.create({
     button: {
         alignItems: 'center',
         justifyContent: 'center',
-        padding: 10,
+        paddingVertical: 10,
+        paddingHorizontal: 48,
         gap: 10,
         borderRadius: 5,
-        marginTop: 16,
+        // marginTop: 16,
     },
     text: {
         color: '#FFFFFF',

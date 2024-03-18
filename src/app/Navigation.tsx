@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { Text, View } from 'react-native';
+import { Button, Text, View } from 'react-native';
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useSelector } from 'react-redux';
 
 import { LoginAccRecovery, LoginAuth, LoginRegistration, LoginScreen, MainScreen } from '@pages';
@@ -15,6 +16,15 @@ import {
 import StartLogotype from '../../assets/startLogo.svg'
 
 const Stack = createStackNavigator<RootStackParamList>();
+// const Tab = createBottomTabNavigator();
+
+// const BottomTabNavigation() {
+//   return (
+//     <Tab.Navigator>
+
+//     </Tab.Navigator>
+//   );
+// }
 
 const Navigation: React.FC = () => {
   const { isAuthenticated, loadingApplication } = useSelector((state: any) => state.authSlice);
@@ -27,6 +37,10 @@ const Navigation: React.FC = () => {
       </View>
     )
   }
+  function alert(arg0: string): void {
+    throw new Error('Function not implemented.');
+  }
+
   return (
     <Stack.Navigator screenOptions={defaultScreenOptions}>
       {!isAuthenticated ?
@@ -46,7 +60,13 @@ const Navigation: React.FC = () => {
             name={AppRoutes.LOGIN_AUTH_SCREEN}
             component={LoginAuth}
             options={{
-              ...withoutHeader,
+              headerStyle: {
+                backgroundColor: '#353535',
+              },
+              headerTintColor: '#F9F9F9',
+              headerLeftContainerStyle: {
+                marginLeft: -3,
+              },
               cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
               ...animationOptions
             }}
@@ -56,7 +76,13 @@ const Navigation: React.FC = () => {
             name={AppRoutes.LOGIN_REGISTRATION_SCREEN}
             component={LoginRegistration}
             options={{
-              ...withoutHeader,
+              headerStyle: {
+                backgroundColor: '#353535',
+              },
+              headerTintColor: '#F9F9F9',
+              headerLeftContainerStyle: {
+                marginLeft: -3,
+              },
               cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
               ...animationOptions
             }}
@@ -66,7 +92,13 @@ const Navigation: React.FC = () => {
             name={AppRoutes.LOGIN_ACC_RECOVERY}
             component={LoginAccRecovery}
             options={{
-              ...withoutHeader,
+              headerStyle: {
+                backgroundColor: '#353535',
+              },
+              headerTintColor: '#F9F9F9',
+              headerLeftContainerStyle: {
+                marginLeft: -3,
+              },
               cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
               ...animationOptions
             }}

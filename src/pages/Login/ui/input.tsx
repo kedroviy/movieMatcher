@@ -69,6 +69,7 @@ export const Input: FC<InputProps> = ({
     return (
         <View style={{
             gap: 16,
+            marginBottom: 5,
         }}>
             <Text style={{
                 fontSize: 14,
@@ -83,7 +84,6 @@ export const Input: FC<InputProps> = ({
             <TextInput
                 style={{
                     ...(isFocused && styles.focused),
-                    ...((type === 'confirm' && !isConfirm && value.length) ? styles.error : null),
                     backgroundColor: '#595959',
                     borderRadius: 5,
                     width: windowWidth - 32,

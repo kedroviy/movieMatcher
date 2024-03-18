@@ -8,6 +8,7 @@ import {
     KeyboardAvoidingView,
     Keyboard,
     Alert,
+    ScrollView,
 } from "react-native"
 import { useNavigation } from "@react-navigation/native";
 
@@ -67,74 +68,65 @@ export const LoginRegistration: FC = () => {
             behavior='padding'
             keyboardVerticalOffset={50}
         >
-            <View style={{ width: '100%', gap: 16 }}>
-                <TouchableOpacity
-                    style={{
-                        left: 16,
-                        width: 24,
-                        height: 44,
-                        gap: 10,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                    }}
-                    onPress={() => { navigation.goBack() }}
-                >
-                    <BackIcon />
-                </TouchableOpacity>
-            </View>
-            <View style={{
-                alignItems: 'flex-start',
-                width: windowWidth,
-                paddingHorizontal: 16,
-                gap: 16,
-                top: 30,
-            }}>
-                <Text style={[styles.text, styles.headerText, { marginBottom: 24 }]}>Регистрация аккаунта</Text>
-                <Input
-                    type='email'
-                    label='Почта'
-                    onChangeText={onChangeEmail}
-                    value={email}
-                    onValidationChange={handleValidationEmail}
-                    placeholder='Введите ваш email'
-                    textError='формат почты name@mail.com'
-                />
-                <Input
-                    type='password'
-                    label='Пароль'
-                    onChangeText={onChangePassword}
-                    onValidationChange={handleValidationPassword}
-                    value={password}
-                    placeholder='Введите ваш пароль'
-                    textError='Пароль должен быть от 6 символов'
-                />
-                <Input
-                    type='confirm'
-                    label='Повторите пароль'
-                    onChangeText={setConfirmPassword}
-                    isConfirm={isFormValidConfirmPassword}
-                    value={confirmPassword}
-                    placeholder='Повторите ваш пароль'
-                    textError='Пароли не совпадают'
-                />
-                {!isFormValidPassword || !isFormValidConfirmPassword || (!isFormValidEmail && !email.length) ?
-                    <TouchableOpacity
-                        style={[styles.button, { backgroundColor: '#940C0C', width: windowWidth - 32, height: 48 }]
-                        }
-                        disabled={true}
-                    >
-                        <Text style={styles.text}>Создать аккаунт</Text>
-                    </TouchableOpacity>
-                    :
-                    <TouchableOpacity
-                        style={[styles.button, { backgroundColor: '#DF0A1E', width: windowWidth - 32, height: 48 }]
-                        }
-                        onPress={() => onSubmitForm({ email, password })}
-                    >
-                        <Text style={styles.text}>Создать аккаунт</Text>
-                    </TouchableOpacity>
-                }
-            </View>
+            <ScrollView
+                keyboardShouldPersistTaps="handled"
+                contentContainerStyle={{ flexGrow: 1, justifyContent: 'space-between', alignItems: 'center', paddingBottom: 30, }}
+            >
+                <View style={{
+                    alignItems: 'flex-start',
+                    width: windowWidth,
+                    paddingHorizontal: 16,
+                    gap: 16,
+                    top: 24,
+                    flex: 1,
+                }}>
+                    <Text style={[styles.text, styles.headerText, { marginBottom: 24 }]}>Регистрация аккаунта</Text>
+                    <Input
+                        type='email'
+                        label='Почта'
+                        onChangeText={onChangeEmail}
+                        value={email}
+                        onValidationChange={handleValidationEmail}
+                        placeholder='Введите ваш email'
+                        textError='формат почты name@mail.com'
+                    />
+                    <Input
+                        type='password'
+                        label='Пароль'
+                        onChangeText={onChangePassword}
+                        onValidationChange={handleValidationPassword}
+                        value={password}
+                        placeholder='Введите ваш пароль'
+                        textError='Пароль должен быть от 6 символов'
+                    />
+                    <Input
+                        type='confirm'
+                        label='Повторите пароль'
+                        onChangeText={setConfirmPassword}
+                        isConfirm={isFormValidConfirmPassword}
+                        value={confirmPassword}
+                        placeholder='Повторите ваш пароль'
+                        textError='Пароли не совпадают'
+                    />
+                    {!isFormValidPassword || !isFormValidConfirmPassword || (!isFormValidEmail && !email.length) ?
+                        <TouchableOpacity
+                            style={[styles.button, { backgroundColor: '#940C0C', width: windowWidth - 32, height: 48 }]
+                            }
+                            disabled={true}
+                        >
+                            <Text style={styles.text}>Создать аккаунт</Text>
+                        </TouchableOpacity>
+                        :
+                        <TouchableOpacity
+                            style={[styles.button, { backgroundColor: '#DF0A1E', width: windowWidth - 32, height: 48 }]
+                            }
+                            onPress={() => onSubmitForm({ email, password })}
+                        >
+                            <Text style={styles.text}>Создать аккаунт</Text>
+                        </TouchableOpacity>
+                    }
+                </View>
+            </ScrollView>
             {loading ? <Loader /> : null}
         </KeyboardAvoidingView>
     )

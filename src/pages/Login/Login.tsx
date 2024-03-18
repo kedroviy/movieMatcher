@@ -9,6 +9,7 @@ import GoogleIcon from '../../../assets/google.svg'
 import { AppDispatch } from "../../redux/configure-store";
 import { authenticateWithGoogle } from "../../redux/authSlice";
 import { Loader } from "@shared/index";
+import { STRINGS } from "./constants";
 
 export const LoginScreen = () => {
     const dispatch: AppDispatch = useDispatch();
@@ -22,7 +23,7 @@ export const LoginScreen = () => {
 
     return (
         <View style={[styles.container, { width: windowWidth }]}>
-            <View style={{ alignItems: 'center', width: windowWidth, height: 328, marginVertical: 25, }}>
+            <View style={{ alignItems: 'center', width: windowWidth, height: 328, marginVertical: 24, }}>
                 <StartLogotype />
             </View>
             <View style={{ width: 328, gap: 12, alignItems: 'center', marginTop: 20 }}>
@@ -32,14 +33,14 @@ export const LoginScreen = () => {
                     fontWeight: '700',
                     lineHeight: 27.5,
                     textAlign: 'center'
-                }}>Добро пожаловать в MovieMatch!</Text>
+                }}>{STRINGS.WELCOME}</Text>
                 <Text style={{
                     color: '#FFFFFF',
                     fontSize: 16,
                     fontWeight: '400',
                     lineHeight: 21.6,
                     textAlign: 'center'
-                }}>Сделай подбор фильмов самостоятельно или в компании друзей</Text>
+                }}>{STRINGS.SUB_WELCOME}</Text>
             </View>
             <View style={{ width: '100%', alignItems: 'center', gap: 16, marginTop: 52, }}>
                 <TouchableOpacity

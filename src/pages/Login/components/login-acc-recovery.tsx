@@ -21,27 +21,13 @@ export const LoginAccRecovery: FC = () => {
 
     return (
         <View style={[styles.container, { width: windowWidth }]}>
-            <View style={{ width: '100%', gap: 16, flex: 0.1, top: 10, marginBottom: 30, }}>
-                <TouchableOpacity
-                    style={{
-                        left: 16,
-                        width: 24,
-                        height: 44,
-                        gap: 10,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                    }}
-                    onPress={() => { navigation.goBack() }}
-                >
-                    <BackIcon />
-                </TouchableOpacity>
-            </View>
             <View style={{
                 alignItems: 'flex-start',
                 width: windowWidth,
                 paddingHorizontal: 16,
                 gap: 16,
-                flex: .5,
+                flex: 1,
+                top: 24,
             }}>
                 <Text style={[styles.text, styles.headerText, { marginBottom: 12 }]}>Введите ваш email</Text>
                 <Text style={{
