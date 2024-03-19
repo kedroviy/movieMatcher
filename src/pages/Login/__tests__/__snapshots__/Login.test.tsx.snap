@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`LoginScreen Component Testing renders correctly 1`] = `
+exports[`LoginScreen Component Testing LoginScreen renders correctly 1`] = `
 <View
   style={
     [
