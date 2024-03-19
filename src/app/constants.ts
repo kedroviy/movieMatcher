@@ -1,11 +1,13 @@
 import { StackNavigationOptions } from '@react-navigation/stack';
 
 export enum AppRoutes {
+    TAB_NAVIGATOR = 'TabNavigator',
     MAIN_SCREEN = 'MainScreen',
     LOGIN_SCREEN = 'LoginScreen',
+    USER_PROFILE_SCREEN = 'UserProfileScreen',
     LOGIN_REGISTRATION_SCREEN = 'LoginRegistration',
     LOGIN_AUTH_SCREEN = 'LoginAuth',
-    LOGIN_ACC_RECOVERY = 'LoginAccRecovery',
+    LOGIN_ACC_RECOVERY_SCREEN = 'LoginAccRecovery',
 };
 
 export const defaultScreenOptions: StackNavigationOptions = {
@@ -14,11 +16,11 @@ export const defaultScreenOptions: StackNavigationOptions = {
     headerShadowVisible: false,
     headerLeftContainerStyle: {
         paddingLeft: 16,
-      },
-      headerRightContainerStyle: {
+    },
+    headerRightContainerStyle: {
         paddingRight: 16,
-      },
-      cardOverlayEnabled: true,
+    },
+    cardOverlayEnabled: true,
 };
 
 export const config = {
@@ -62,9 +64,11 @@ export const animationOptions: any = {
 };
 
 export type RootStackParamList = {
+    TabNavigator: undefined;
     MainScreen: undefined;
     LoginScreen: undefined;
     LoginAuth: undefined;
     LoginRegistration: undefined;
     LoginAccRecovery: undefined;
+    UserProfileScreen: undefined;
 };

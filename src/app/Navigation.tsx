@@ -1,10 +1,17 @@
 import * as React from 'react';
-import { Button, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { BottomTabNavigationOptions, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useSelector } from 'react-redux';
 
-import { LoginAccRecovery, LoginAuth, LoginRegistration, LoginScreen, MainScreen } from '@pages';
+import {
+  LoginAccRecovery,
+  LoginAuth,
+  LoginRegistration,
+  LoginScreen,
+  MainScreen,
+  UserProfileScreen,
+} from '@pages';
 import {
   AppRoutes,
   RootStackParamList,
@@ -16,15 +23,45 @@ import {
 import StartLogotype from '../../assets/startLogo.svg'
 
 const Stack = createStackNavigator<RootStackParamList>();
-// const Tab = createBottomTabNavigator();
+const Tab = createBottomTabNavigator();
 
-// const BottomTabNavigation() {
-//   return (
-//     <Tab.Navigator>
+const screenOptions: BottomTabNavigationOptions = {
+  tabBarInactiveTintColor: '#FFF',
+  tabBarActiveTintColor: 'orange',
+  tabBarStyle: {
+    elevation: 1,
+    backgroundColor: '#4D4C4D',
+  },
+  headerShown: false,
+};
 
-//     </Tab.Navigator>
-//   );
-// }
+const BottomTabNavigation = () => {
+  return (
+    <Tab.Navigator screenOptions={screenOptions}>
+      <Tab.Screen
+        name={AppRoutes.MAIN_SCREEN}
+        component={MainScreen}
+        options={{
+          tabBarLabel: 'Home',
+          cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+          ...animationOptions
+        }}
+
+        key={AppRoutes.MAIN_SCREEN}
+      />
+      <Tab.Screen
+        name={AppRoutes.USER_PROFILE_SCREEN}
+        options={{
+          tabBarLabel: 'Profile',
+          cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+          ...animationOptions
+        }}
+        component={UserProfileScreen}
+        key={AppRoutes.USER_PROFILE_SCREEN}
+      />
+    </Tab.Navigator>
+  );
+}
 
 const Navigation: React.FC = () => {
   const { isAuthenticated, loadingApplication } = useSelector((state: any) => state.authSlice);
@@ -36,9 +73,6 @@ const Navigation: React.FC = () => {
         <Text>Loading...</Text>
       </View>
     )
-  }
-  function alert(arg0: string): void {
-    throw new Error('Function not implemented.');
   }
 
   return (
@@ -66,6 +100,7 @@ const Navigation: React.FC = () => {
               headerTintColor: '#F9F9F9',
               headerLeftContainerStyle: {
                 marginLeft: -3,
+                marginTop: 24,
               },
               cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
               ...animationOptions
@@ -82,6 +117,7 @@ const Navigation: React.FC = () => {
               headerTintColor: '#F9F9F9',
               headerLeftContainerStyle: {
                 marginLeft: -3,
+                marginTop: 24,
               },
               cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
               ...animationOptions
@@ -89,7 +125,7 @@ const Navigation: React.FC = () => {
             key={AppRoutes.LOGIN_REGISTRATION_SCREEN}
           />
           <Stack.Screen
-            name={AppRoutes.LOGIN_ACC_RECOVERY}
+            name={AppRoutes.LOGIN_ACC_RECOVERY_SCREEN}
             component={LoginAccRecovery}
             options={{
               headerStyle: {
@@ -98,21 +134,21 @@ const Navigation: React.FC = () => {
               headerTintColor: '#F9F9F9',
               headerLeftContainerStyle: {
                 marginLeft: -3,
+                marginTop: 24,
               },
               cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
               ...animationOptions
             }}
-            key={AppRoutes.LOGIN_ACC_RECOVERY}
+            key={AppRoutes.LOGIN_ACC_RECOVERY_SCREEN}
           />
 
         </Stack.Group> :
         <Stack.Group>
 
           <Stack.Screen
-            name={AppRoutes.MAIN_SCREEN}
-            component={MainScreen}
-            options={{ ...withoutHeader }}
-            key={AppRoutes.MAIN_SCREEN}
+            name={AppRoutes.TAB_NAVIGATOR}
+            component={BottomTabNavigation}
+            options={{ headerShown: false }}
           />
 
         </Stack.Group>

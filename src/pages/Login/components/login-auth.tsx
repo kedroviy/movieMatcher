@@ -13,11 +13,11 @@ import {
 import { NavigationProp, ParamListBase, useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 
-import BackIcon from '../../../../assets/backArrow.svg';
 import { AppDispatch, RootState } from "../../../redux/configure-store";
 import { authUser } from "../../../redux/authSlice";
 import { AppConstants, Loader } from "@shared/index";
 import { Input } from "../ui";
+import { STRINGS } from "../constants";
 
 export const LoginAuth: FC = () => {
     const windowWidth = Dimensions.get('window').width;
@@ -89,6 +89,7 @@ export const LoginAuth: FC = () => {
                         ]}
                         disabled={(isFormValidPassword && isFormValidEmail) ? false : true}
                         onPress={() => onLoginUser({ email, password })}
+                        testID='myButton'
                     >
                         <Text style={styles.text}>Войти</Text>
                     </TouchableOpacity>
@@ -110,8 +111,9 @@ export const LoginAuth: FC = () => {
                         }
                     }
                     onPress={() => navigation.navigate('LoginAccRecovery')}
+                    testID='myButton'
                 >
-                    <Text style={styles.text}>Забыли пароль? Восстановить</Text>
+                    <Text style={styles.text}>{STRINGS.PASSWORD_RECOVERY}</Text>
                 </TouchableOpacity>
             </ScrollView>
             {loading ? <Loader /> : null}

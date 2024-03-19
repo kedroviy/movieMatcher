@@ -1,16 +1,13 @@
 import { FC, useState } from "react"
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { useNavigation } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 
-import BackIcon from '../../../../assets/backArrow.svg';
 import { Input } from "../ui";
 import { RootState } from "../../../redux/configure-store";
 import { AppConstants, Loader } from "../../../shared";
 
 export const LoginAccRecovery: FC = () => {
     const windowWidth = Dimensions.get('window').width;
-    const navigation = useNavigation();
     const { loading } = useSelector((state: RootState) => state.authSlice);
     const [email, onChangeEmail] = useState<string>(AppConstants.EMPTY_VALUE);
     const [isFormValidEmail, setIsFormValidEmail] = useState<boolean>(false);
@@ -52,23 +49,18 @@ export const LoginAccRecovery: FC = () => {
                     textError='формат почты name@mail.com'
                 />
 
-                {!isFormValidEmail ?
-                    <TouchableOpacity
-                        style={[styles.button, { backgroundColor: '#940C0C', width: windowWidth - 32, height: 48 }]
-                        }
-                        disabled={true}
-                    >
-                        <Text style={styles.text}>Продолжить</Text>
-                    </TouchableOpacity>
-                    :
-                    <TouchableOpacity
-                        style={[styles.button, { backgroundColor: '#DF0A1E', width: windowWidth - 32, height: 48 }]
-                        }
-                        onPress={() => console.log('restore')}
-                    >
-                        <Text style={styles.text}>Продолжить</Text>
-                    </TouchableOpacity>
-                }
+                <TouchableOpacity
+                    style={[styles.button,
+                    (isFormValidEmail) ?
+                        { backgroundColor: '#ED0E0E', width: windowWidth - 32, height: 48 } :
+                        { backgroundColor: '#940C0C', width: windowWidth - 32, height: 48 }
+                    ]}
+                    disabled={isFormValidEmail ? false : true}
+                    testID='myButton'
+                >
+                    <Text style={styles.text}>Продолжить</Text>
+                </TouchableOpacity>
+
             </View>
             {loading ? <Loader /> : null}
         </View >

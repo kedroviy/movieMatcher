@@ -1,7 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
-import { StyleSheet, Dimensions, Text, TouchableOpacity } from "react-native";
+import { View, StyleSheet, Dimensions, Text, TouchableOpacity } from "react-native";
 import { NavigationProp, ParamListBase, useNavigation } from "@react-navigation/native";
-import { View } from 'react-native-ui-lib';
 
 import StartLogotype from '../../../assets/startLogo.svg';
 import GoogleIcon from '../../../assets/google.svg'
@@ -26,7 +25,7 @@ export const LoginScreen = () => {
             <View style={{ alignItems: 'center', width: windowWidth, height: 328, marginVertical: 24, }}>
                 <StartLogotype />
             </View>
-            <View style={{ width: 328, gap: 12, alignItems: 'center', marginTop: 20 }}>
+            <View style={{ width: 328, gap: 12, alignItems: 'center', marginTop: 32 }}>
                 <Text style={{
                     color: '#FFFFFF',
                     fontSize: 22,
@@ -42,7 +41,7 @@ export const LoginScreen = () => {
                     textAlign: 'center'
                 }}>{STRINGS.SUB_WELCOME}</Text>
             </View>
-            <View style={{ width: '100%', alignItems: 'center', gap: 16, marginTop: 52, }}>
+            <View style={{ width: '100%', alignItems: 'center', gap: 16, marginTop: 32, }}>
                 <TouchableOpacity
                     style={[
                         styles.button,
@@ -56,6 +55,7 @@ export const LoginScreen = () => {
                         }
                     ]}
                     onPress={() => navigation.navigate('LoginAuth')}
+                    testID='myButton'
                 >
                     <Text style={{
                         color: '#FFF',
@@ -76,6 +76,7 @@ export const LoginScreen = () => {
                         }
                     ]}
                     onPress={onAuthWithGoogle}
+                    testID='myButton'
                 >
                     <GoogleIcon width={36} height={36} />
                     <Text style={{
@@ -98,6 +99,7 @@ export const LoginScreen = () => {
                         }
                     ]}
                     onPress={() => navigation.navigate('LoginRegistration')}
+                    testID='myButton'
                 >
                     <Text style={{
                         color: '#FFF',

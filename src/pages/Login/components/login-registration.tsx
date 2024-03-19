@@ -10,9 +10,7 @@ import {
     Alert,
     ScrollView,
 } from "react-native"
-import { useNavigation } from "@react-navigation/native";
 
-import BackIcon from '../../../../assets/backArrow.svg';
 import { Input } from "../ui";
 import { authRegistrationUser } from "../../../redux/authSlice";
 import { useDispatch, useSelector } from "react-redux";
@@ -21,7 +19,6 @@ import { Loader } from "../../../shared";
 
 export const LoginRegistration: FC = () => {
     const windowWidth = Dimensions.get('window').width;
-    const navigation = useNavigation();
     const dispatch: AppDispatch = useDispatch();
     const { loading } = useSelector((state: RootState) => state.authSlice);
     const [email, onChangeEmail] = useState<string>('');
@@ -113,6 +110,7 @@ export const LoginRegistration: FC = () => {
                             style={[styles.button, { backgroundColor: '#940C0C', width: windowWidth - 32, height: 48 }]
                             }
                             disabled={true}
+                            testID='myButton'
                         >
                             <Text style={styles.text}>Создать аккаунт</Text>
                         </TouchableOpacity>
@@ -121,6 +119,7 @@ export const LoginRegistration: FC = () => {
                             style={[styles.button, { backgroundColor: '#DF0A1E', width: windowWidth - 32, height: 48 }]
                             }
                             onPress={() => onSubmitForm({ email, password })}
+                            testID='myButton'
                         >
                             <Text style={styles.text}>Создать аккаунт</Text>
                         </TouchableOpacity>

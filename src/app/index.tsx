@@ -21,12 +21,14 @@ export default function AppContainer() {
     }, [dispatch]);
 
     return (
-        <NavigationContainer>
+        <NavigationContainer >
             <SafeAreaView
                 style={[
                     backgroundStyle,
                     { flex: 1 }
-                ]}>
+                ]}
+                testID="appContainer"
+            >
                 <StatusBar
                     barStyle={isDarkMode ? 'light-content' : 'dark-content'}
                     backgroundColor="#353535"
