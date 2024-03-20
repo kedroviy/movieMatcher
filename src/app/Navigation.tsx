@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
 import { BottomTabNavigationOptions, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useSelector } from 'react-redux';
@@ -10,6 +10,7 @@ import {
   LoginRegistration,
   LoginScreen,
   MainScreen,
+  OnboardingScreen,
   UserProfileScreen,
 } from '@pages';
 import {
@@ -19,8 +20,7 @@ import {
   defaultScreenOptions,
   withoutHeader,
 } from './constants';
-
-import StartLogotype from '../../assets/startLogo.svg'
+import { StartMessage } from 'shared';
 
 const Stack = createStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator();
@@ -34,6 +34,10 @@ const screenOptions: BottomTabNavigationOptions = {
   },
   headerShown: false,
 };
+
+type NavigationTypes = {
+  onboarded: string;
+}
 
 const BottomTabNavigation = () => {
   return (
@@ -63,14 +67,13 @@ const BottomTabNavigation = () => {
   );
 }
 
-const Navigation: React.FC = () => {
+const Navigation: React.FC<NavigationTypes> = ({ onboarded }) => {
   const { isAuthenticated, loadingApplication } = useSelector((state: any) => state.authSlice);
 
   if (loadingApplication) {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <StartLogotype />
-        <Text>Loading...</Text>
+        <StartMessage />
       </View>
     )
   }
@@ -145,11 +148,19 @@ const Navigation: React.FC = () => {
         </Stack.Group> :
         <Stack.Group>
 
-          <Stack.Screen
-            name={AppRoutes.TAB_NAVIGATOR}
-            component={BottomTabNavigation}
-            options={{ headerShown: false }}
-          />
+          {onboarded ?
+            <Stack.Screen
+              name={AppRoutes.TAB_NAVIGATOR}
+              component={BottomTabNavigation}
+              options={{ headerShown: false }}
+            /> : 
+            <Stack.Screen
+              name={AppRoutes.ONBOARDING_SCREEN}
+              component={OnboardingScreen}
+              options={{ headerShown: false }}
+            />
+          }
+
 
         </Stack.Group>
 

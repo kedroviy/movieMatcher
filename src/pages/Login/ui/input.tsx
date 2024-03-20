@@ -3,7 +3,6 @@ import { Dimensions, StyleSheet, Text, TextInput, TouchableOpacity, View } from 
 
 import VisibilityEye from '../../../../assets/visibility.svg';
 import NotVisibilityEye from '../../../../assets/visibility-no.svg';
-import { AppConstants } from "shared";
 
 type InputProps = {
     label?: string;

@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { StyleSheet, TouchableOpacity, Text, View} from "react-native";
+import { StyleSheet, TouchableOpacity, Text, View } from "react-native";
 import { useDispatch } from "react-redux";
 
 import { logout } from "../../redux/authSlice";
@@ -26,6 +26,6 @@ export const MainScreen: FC = () => {
             <TouchableOpacity style={{ width: 100, height: 48 }} onPress={handleLogout} testID='myButton'>
                 <Text style={{ fontSize: 20, color: '#FFF' }}>Logout</Text>
             </TouchableOpacity>
-        </View>
+        </View >
     )
 }
