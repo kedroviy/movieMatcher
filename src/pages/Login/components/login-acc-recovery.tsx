@@ -1,19 +1,40 @@
 import { FC, useState } from "react"
-import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { useSelector } from "react-redux";
+import { Dimensions, Keyboard, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
 
 import { Input } from "../ui";
-import { RootState } from "../../../redux/configure-store";
+import { AppDispatch, RootState } from "../../../redux/configure-store";
 import { AppConstants, Loader } from "../../../shared";
+import { sendEmailForRecoveryEffect } from "redux/recoveryPasswordSlice";
+import { NavigationProp, ParamListBase, useNavigation } from "@react-navigation/native";
 
 export const LoginAccRecovery: FC = () => {
     const windowWidth = Dimensions.get('window').width;
-    const { loading } = useSelector((state: RootState) => state.authSlice);
-    const [email, onChangeEmail] = useState<string>(AppConstants.EMPTY_VALUE);
+    const dispatch: AppDispatch = useDispatch();
+    const navigation: NavigationProp<ParamListBase> = useNavigation();
+    const { loading } = useSelector((state: RootState) => state.recoveryPasswordSlice);
+    const [inputEmail, onChangeInputEmail] = useState<string>(AppConstants.EMPTY_VALUE);
     const [isFormValidEmail, setIsFormValidEmail] = useState<boolean>(false);
 
     const handleValidationEmail = (isValid: boolean) => {
         setIsFormValidEmail(isValid);
+    };
+
+    const onSendEmail = async (email: string) => {
+        Keyboard.dismiss();
+        try {
+            const actionResult = await dispatch(sendEmailForRecoveryEffect(email));
+
+            if (sendEmailForRecoveryEffect.fulfilled.match(actionResult)) {
+                console.log('Email sent successfully');
+                navigation.navigate('LoginAccRecoveryCode');
+            } else {
+                console.log('Failed to send email');
+            }
+        } catch (error) {
+            console.log(error)
+        }
+        // navigation.navigate('LoginAccRecoveryCode');
     };
 
     return (
@@ -42,8 +63,8 @@ export const LoginAccRecovery: FC = () => {
                 <Input
                     type='email'
                     label='Почта'
-                    onChangeText={onChangeEmail}
-                    value={email}
+                    onChangeText={onChangeInputEmail}
+                    value={inputEmail}
                     onValidationChange={handleValidationEmail}
                     placeholder='Введите ваш email'
                     textError='формат почты name@mail.com'
@@ -57,6 +78,7 @@ export const LoginAccRecovery: FC = () => {
                     ]}
                     disabled={isFormValidEmail ? false : true}
                     testID='myButton'
+                    onPress={() => onSendEmail(inputEmail)}
                 >
                     <Text style={styles.text}>Продолжить</Text>
                 </TouchableOpacity>

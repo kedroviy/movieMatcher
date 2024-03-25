@@ -8,6 +8,9 @@ export enum AppRoutes {
     LOGIN_REGISTRATION_SCREEN = 'LoginRegistration',
     LOGIN_AUTH_SCREEN = 'LoginAuth',
     LOGIN_ACC_RECOVERY_SCREEN = 'LoginAccRecovery',
+    LOGIN_ACC_RECOVERY_CODE_SCREEN = 'LoginAccRecoveryCode',
+    LOGIN_ACC_RECOVERY_NEW_PASSWORD = 'LoginAccRecoveryChangePassword',
+    LOGIN_RESULT = 'LoginResult',
     ONBOARDING_SCREEN = 'OnboardingScreen',
 };
 
@@ -71,6 +74,15 @@ export type RootStackParamList = {
     LoginAuth: undefined;
     LoginRegistration: undefined;
     LoginAccRecovery: undefined;
+    LoginAccRecoveryCode: undefined;
+    LoginAccRecoveryChangePassword: undefined;
+    LoginResult: {
+        icon: string;
+        resultText: string;
+        buttonText: string;
+        buttonColor: string;
+        onHandlePress: () => void;
+    };
     UserProfileScreen: undefined;
     OnboardingScreen: undefined;
 };

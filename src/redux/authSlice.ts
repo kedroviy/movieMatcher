@@ -1,8 +1,12 @@
 import { createAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import * as Keychain from 'react-native-keychain';
 
-import { loginUser, registrationUser, sendGoogleCodeToServer } from '../features/auth/authAPI';
 import { removeToken, saveToken } from '../shared';
+import {
+    loginUser,
+    registrationUser,
+    sendGoogleCodeToServer,
+} from 'features';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 type AuthState = {
@@ -36,6 +40,7 @@ export const authUser = createAsyncThunk(
     async (userData: { email: string; password: string }, { rejectWithValue }) => {
         try {
             const response = await loginUser(userData);
+
             if (response.success) {
                 saveToken(response.token as string);
             }
@@ -46,23 +51,25 @@ export const authUser = createAsyncThunk(
     }
 );
 
-export const authenticateWithGoogle = createAsyncThunk('auth/GOOGLE', async (_, { rejectWithValue }) => {
-    try {
-        await GoogleSignin.hasPlayServices();
-        const userInfo = await GoogleSignin.signIn();
-        const idToken = userInfo.idToken;
-        
-        const response = await sendGoogleCodeToServer(idToken as string);
+export const authenticateWithGoogle = createAsyncThunk(
+    'auth/GOOGLE',
+    async (_, { rejectWithValue }) => {
+        try {
+            await GoogleSignin.hasPlayServices();
+            const userInfo = await GoogleSignin.signIn();
+            const idToken = userInfo.idToken;
 
-        if (response.success) {
-            saveToken(response.token as string);
+            const response = await sendGoogleCodeToServer(idToken as string);
+
+            if (response.success) {
+                saveToken(response.token as string);
+            }
+
+            return response;
+        } catch (error) {
+            return rejectWithValue(error || 'An error occurred');
         }
-
-        return response;
-    } catch (error) {
-        return rejectWithValue(error || 'An error occurred');
-    }
-});
+    });
 
 export const authRegistrationUser = createAsyncThunk(
     'auth/REGISTRATION',
@@ -70,7 +77,6 @@ export const authRegistrationUser = createAsyncThunk(
         try {
             const response = await registrationUser(userData);
             if (!response.success) {
-                console.log(response)
                 return rejectWithValue(response?.error);
             }
             return response
@@ -80,7 +86,8 @@ export const authRegistrationUser = createAsyncThunk(
     }
 );
 
-export const checkAuthStatus = createAsyncThunk('auth/checkStatus',
+export const checkAuthStatus = createAsyncThunk(
+    'auth/CHECK_STATUS',
     async () => {
         try {
             const credentials = await Keychain.getGenericPassword({ service: 'token_guard' });
@@ -93,6 +100,23 @@ export const checkAuthStatus = createAsyncThunk('auth/checkStatus',
         }
     }
 );
+
+// export const sendRecoveryCodeEffect = createAsyncThunk(
+//     'auth/SEND_RECOVERY_CODE',
+//     async (email: string, { rejectWithValue }) => {
+//         try {
+//             const response = await sendRecoveryCodeAPI(email);
+
+//             if (response.success) {
+//                 console.log(response.success);
+//             }
+
+//             return response;
+//         } catch (error) {
+//             return rejectWithValue(error);
+//         }
+//     }
+// );
 
 export const saveGoogleAuthCode = createAction<string>('auth/SAVE_GOOGLE_AUTH_CODE');
 

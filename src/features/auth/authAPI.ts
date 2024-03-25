@@ -65,7 +65,7 @@ export const loginUser = async (body: IUserFields) => {
 
 export const registrationUser = async (body: IUserFields) => {
 
-    const response = await api.post<Response<{ message: string }>>(`/auth/register`, body, {
+    const response = await api.post<Response<{ message: string }>>(API.REGISTRATION, body, {
         headers: {
             'Content-Type': 'application/json',
         },

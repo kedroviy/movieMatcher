@@ -1,18 +1,20 @@
 import 'react-native-gesture-handler';
 import React, { useLayoutEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { SafeAreaView, StatusBar, useColorScheme } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { Navigation } from './Navigation';
+import { AppNavigation } from './Navigation';
 import { AppDispatch } from '../redux/configure-store';
 import { checkAuthStatus } from '../redux/authSlice';
+import { LoginNavigator } from './LoginNavigator';
 
 export default function AppContainer() {
     const dispatch: AppDispatch = useDispatch();
     const [onboarded, setOnboarded] = useState<string>();
+    const { isAuthenticated, loadingApplication } = useSelector((state: any) => state.authSlice);
     const isDarkMode = useColorScheme() === 'light';
     const backgroundStyle = {
         backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
@@ -35,7 +37,7 @@ export default function AppContainer() {
     };
 
     return (
-        <NavigationContainer >
+        <NavigationContainer>
             <SafeAreaView
                 style={[
                     backgroundStyle,
@@ -47,7 +49,12 @@ export default function AppContainer() {
                     barStyle={isDarkMode ? 'light-content' : 'dark-content'}
                     backgroundColor="#353535"
                 />
-                <Navigation onboarded={onboarded} />
+                {
+                    !isAuthenticated ?
+                        <LoginNavigator /> :
+                        <AppNavigation onboarded={onboarded as string} />
+                }
+
             </SafeAreaView>
         </NavigationContainer>
     );

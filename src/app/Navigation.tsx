@@ -5,10 +5,6 @@ import { BottomTabNavigationOptions, createBottomTabNavigator } from '@react-nav
 import { useSelector } from 'react-redux';
 
 import {
-  LoginAccRecovery,
-  LoginAuth,
-  LoginRegistration,
-  LoginScreen,
   MainScreen,
   OnboardingScreen,
   UserProfileScreen,
@@ -18,7 +14,6 @@ import {
   RootStackParamList,
   animationOptions,
   defaultScreenOptions,
-  withoutHeader,
 } from './constants';
 import { StartMessage } from 'shared';
 
@@ -67,7 +62,7 @@ const BottomTabNavigation = () => {
   );
 }
 
-const Navigation: React.FC<NavigationTypes> = ({ onboarded }) => {
+export const AppNavigation: React.FC<NavigationTypes> = ({ onboarded }) => {
   const { isAuthenticated, loadingApplication } = useSelector((state: any) => state.authSlice);
 
   if (loadingApplication) {
@@ -80,72 +75,7 @@ const Navigation: React.FC<NavigationTypes> = ({ onboarded }) => {
 
   return (
     <Stack.Navigator screenOptions={defaultScreenOptions}>
-      {!isAuthenticated ?
-        <Stack.Group>
-
-          <Stack.Screen
-            name={AppRoutes.LOGIN_SCREEN}
-            component={LoginScreen}
-            options={{
-              ...withoutHeader,
-              cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
-              ...animationOptions
-            }}
-            key={AppRoutes.LOGIN_SCREEN}
-          />
-          <Stack.Screen
-            name={AppRoutes.LOGIN_AUTH_SCREEN}
-            component={LoginAuth}
-            options={{
-              headerStyle: {
-                backgroundColor: '#353535',
-              },
-              headerTintColor: '#F9F9F9',
-              headerLeftContainerStyle: {
-                marginLeft: -3,
-                marginTop: 24,
-              },
-              cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
-              ...animationOptions
-            }}
-            key={AppRoutes.LOGIN_AUTH_SCREEN}
-          />
-          <Stack.Screen
-            name={AppRoutes.LOGIN_REGISTRATION_SCREEN}
-            component={LoginRegistration}
-            options={{
-              headerStyle: {
-                backgroundColor: '#353535',
-              },
-              headerTintColor: '#F9F9F9',
-              headerLeftContainerStyle: {
-                marginLeft: -3,
-                marginTop: 24,
-              },
-              cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
-              ...animationOptions
-            }}
-            key={AppRoutes.LOGIN_REGISTRATION_SCREEN}
-          />
-          <Stack.Screen
-            name={AppRoutes.LOGIN_ACC_RECOVERY_SCREEN}
-            component={LoginAccRecovery}
-            options={{
-              headerStyle: {
-                backgroundColor: '#353535',
-              },
-              headerTintColor: '#F9F9F9',
-              headerLeftContainerStyle: {
-                marginLeft: -3,
-                marginTop: 24,
-              },
-              cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
-              ...animationOptions
-            }}
-            key={AppRoutes.LOGIN_ACC_RECOVERY_SCREEN}
-          />
-
-        </Stack.Group> :
+      
         <Stack.Group>
 
           {onboarded ?
@@ -153,7 +83,7 @@ const Navigation: React.FC<NavigationTypes> = ({ onboarded }) => {
               name={AppRoutes.TAB_NAVIGATOR}
               component={BottomTabNavigation}
               options={{ headerShown: false }}
-            /> : 
+            /> :
             <Stack.Screen
               name={AppRoutes.ONBOARDING_SCREEN}
               component={OnboardingScreen}
@@ -164,9 +94,6 @@ const Navigation: React.FC<NavigationTypes> = ({ onboarded }) => {
 
         </Stack.Group>
 
-      }
     </Stack.Navigator>
   );
 };
-
-export { Navigation };

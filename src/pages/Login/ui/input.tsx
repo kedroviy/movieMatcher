@@ -4,7 +4,7 @@ import { Dimensions, StyleSheet, Text, TextInput, TouchableOpacity, View } from 
 import VisibilityEye from '../../../../assets/visibility.svg';
 import NotVisibilityEye from '../../../../assets/visibility-no.svg';
 
-type InputProps = {
+type InputType = {
     label?: string;
     onChangeText: (text: string) => void;
     value: string;
@@ -15,7 +15,7 @@ type InputProps = {
     isConfirm?: boolean;
 }
 
-export const Input: FC<InputProps> = ({
+export const Input: FC<InputType> = ({
     label,
     onChangeText,
     value,
