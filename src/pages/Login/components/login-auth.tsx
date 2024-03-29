@@ -135,7 +135,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 48,
         gap: 10,
         borderRadius: 5,
-        // marginTop: 16,
     },
     text: {
         color: '#FFFFFF',

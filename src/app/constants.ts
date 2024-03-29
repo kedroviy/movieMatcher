@@ -2,9 +2,10 @@ import { StackNavigationOptions } from '@react-navigation/stack';
 
 export enum AppRoutes {
     TAB_NAVIGATOR = 'TabNavigator',
-    MAIN_SCREEN = 'MainScreen',
+    SOLO_MATCH_SCREEN = 'SoloMatchScreen',
     LOGIN_SCREEN = 'LoginScreen',
     USER_PROFILE_SCREEN = 'UserProfileScreen',
+    MATCH_SCREEN = 'MatchScreen',
     LOGIN_REGISTRATION_SCREEN = 'LoginRegistration',
     LOGIN_AUTH_SCREEN = 'LoginAuth',
     LOGIN_ACC_RECOVERY_SCREEN = 'LoginAccRecovery',
@@ -69,9 +70,10 @@ export const animationOptions: any = {
 
 export type RootStackParamList = {
     TabNavigator: undefined;
-    MainScreen: undefined;
+    SoloMatchScreen: undefined;
     LoginScreen: undefined;
     LoginAuth: undefined;
+    MatchScreen: undefined;
     LoginRegistration: undefined;
     LoginAccRecovery: undefined;
     LoginAccRecoveryCode: undefined;

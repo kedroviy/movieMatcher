@@ -1,1 +1,1 @@
-export {MainScreen} from './Main';
+export { SoloMatchScreen }from './SoloMatch';

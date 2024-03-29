@@ -3,6 +3,7 @@ import { Dimensions, StyleSheet, Text, TextInput, TouchableOpacity, View } from 
 
 import VisibilityEye from '../../../../assets/visibility.svg';
 import NotVisibilityEye from '../../../../assets/visibility-no.svg';
+import { Color } from "styles/colors";
 
 type InputType = {
     label?: string;
@@ -165,7 +166,7 @@ const styles = StyleSheet.create({
         borderColor: '#ED0E0E',
     },
     errorText: {
-        color: '#ED0E0E',
+        color: Color.WHITE,
         fontSize: 14,
         lineHeight: 16.8
     },
