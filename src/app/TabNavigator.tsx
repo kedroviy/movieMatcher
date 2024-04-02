@@ -5,6 +5,7 @@ import { SoloMatchScreen, UserProfileScreen, MatchScreen } from "pages";
 import {
     AppRoutes,
     animationOptions,
+    defaultOptions,
 } from "./constants";
 import { Color } from "styles/colors";
 import { MatchSvgIcon, PlaySvgIcon, ProfileSvgIcon } from "shared";
@@ -17,7 +18,7 @@ const screenOptions: BottomTabNavigationOptions = {
     tabBarStyle: {
         elevation: 0,
         backgroundColor: Color.GRAY_BROWN,
-        height: 58,
+        height: 86,
         paddingBottom: 5,
     },
     headerShown: false,
@@ -34,13 +35,7 @@ export const TabNavigator = () => (
                     <MatchSvgIcon width={size} height={size} stroke={color} />
                 ),
                 tabBarLabel: 'Подбор',
-                tabBarLabelStyle: {
-                    fontSize: 12,
-                    fontWeight: '400',
-                    fontStyle: 'normal',
-                    fontFamily: 'Roboto',
-                    lineHeight: 14.4,
-                },
+                ...defaultOptions,
                 unmountOnBlur: true,
                 cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
                 ...animationOptions,
@@ -57,13 +52,7 @@ export const TabNavigator = () => (
                     <PlaySvgIcon width={size} height={size} stroke={color} />
                 ),
                 tabBarLabel: 'Матч',
-                tabBarLabelStyle: {
-                    fontSize: 12,
-                    fontWeight: '400',
-                    fontStyle: 'normal',
-                    fontFamily: 'Roboto',
-                    lineHeight: 14.4,
-                },
+                ...defaultOptions,
                 unmountOnBlur: true,
                 cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
                 ...animationOptions,
@@ -80,6 +69,8 @@ export const TabNavigator = () => (
                     <ProfileSvgIcon width={size} height={size} stroke={color} />
                 ),
                 tabBarLabel: 'Профиль',
+                ...defaultOptions,
+                unmountOnBlur: true,
                 cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
                 ...animationOptions,
                 key: AppRoutes.USER_PROFILE_SCREEN

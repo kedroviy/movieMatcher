@@ -6,6 +6,7 @@ export enum Color {
     
     
     BLACK = '#000000',
+    NEW_BLACK = '#1D1D1D',
     SYSTEM_BLACK = '#1D2330',
     MY_NETWORK_BLACK = '#1F2229',
     LIGHT_BLACK = '#1E1E1E',

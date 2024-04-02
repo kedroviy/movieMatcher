@@ -4,7 +4,6 @@ export enum AppRoutes {
     TAB_NAVIGATOR = 'TabNavigator',
     SOLO_MATCH_SCREEN = 'SoloMatchScreen',
     LOGIN_SCREEN = 'LoginScreen',
-    USER_PROFILE_SCREEN = 'UserProfileScreen',
     MATCH_SCREEN = 'MatchScreen',
     LOGIN_REGISTRATION_SCREEN = 'LoginRegistration',
     LOGIN_AUTH_SCREEN = 'LoginAuth',
@@ -13,6 +12,9 @@ export enum AppRoutes {
     LOGIN_ACC_RECOVERY_NEW_PASSWORD = 'LoginAccRecoveryChangePassword',
     LOGIN_RESULT = 'LoginResult',
     ONBOARDING_SCREEN = 'OnboardingScreen',
+    USER_PROFILE_SCREEN = 'UserProfileScreen',
+    PROFILE_NAVIGATOR = 'ProfileNavigator',
+    USER_PROFILE_ABOUT_SCREEN = 'UPAboutApplication',
 };
 
 export const defaultScreenOptions: StackNavigationOptions = {
@@ -68,6 +70,18 @@ export const animationOptions: any = {
     },
 };
 
+export const defaultOptions: any = {
+    tabBarIconStyle: { bottom: '13%' },
+    tabBarLabelStyle: {
+        fontSize: 12,
+        fontWeight: '400',
+        fontStyle: 'normal',
+        fontFamily: 'Roboto',
+        lineHeight: 14.4,
+        bottom: '20%'
+    },
+}
+
 export type RootStackParamList = {
     TabNavigator: undefined;
     SoloMatchScreen: undefined;
@@ -85,6 +99,8 @@ export type RootStackParamList = {
         buttonColor: string;
         onHandlePress: () => void;
     };
-    UserProfileScreen: undefined;
     OnboardingScreen: undefined;
+    ProfileNavigator: undefined;
+    UserProfileScreen: undefined;
+    UPAboutApplication: undefined;
 };

@@ -8,6 +8,7 @@ import {
     sendGoogleCodeToServer,
 } from 'features';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type AuthState = {
     token: string | null;
@@ -17,6 +18,7 @@ type AuthState = {
     loading: boolean;
     loadingApplication: boolean;
     success: boolean;
+    onboarded: boolean;
 }
 
 const initialState: AuthState = {
@@ -27,6 +29,7 @@ const initialState: AuthState = {
     loading: false,
     loadingApplication: false,
     success: false,
+    onboarded: false,
 };
 
 GoogleSignin.configure({
@@ -101,22 +104,36 @@ export const checkAuthStatus = createAsyncThunk(
     }
 );
 
-// export const sendRecoveryCodeEffect = createAsyncThunk(
-//     'auth/SEND_RECOVERY_CODE',
-//     async (email: string, { rejectWithValue }) => {
-//         try {
-//             const response = await sendRecoveryCodeAPI(email);
+export const initializeApp = createAsyncThunk(
+    'auth/INITIALIZE_APP',
+    async (_, { dispatch, rejectWithValue }) => {
+        let timeoutId;
+        try {
+            dispatch(setLoadingApplication(true));
 
-//             if (response.success) {
-//                 console.log(response.success);
-//             }
+            const cancellablePromise = new Promise<void>((resolve) => {
+                timeoutId = setTimeout(() => {
+                    resolve();
+                }, 3000);
+            });
+            await cancellablePromise;
 
-//             return response;
-//         } catch (error) {
-//             return rejectWithValue(error);
-//         }
-//     }
-// );
+            const authStatusResult = await dispatch(checkAuthStatus()).unwrap();
+            const isAuthenticated = authStatusResult.isAuthenticated;
+            const onboardedValue = await AsyncStorage.getItem('ONBOARDED');
+            const onboarded = !!onboardedValue;
+
+            return { isAuthenticated, onboarded };
+        } catch (error) {
+            return rejectWithValue('Error while initializing the application');
+        } finally {
+            dispatch(setLoadingApplication(false));
+            clearTimeout(timeoutId);
+        }
+    }
+);
+
+const setLoadingApplication = createAction<boolean>('auth/SET_LOADING_APPLICATION');
 
 export const saveGoogleAuthCode = createAction<string>('auth/SAVE_GOOGLE_AUTH_CODE');
 
@@ -135,6 +152,21 @@ const authSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
+            .addCase(initializeApp.pending, (state) => {
+                state.loadingApplication = true;
+            })
+            .addCase(initializeApp.fulfilled, (state, action) => {
+                state.isAuthenticated = action.payload.isAuthenticated;
+                state.onboarded = action.payload.onboarded;
+                state.loadingApplication = false;
+            })
+            .addCase(initializeApp.rejected, (state) => {
+                state.loadingApplication = false;
+                state.error = "Error while initializing the application";
+            })
+            .addCase(setLoadingApplication, (state, action) => {
+                state.loadingApplication = action.payload;
+            })
             .addCase(checkAuthStatus.pending, (state) => {
                 state.loading = true;
                 state.loadingApplication = true;
@@ -146,7 +178,7 @@ const authSlice = createSlice({
             })
             .addCase(checkAuthStatus.rejected, (state) => {
                 state.loading = false;
-                state.error = "Ошибка при проверке статуса аутентификации";
+                state.error = "Error checking authentication status";
                 state.loadingApplication = false;
             })
             .addCase(authUser.pending, (state) => {
