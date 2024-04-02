@@ -1,9 +1,7 @@
 import 'react-native';
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react-native';
 import { LoginScreen } from '../Login';
 import { useDispatch, useSelector } from 'react-redux';
-import { Dispatch } from 'redux';
 import { it } from '@jest/globals';
 import renderer from 'react-test-renderer';
 import { TypedUseSelectorHook } from 'react-redux';

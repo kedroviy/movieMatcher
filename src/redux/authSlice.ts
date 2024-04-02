@@ -1,5 +1,7 @@
 import { createAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import * as Keychain from 'react-native-keychain';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { removeToken, saveToken } from '../shared';
 import {
@@ -7,8 +9,6 @@ import {
     registrationUser,
     sendGoogleCodeToServer,
 } from 'features';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type AuthState = {
     token: string | null;
