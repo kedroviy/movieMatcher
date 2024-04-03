@@ -1,0 +1,1 @@
+export { useLocalizedMenuItems } from './useLocalizedMenuItems';
