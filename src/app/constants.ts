@@ -15,6 +15,7 @@ export enum AppRoutes {
     USER_PROFILE_SCREEN = 'UserProfileScreen',
     PROFILE_NAVIGATOR = 'ProfileNavigator',
     USER_PROFILE_ABOUT_SCREEN = 'UPAboutApplication',
+    USER_PROFILE_LANGUAGE = 'UPLanguage',
 };
 
 export const defaultScreenOptions: StackNavigationOptions = {
@@ -103,4 +104,5 @@ export type RootStackParamList = {
     ProfileNavigator: undefined;
     UserProfileScreen: undefined;
     UPAboutApplication: undefined;
+    UPLanguage: undefined;
 };

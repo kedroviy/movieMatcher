@@ -9,7 +9,6 @@ type SMSwipeCardType = {
 }
 export const SMSwipeCards: FC<SMSwipeCardType> = ({ card }) => {
 
-
     return (
         <View style={styles.card}>
             <Image

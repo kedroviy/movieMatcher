@@ -10,3 +10,5 @@ export {
     PencilSvgIcon,
     ChevronRightSVGIcon,
 } from './icons';
+export { RadioButton } from './radio-button';
+

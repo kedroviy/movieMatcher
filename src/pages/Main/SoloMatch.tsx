@@ -1,22 +1,24 @@
 import { FC, useRef, useState } from "react";
 import { StyleSheet, Text, View, Dimensions, TouchableOpacity } from "react-native";
 import { useDispatch } from "react-redux";
+import Swiper from "react-native-deck-swiper";
+import { ParamListBase, useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { useTranslation } from "react-i18next";
 
 import { logout } from "../../redux/authSlice";
 import { SMSwipeCards } from "./components/sm-swipe-cards";
 import { movieCards, photoCards } from './constants';
-import Swiper from "react-native-deck-swiper";
-import { OverlayLabel } from "./ui/overlay-label";
-import { ParamListBase, useNavigation } from "@react-navigation/native";
-import { StackNavigationProp } from "@react-navigation/stack";
 import { SMControlBar } from "./components/sm-control-bar";
 import { Color } from "styles/colors";
+import { OverlayLabel } from "./ui/overlay-label";
 import { FiltersSvgIcon } from "shared";
 
 const { height, width } = Dimensions.get('window')
 
 export const SoloMatchScreen: FC = () => {
     const dispatch = useDispatch();
+    const { t } = useTranslation();
     const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
     const [allCardsSwiped, setAllCardsSwiped] = useState<boolean>(false);
     const [currentIndex, setCurrentIndex] = useState<number>(0);
@@ -53,7 +55,7 @@ export const SoloMatchScreen: FC = () => {
                 marginTop: 10,
             }}
             >
-                <Text style={styles.headerText}>Подбор фильма</Text>
+                <Text style={styles.headerText}>{t('movieSelection')}</Text>
                 <TouchableOpacity
                     style={{ 
                         alignItems: 'center',

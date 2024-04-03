@@ -3,18 +3,19 @@ import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from "react-nati
 import { useDispatch } from "react-redux";
 import { logout } from "redux/authSlice";
 import { UPAvatarContainer, UPMenuItems } from "./ui";
-import { menuItems } from "./constants";
+import { useLocalizedMenuItems } from "./hooks";
 
 const fakeImage = 'https://drive.google.com/uc?export=download&id=1XyvtSH--FxiGK67-Q9pPcKRCYxDfqGfF'
 
 export const UserProfileScreen: FC = () => {
     const windowWidth = Dimensions.get('window').width;
     const dispatch = useDispatch();
+    const { menuItems } = useLocalizedMenuItems();
 
     const handleLogout = () => {
         dispatch(logout());
     };
-    
+
     return (
         <View style={[styles.container, { width: windowWidth }]}>
             <View style={{
