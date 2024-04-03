@@ -1,14 +1,17 @@
 import { FC } from "react";
+import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
 import { View, Text, StyleSheet, Dimensions } from "react-native";
 import { UPMenuItems } from "../ui";
-import { aboutAppItems } from "../constants";
 import { Color } from "styles/colors";
-import { useSelector } from "react-redux";
+import { useLocalizedMenuItems } from "../hooks";
 
 export const UPAboutApplication: FC = () => {
     const windowWidth = Dimensions.get('window').width;
     const { appVersion } = useSelector((state: any) => state.appSlice);
-
+    const { aboutAppItems } = useLocalizedMenuItems();
+    const { t } = useTranslation();
+    
     return (
         <View style={[styles.container, { width: windowWidth }]}>
             <View style={{
@@ -47,7 +50,7 @@ export const UPAboutApplication: FC = () => {
                         lineHeight: 20.8,
                         color: Color.WHITE,
                     }}>
-                    Версия {appVersion}
+                    {t('about_app.version')} {appVersion}
                 </Text>
             </View>
             <View style={{
