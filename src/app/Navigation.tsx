@@ -12,6 +12,7 @@ import {
 } from './constants';
 import { TabNavigator } from './TabNavigator';
 import { ProfileNavigator } from './ProfileNavigator';
+import { SelfSelectNavigator } from './SelfSelectNavigator';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -39,7 +40,16 @@ export const AppNavigation: React.FC<AppNavigatorType> = ({ onboarded }) => {
               name={AppRoutes.PROFILE_NAVIGATOR}
               component={ProfileNavigator}
               options={{
-                headerShown: false, 
+                headerShown: false,
+                cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+                ...animationOptions
+              }}
+            />
+            <Stack.Screen
+              name={AppRoutes.SELF_SELECT_NAVIGATOR}
+              component={SelfSelectNavigator}
+              options={{
+                headerShown: false,
                 cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
                 ...animationOptions
               }}

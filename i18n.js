@@ -22,6 +22,26 @@ const resources = {
                 version: 'Version',
                 feedback: 'Feedback',
                 rate_app: 'Rate application',
+            },
+            acc_settings: {
+                user_name: 'Username',
+                email: 'Email',
+                password: 'Password',
+                changeName: {
+                    change_name: 'Change name',
+                    label: 'User name',
+                    textError: 'Fill in the field',
+                },
+                logout_acc: 'Log out of your account' 
+            },
+            selection_movie: {
+                my_movie_list: 'My movie lists',
+                create_list_button: 'Create List',
+                create_list_component: {
+                    crc_header: 'Create list',
+                    start_select: 'Start select',
+                    list_name: 'List name',
+                }
             }
         }
     },
@@ -44,6 +64,26 @@ const resources = {
                 version: 'Версия',
                 feedback: 'Обратная связь',
                 rate_app: 'Оценить приложение',
+            },
+            acc_settings: {
+                user_name: 'Имя пользователя',
+                email: 'Электронная почта',
+                password: 'Пароль',
+                changeName: {
+                    change_name: 'Изменить имя',
+                    label: 'Имя пользователя',
+                    textError: 'Заполните поле',
+                },
+                logout_acc: 'Выйти из аккаунта' 
+            },
+            selection_movie: {
+                my_movie_list: 'Мои списки фильмов',
+                create_list_button: 'Создать список',
+                create_list_component: {
+                    crc_header: 'Создание списка',
+                    start_select: 'Начать подбор',
+                    list_name: 'Название списка',
+                }
             }
         }
     },

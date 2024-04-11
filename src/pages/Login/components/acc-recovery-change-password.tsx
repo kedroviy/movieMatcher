@@ -1,52 +1,78 @@
-import { FC, useEffect, useState } from "react"
+import { FC, useReducer } from "react"
 import { Dimensions, Keyboard, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { NavigationProp, ParamListBase, useNavigation } from "@react-navigation/native";
 
 import { sendRecoveryNewPasswordEffect } from "redux/recoveryPasswordSlice";
+import { RecoveryPasswordActionType, RecoveryPasswordType } from "../login.model";
 import { AppDispatch, RootState } from "../../../redux/configure-store";
-import { Loader } from "../../../shared";
-import Icon from '../../../../assets/check.svg';
+import { CheckSvgIcon, Loader } from "../../../shared";
 import { Input } from "../ui";
 import { AppRoutes } from "app/constants";
+import { Color } from "styles/colors";
+
+const initialState: RecoveryPasswordType = {
+    password: '',
+    confirmPassword: '',
+    isFormValidPassword: false,
+    isFormValidConfirmPassword: false,
+};
+
+function reducer(state: RecoveryPasswordType, action: RecoveryPasswordActionType) {
+    switch (action.type) {
+        case 'SET_PASSWORD':
+            return {
+                ...state,
+                password: action.payload,
+                isFormValidPassword: action.payload.length >= 6,
+                isFormValidConfirmPassword: action.payload.length >= 6 && state.confirmPassword === action.payload
+            };
+        case 'SET_CONFIRM_PASSWORD':
+            return {
+                ...state,
+                confirmPassword: action.payload,
+                isFormValidConfirmPassword: action.payload.length >= 6 && state.password === action.payload
+            };
+        default:
+            throw new Error();
+    }
+}
 
 export const LoginAccRecoveryChangePassword: FC = () => {
     const windowWidth = Dimensions.get('window').width;
-    const dispatch: AppDispatch = useDispatch();
+    const stateDispatch: AppDispatch = useDispatch();
     const navigation: NavigationProp<ParamListBase> = useNavigation();
     const { loading, email, code } = useSelector((state: RootState) => state.recoveryPasswordSlice);
-    const [password, onChangePassword] = useState<string>('');
-    const [confirmPassword, setConfirmPassword] = useState<string>('');
-    const [isFormValidPassword, setIsFormValidPassword] = useState<boolean>(false);
-    const [isFormValidConfirmPassword, setIsFormValidConfirmPassword] = useState<boolean>(false);
+    const [state, dispatch] = useReducer(reducer, initialState);
 
-    const handleValidationPassword = (isValid: boolean) => {
-        setIsFormValidPassword(isValid)
+    const handleChangePassword = (password: string) => {
+        dispatch({ type: 'SET_PASSWORD', payload: password });
     };
-
-    useEffect(() => {
-        setIsFormValidConfirmPassword(confirmPassword.length > 0 && confirmPassword == password);
-    }, [password, confirmPassword]);
+    
+    const handleChangeConfirmPassword = (confirmPassword: string) => {
+        dispatch({ type: 'SET_CONFIRM_PASSWORD', payload: confirmPassword });
+    };
 
     const onSubmitComponent = async (email: string | null, code: string | null, password: string) => {
         Keyboard.dismiss();
         if (email && code) {
             try {
-                const actionResult = await dispatch(sendRecoveryNewPasswordEffect({ email, code, password }));
+                const actionResult = await stateDispatch(sendRecoveryNewPasswordEffect({ email, code, password }));
 
                 if (sendRecoveryNewPasswordEffect.fulfilled.match(actionResult)) {
                     navigation.navigate(AppRoutes.LOGIN_RESULT, {
-                        icon: <Icon width={41} height={41} />,
+                        icon: <CheckSvgIcon />,
                         resultText: 'Поздравляем, пароль успешно изменен!',
                         buttonText: 'Войти в аккаунт',
-                        buttonColor: '#ED0E0E',
-                        onHandlePress: () => { 
+                        buttonColor: Color.BUTTON_RED,
+                        onHandlePress: () => {
                             navigation.reset({
-                            index: 0,
-                            routes: [
-                                { name: AppRoutes.LOGIN_SCREEN },
-                            ],
-                        })},
+                                index: 0,
+                                routes: [
+                                    { name: AppRoutes.LOGIN_SCREEN },
+                                ],
+                            })
+                        },
                     });
 
                 } else {
@@ -82,33 +108,32 @@ export const LoginAccRecoveryChangePassword: FC = () => {
                     Создайте новый пароль для своего аккаунта
                 </Text>
                 <Input
-                    type='password'
-                    label='Пароль'
-                    onChangeText={onChangePassword}
-                    onValidationChange={handleValidationPassword}
-                    value={password}
-                    placeholder='Введите ваш пароль'
-                    textError='Пароль должен быть от 6 символов'
+                    type="password"
+                    label="Пароль"
+                    onChangeText={handleChangePassword}
+                    value={state.password}
+                    placeholder="Введите ваш пароль"
+                    textError="Пароль должен быть от 6 символов"
                 />
                 <Input
-                    type='confirm'
-                    label='Повторите пароль'
-                    onChangeText={setConfirmPassword}
-                    isConfirm={isFormValidConfirmPassword}
-                    value={confirmPassword}
-                    placeholder='Повторите ваш пароль'
-                    textError='Пароли не совпадают'
+                    type="confirm"
+                    label="Повторите пароль"
+                    onChangeText={handleChangeConfirmPassword}
+                    value={state.confirmPassword}
+                    placeholder="Повторите ваш пароль"
+                    textError="Пароли не совпадают"
                 />
 
                 <TouchableOpacity
-                    style={[styles.button,
-                    (isFormValidPassword && isFormValidConfirmPassword) ?
-                        { backgroundColor: '#ED0E0E', width: windowWidth - 32, height: 48 } :
-                        { backgroundColor: '#940C0C', width: windowWidth - 32, height: 48 }
+                    style={[
+                        styles.button,
+                        (state.isFormValidPassword && state.isFormValidConfirmPassword)
+                            ? { backgroundColor: '#ED0E0E', width: windowWidth - 32, height: 48 }
+                            : { backgroundColor: '#940C0C', width: windowWidth - 32, height: 48 }
                     ]}
-                    disabled={isFormValidPassword && isFormValidConfirmPassword ? false : true}
+                    disabled={!state.isFormValidPassword || !state.isFormValidConfirmPassword}
                     testID='myButton'
-                    onPress={() => onSubmitComponent(email, code, password)}
+                    onPress={() => onSubmitComponent(email, code, state.password)}
                 >
                     <Text style={styles.text}>Восстановить пароль</Text>
                 </TouchableOpacity>

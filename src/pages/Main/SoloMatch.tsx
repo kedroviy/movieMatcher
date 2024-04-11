@@ -1,48 +1,45 @@
-import { FC, useRef, useState } from "react";
-import { StyleSheet, Text, View, Dimensions, TouchableOpacity } from "react-native";
-import { useDispatch } from "react-redux";
-import Swiper from "react-native-deck-swiper";
-import { ParamListBase, useNavigation } from "@react-navigation/native";
-import { StackNavigationProp } from "@react-navigation/stack";
+import React, { FC, useEffect, useState } from "react";
+import { StyleSheet, Text, View, Dimensions } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useDispatch, } from "react-redux";
 import { useTranslation } from "react-i18next";
 
-import { logout } from "../../redux/authSlice";
-import { SMSwipeCards } from "./components/sm-swipe-cards";
-import { movieCards, photoCards } from './constants';
-import { SMControlBar } from "./components/sm-control-bar";
+import { NavigationProp, ParamListBase, useNavigation } from "@react-navigation/native";
+import { AppDispatch } from "redux/configure-store";
+import { MyMovieListComponent, withListOrEmptyState } from "./components/sm-hoc-component";
+import { EmptyListComponent } from "./components/sm-empty-list";
 import { Color } from "styles/colors";
-import { OverlayLabel } from "./ui/overlay-label";
-import { FiltersSvgIcon } from "shared";
+import { SimpleButton } from "shared";
+import { AppRoutes } from "app/constants";
 
-const { height, width } = Dimensions.get('window')
+const { width } = Dimensions.get('window')
+
+const renderMovieCard = (movie: any) => (
+    <Text key={movie.id}>{movie.title}</Text>
+);
+
+const MyListWithEmptyState = withListOrEmptyState(MyMovieListComponent);
 
 export const SoloMatchScreen: FC = () => {
-    const dispatch = useDispatch();
+    const dispatch: AppDispatch = useDispatch();
+    const navigation: NavigationProp<ParamListBase> = useNavigation();
     const { t } = useTranslation();
-    const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
-    const [allCardsSwiped, setAllCardsSwiped] = useState<boolean>(false);
-    const [currentIndex, setCurrentIndex] = useState<number>(0);
-    const useSwiper = useRef<Swiper<any>>(null);
+    const [moviesList, setMoviesList] = useState<any[]>([]);
 
-    const handleLogout = () => {
-        dispatch(logout());
-    };
+    useEffect(() => {
+        const fetchMoviesList = async () => {
+            const listString = await AsyncStorage.getItem('my-movie_lists');
+            const list = listString ? JSON.parse(listString) : null;
+            setMoviesList(list);
+        };
 
-    const handleOnSwipedLeft = (cardIndex: any) => {
-        console.log(`Свайп влево на карточке с индексом ${cardIndex}`);
-    };
+        fetchMoviesList();
+    }, []);
 
-    const handleOnSwipedRight = (cardIndex: any) => {
-        console.log(`Свайп вправо на карточке с индексом ${cardIndex}`);
-    };
-
-    const handleOnSwiped = () => {
-        if (currentIndex === photoCards.length - 1) {
-            setAllCardsSwiped(true);
-        } else {
-            setCurrentIndex(currentIndex + 1);
-        }
-    };
+    const onNavigate = () => navigation.navigate(
+        AppRoutes.SELF_SELECT_NAVIGATOR, {
+        screen: AppRoutes.SM_CREATE_MOVIE_LIST_SCREEN,
+    });
 
     return (
         <View style={styles.container}>
@@ -55,80 +52,19 @@ export const SoloMatchScreen: FC = () => {
                 marginTop: 10,
             }}
             >
-                <Text style={styles.headerText}>{t('movieSelection')}</Text>
-                <TouchableOpacity
-                    style={{ 
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: 48, 
-                        height: 48 
-                    }}
-                >
-                    <FiltersSvgIcon width={24} height={24} />
-                </TouchableOpacity>
+                <Text style={styles.headerText}>{t('selection_movie.my_movie_list')}</Text>
             </View>
-            {allCardsSwiped ? (
-                <Text style={{
-                    fontSize: 22,
-                    color: 'white',
-                }}>Карточки закончились</Text>
-            ) : (
-                <View style={{
-                    width: width,
-                    flex: 0.70,
-                    bottom: 40,
-                }}>
-                    <Swiper
-                        ref={useSwiper}
-                        animateCardOpacity
-                        containerStyle={styles.swiperContainer}
-                        cards={movieCards.docs}
-                        renderCard={card => <SMSwipeCards card={card} />}
-                        cardIndex={0}
-                        backgroundColor={Color.BACKGROUND_GREY}
-                        stackSize={3}
-                        stackSeparation={-25}
-                        showSecondCard
-                        animateOverlayLabelsOpacity
-                        onSwipedLeft={handleOnSwipedLeft}
-                        onSwipedRight={handleOnSwipedRight}
-                        onSwiped={handleOnSwiped}
-                        overlayLabels={{
-                            left: {
-                                title: 'NOPE',
-                                element: <OverlayLabel label="NOPE" color="#E5566D" />,
-                                style: {
-                                    wrapper: styles.overlayWrapper,
-                                },
-                            },
-                            right: {
-                                title: 'LIKE',
-                                element: <OverlayLabel label="LIKE" color="#4CCC93" />,
-                                style: {
-                                    wrapper: {
-                                        ...styles.overlayWrapper,
-                                        alignItems: 'flex-start',
-                                        marginLeft: 30,
-                                    },
-                                },
-                            },
-                        }}
-                    />
-                </View>
-            )}
-            <View style={{
-                flex: 0.17,
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-evenly',
-                width: width / 2.2,
-                bottom: 20,
-            }}>
-                <SMControlBar
-                    onHandleLike={() => useSwiper.current?.swipeRight()}
-                    onHandleDislike={() => useSwiper.current?.swipeLeft()}
-                />
-            </View>
+            <MyListWithEmptyState
+                data={moviesList || []}
+                renderItem={renderMovieCard}
+                EmptyListComponent={EmptyListComponent}
+            />
+            <SimpleButton
+                color={Color.BUTTON_RED}
+                titleColor={Color.WHITE}
+                title={t('selection_movie.create_list_button')}
+                onHandlePress={onNavigate}
+            />
         </View>
     );
 };
@@ -139,6 +75,7 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'space-between',
+        paddingVertical: 32,
     },
     swiperContainer: {
         flex: 0.8,

@@ -1,9 +1,11 @@
 import React from 'react';
 import Svg, { Path, G, Defs, ClipPath, Rect } from 'react-native-svg';
 import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
 
 export const useLocalizedMenuItems = () => {
     const { t } = useTranslation();
+    const { user } = useSelector((state: any) => state.userSlice);
 
     const menuItems = React.useMemo(() => [
         {
@@ -14,7 +16,7 @@ export const useLocalizedMenuItems = () => {
                     <Path id="Vector_2" d="M12 11C14.2091 11 16 9.20914 16 7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7C8 9.20914 9.79086 11 12 11Z" stroke="#FFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                 </Svg>,
             name: t('profile.account_settings'),
-            navigateScreen: 'UPAboutApplication',
+            navigateScreen: 'UPAccountSettings',
         },
         {
             id: 1,
@@ -89,5 +91,23 @@ export const useLocalizedMenuItems = () => {
         }
     ], [t]);
 
-    return {menuItems, aboutAppItems};
+    const accountSettingsItems = React.useMemo(() => [
+        {
+            id: 1,
+            name: t('acc_settings.user_name'),
+            subName: user?.username ?? 'User',
+            navigateScreen: 'UPChangeName',
+        },
+        {
+            id: 2,
+            name: t('acc_settings.email'),
+            subName: user?.email ?? 'Email',
+        },
+        {
+            id: 3,
+            name: t('acc_settings.password'),
+        }
+    ], [t]);
+
+    return { menuItems, aboutAppItems, accountSettingsItems };
 };
