@@ -10,10 +10,10 @@ export enum Color {
     SYSTEM_BLACK = '#1D2330',
     MY_NETWORK_BLACK = '#1F2229',
     LIGHT_BLACK = '#1E1E1E',
-    WHITE = '#F9F9F9',
     GREY = '#C3C3C3',
     BACKGROUND_GREY = '#353535',
     SLIGHTLY_LIGHT_GRAY = '#C4C4C4',
+    INPUT_GREY = '#595959',
     LIGHT_GRAY = '#F5F5F5',
     NEW_LIGHT_GRAY = '#F3F3F5',
     EXTRA_LIGHT_GRAY = '#EEEEEE',
@@ -32,5 +32,7 @@ export enum Color {
     DISABLED_RED = '#940C0C',
     LIGHT_BROWN = '#746655',
     MEDIUM_BROWN = '#5D5244',
+    WHITE = '#F9F9F9',
+    FADED_WHITE = '#c2c0c0',
   }
   

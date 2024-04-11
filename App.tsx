@@ -11,12 +11,12 @@ function App(): React.JSX.Element {
   useEffect(() => {
     const setLocalization = async () => {
 
-      let currentLanguage = await AsyncStorage.getItem('currentLanguage');
+      let currentLanguage = await AsyncStorage.getItem('language');
 
       if (!currentLanguage) {
         currentLanguage = RNLocalize.getLocales()[0].languageCode;
         i18n.changeLanguage(currentLanguage);
-        await AsyncStorage.setItem('currentLanguage', currentLanguage);
+        await AsyncStorage.setItem('language', currentLanguage);
       }
 
       i18n.changeLanguage(currentLanguage);

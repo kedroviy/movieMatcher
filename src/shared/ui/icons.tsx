@@ -76,3 +76,29 @@ export const ChevronRightSVGIcon = () => (
         <Path d="M9 18L15 12L9 6" stroke="#F9F9F9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
     </Svg>
 )
+
+export const ChevronSvgDownIcon = () => (
+    <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <Path d="M6 9L12 15L18 9" stroke="#F9F9F9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+    </Svg>
+)
+
+export const ChevronSvgUpIcon = () => (
+    <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <Path d="M6 15L12 9L18 15" stroke="#F9F9F9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+    </Svg>
+);
+
+export const CheckSvgIcon: FC = () => (
+    <Svg width="42" height="42" viewBox="0 0 42 42" fill="none">
+        <G id="check">
+            <Path id="Vector" d="M34.6756 10.7441L15.8722 29.5476L7.3252 21.0006" stroke="#F9F9F9" stroke-width="3.4188" stroke-linecap="round" stroke-linejoin="round" />
+        </G>
+    </Svg>
+);
+
+export const CrossSvgIcon: FC = () => (
+    <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <Path d="M16 8L8 16M8.00001 8L16 16" stroke="#F9F9F9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+    </Svg>
+)

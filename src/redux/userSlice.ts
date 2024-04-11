@@ -1,38 +1,104 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { ApiResponse, UpdateUsernameArgs, getUserProfile, putUpdateUsername } from "features";
+import { UserModelType } from "shared";
+
+type UserState = {
+    user: UserModelType | null;
+    error: null | string;
+    loading: boolean;
+    loadingApplication: boolean;
+    success: boolean;
+    onboarded: boolean;
+}
+
+const initialState: UserState = {
+    user: null,
+    error: null,
+    loading: false,
+    loadingApplication: false,
+    success: false,
+    onboarded: false,
+};
+
+export const fetchUserProfile = createAsyncThunk(
+    'user/GET_USER',
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await getUserProfile();
+
+            if (!response.success) {
+                return rejectWithValue('Failed to fetch user profile');
+            }
+
+            return response.data;
+        } catch (error) {
+            if (error instanceof Error) {
+                return rejectWithValue(error.message);
+            }
+            return rejectWithValue('An unknown error occurred');
+        }
+    }
+);
+
+export const updateUsername = createAsyncThunk<
+    UserModelType,
+    UpdateUsernameArgs,
+    {
+        rejectValue: ApiResponse
+    }
+>(
+    'user/updateUsername',
+    async (args, { rejectWithValue }) => {
+        try {
+            const response = await putUpdateUsername(args);
+        
+            if (response.success && response.data) {
+                return response.data as UserModelType;
+            } else {
+                return rejectWithValue(response as ApiResponse);
+            }
+        } catch (error) {
+            if (error instanceof Error) {
+                return rejectWithValue({ success: false, message: error.message } as ApiResponse);
+            } else {
+                return rejectWithValue({ success: false, message: 'Unknown error' } as ApiResponse);
+            }
+        }
+    }
+);
 
 const userSlice = createSlice({
     name: 'user',
     initialState,
     reducers: {
-        reset: () => initialState,
-        logout: (state) => {
-            state.isAuthenticated = false;
-            state.token = null;
-            removeToken();
-        },
+
     },
+
     extraReducers: (builder) => {
         builder
-            .addCase(authUser.pending, (state) => {
+            .addCase(fetchUserProfile.pending, (state) => {
                 state.loading = true;
             })
-            .addCase(authUser.fulfilled, (state, action) => {
+            .addCase(fetchUserProfile.fulfilled, (state, action) => {
                 state.loading = false;
-                state.token = action.payload.token as string;
-
-                if (action.payload.success) {
-                    state.token = action.payload.token as string;
-                    state.isAuthenticated = true;
-                } else {
-                    state.isAuthenticated = false;
-                    state.token = null;
-                }
+                state.user = action.payload;
             })
-            .addCase(authUser.rejected, (state, action) => {
+            .addCase(fetchUserProfile.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload as string;
             })
+            .addCase(updateUsername.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(updateUsername.fulfilled, (state, action) => {
+                state.loading = false;
+                state.user = action.payload;
+            })
+            .addCase(updateUsername.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload as string;
+            });
     },
 });
 
-export default authSlice.reducer;
+export default userSlice.reducer;

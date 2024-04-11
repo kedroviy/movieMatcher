@@ -29,7 +29,7 @@ const initialState: AuthState = {
     loading: false,
     loadingApplication: false,
     success: false,
-    onboarded: false,
+    onboarded: true,
 };
 
 GoogleSignin.configure({

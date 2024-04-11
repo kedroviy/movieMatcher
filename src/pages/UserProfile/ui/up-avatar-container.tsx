@@ -61,9 +61,9 @@ export const UPAvatarContainer: FC<UPAvatarContainerType> = ({ imageUrl, name, s
                     lineHeight: 20.8,
                 }}
                 >
-                    {name}
+                    {name ?? 'User'}
                 </Text>
-                <Text style={{ color: Color.WHITE, }}>id {subName}</Text>
+                <Text style={{ color: Color.WHITE, }}>id {subName ?? '0000'}</Text>
             </View>
         </View>
     )

@@ -1,3 +1,5 @@
+import { yearOptions } from "./sm.utils";
+
 export const photoCards = [
     {
         name: 'Austin Wade',
@@ -48,6 +50,77 @@ export const photoCards = [
         key: 'mFcc5b_t74Q',
     }, '../../../assets/google.svg'
 ]
+
+export const FILTERS_DATA = {
+    country: {
+        title: 'Выбор страны',
+        placeholder: 'Выберите страну',
+        options: [
+            { id: 1, label: 'Беларусь' },
+            { id: 2, label: 'СССР' },
+            { id: 3, label: 'США' },
+            { id: 4, label: 'Казахстан' },
+            { id: 5, label: 'Франция' },
+            { id: 6, label: 'Южная Корея' },
+            { id: 23, label: 'Россия' },
+            { id: 7, label: 'Великобритания' },
+            { id: 8, label: 'Япония' },
+            { id: 9, label: 'Италия' },
+            { id: 10, label: 'Испания' },
+            { id: 11, label: 'Германия' },
+            { id: 12, label: 'Турция' },
+            { id: 13, label: 'Швеция' },
+            { id: 14, label: 'Дания' },
+            { id: 15, label: 'Норвегия' },
+            { id: 16, label: 'Гонконг' },
+            { id: 17, label: 'Австралия' },
+            { id: 18, label: 'Бельгия' },
+            { id: 19, label: 'Нидерланды' },
+            { id: 20, label: 'Греция' },
+            { id: 21, label: 'Австрия' },
+            { id: 22, label: 'Канада' },
+        ],
+    },
+    year: {
+        title: 'Выбор года',
+        placeholder: 'Выберите год',
+        options: yearOptions,
+    },
+    genre: {
+        title: 'Выбор жанра',
+        placeholder: 'Выберите жанр',
+        options: [
+            { id: 1, label: 'Комедии' },
+            { id: 2, label: 'Мультфильмы' },
+            { id: 3, label: 'Ужасы' },
+            { id: 4, label: 'Фантастика' },
+            { id: 5, label: 'Триллеры' },
+            { id: 6, label: 'Боевики' },
+            { id: 7, label: 'Мелодрамы' },
+            { id: 8, label: 'Детективы' },
+            { id: 9, label: 'Приключения' },
+            { id: 10, label: 'Фэнтези' },
+            { id: 11, label: 'Военные' },
+            { id: 12, label: 'Семейные' },
+            { id: 13, label: 'Аниме' },
+            { id: 14, label: 'Исторические' },
+            { id: 15, label: 'Драмы' },
+            { id: 16, label: 'Документальные' },
+            { id: 17, label: 'Детские' },
+            { id: 18, label: 'Криминал' },
+            { id: 19, label: 'Биографии' },
+            { id: 20, label: 'Вестерны' },
+            { id: 21, label: 'Фильмы-нуар' },
+            { id: 22, label: 'Спортивные' },
+            { id: 23, label: 'Реальное ТВ' },
+            { id: 24, label: 'Короткометражки' },
+            { id: 25, label: 'Музыкальные' },
+            { id: 26, label: 'Мюзиклы' },
+            { id: 27, label: 'Ток-шоу' },
+            { id: 28, label: 'Игры' },
+        ],
+    },
+};
 
 export const movieCards =
 {

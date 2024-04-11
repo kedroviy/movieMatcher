@@ -3,12 +3,14 @@ import * as Keychain from 'react-native-keychain';
 
 export const saveToken = async (token: string) => {
     await Keychain.setGenericPassword('token', token, { service: 'token_guard' });
+    console.log(token)
 }
 
 export const getToken = async () => {
     try {
         const credentials = await Keychain.getGenericPassword({ service: 'token_guard' });
         if (credentials) {
+            console.log(credentials)
             return credentials.password;
         }
         return null;

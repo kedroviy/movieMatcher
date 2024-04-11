@@ -11,11 +11,15 @@ export const SMSwipeCards: FC<SMSwipeCardType> = ({ card }) => {
 
     return (
         <View style={styles.card}>
-            <Image
-                style={styles.image}
-                source={{ uri: card.poster?.previewUrl }}
-                resizeMode="cover"
-            />
+            {card.poster ? (
+                <Image
+                    style={styles.image}
+                    source={{ uri: card.poster?.previewUrl }}
+                    resizeMode="cover"
+                />
+            ) : (
+                <View style={styles.placeholder} />
+            )}
             <View style={styles.movieDescriptionContainer}>
                 <Text style={styles.headerText}>
                     {`${card.name}  (${card.year})`}
@@ -30,7 +34,7 @@ export const SMSwipeCards: FC<SMSwipeCardType> = ({ card }) => {
 
 const styles = StyleSheet.create({
     card: {
-        height: height / 1.7,
+        height: 490,
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: Color.WHITE,
@@ -49,6 +53,13 @@ const styles = StyleSheet.create({
         borderTopRightRadius: 10,
         flex: 1,
         width: '100%',
+    },
+    placeholder: {
+        borderTopLeftRadius: 10,
+        borderTopRightRadius: 10,
+        flex: 1,
+        width: '100%',
+        backgroundColor: Color.NEW_BLACK
     },
     movieDescriptionContainer: {
         gap: 8,

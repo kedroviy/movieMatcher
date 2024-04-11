@@ -7,7 +7,7 @@ import {
     animationOptions,
     defaultScreenOptions,
 } from "./constants";
-import { UPAboutApplication, UPLanguage } from "pages";
+import { UPAboutApplication, UPAccountSettings, UPChangeName, UPLanguage } from "pages";
 
 const ProfileStack = createStackNavigator();
 
@@ -58,6 +58,51 @@ export const ProfileNavigator: FC = () => {
                 }}
                 key={AppRoutes.USER_PROFILE_LANGUAGE}
             />
+
+            <ProfileStack.Screen
+                name={AppRoutes.USER_PROFILE_ACC_SETTINGS}
+                component={UPAccountSettings}
+                options={{
+                    headerTitle: t('profile.account_settings'),
+                    headerStyle: {
+                        backgroundColor: '#353535',
+                    },
+                    headerTitleStyle: {
+                        marginTop: 24,
+                    },
+                    headerTintColor: '#F9F9F9',
+                    headerLeftContainerStyle: {
+                        marginLeft: -3,
+                        marginTop: 24,
+                    },
+                    cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+                    ...animationOptions
+                }}
+                key={AppRoutes.USER_PROFILE_ACC_SETTINGS}
+            />
+
+            <ProfileStack.Screen
+                name={AppRoutes.USER_PROFILE_CHANGENAME}
+                component={UPChangeName}
+                options={{
+                    headerTitle: t('acc_settings.changeName.change_name'),
+                    headerStyle: {
+                        backgroundColor: '#353535',
+                    },
+                    headerTitleStyle: {
+                        marginTop: 24,
+                    },
+                    headerTintColor: '#F9F9F9',
+                    headerLeftContainerStyle: {
+                        marginLeft: -3,
+                        marginTop: 24,
+                    },
+                    cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+                    ...animationOptions
+                }}
+                key={AppRoutes.USER_PROFILE_CHANGENAME}
+            />
+
         </ProfileStack.Navigator>
     )
 }

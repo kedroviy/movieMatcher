@@ -9,6 +9,16 @@ export {
     FiltersSvgIcon,
     PencilSvgIcon,
     ChevronRightSVGIcon,
+    ChevronSvgDownIcon,
+    ChevronSvgUpIcon,
+    CheckSvgIcon,
+    CrossSvgIcon,
 } from './icons';
 export { RadioButton } from './radio-button';
+export { SimpleInput } from './text-input';
+export { SimpleButton } from './simple-button';
+
+// export { MovieLoader } from './movie-loader';
+
+
 
