@@ -29,6 +29,7 @@ export const defaultScreenOptions: StackNavigationOptions = {
     headerTitle: () => null,
     headerTitleAlign: 'center',
     headerShadowVisible: false,
+    headerShown: true,
     headerLeftContainerStyle: {
         paddingLeft: 16,
     },

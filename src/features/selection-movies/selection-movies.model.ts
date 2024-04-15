@@ -79,3 +79,10 @@ export interface SMApiResponse {
     page: number;
     pages: number;
 }
+
+export type MoviesSavedType = {
+    id: string,
+    label: string,
+    link: string,
+    movies: Movie[]
+}

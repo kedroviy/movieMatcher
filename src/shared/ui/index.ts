@@ -13,12 +13,11 @@ export {
     ChevronSvgUpIcon,
     CheckSvgIcon,
     CrossSvgIcon,
+    AlertCircleSvgIcon,
+    GoogleSvgIcon,
 } from './icons';
 export { RadioButton } from './radio-button';
 export { SimpleInput } from './text-input';
 export { SimpleButton } from './simple-button';
-
+export { SimpleNotification } from './simple-notification';
 // export { MovieLoader } from './movie-loader';
-
-
-

@@ -1,13 +1,10 @@
 import { useDispatch, useSelector } from "react-redux";
-import { View, StyleSheet, Dimensions, Text, TouchableOpacity } from "react-native";
+import { View, StyleSheet, Dimensions, Text, TouchableOpacity, Image } from "react-native";
 import { NavigationProp, ParamListBase, useNavigation } from "@react-navigation/native";
-
-import StartLogotype from '../../../assets/startLogo.svg';
-import GoogleIcon from '../../../assets/google.svg'
 
 import { AppDispatch } from "../../redux/configure-store";
 import { authenticateWithGoogle } from "../../redux/authSlice";
-import { Loader } from "@shared/index";
+import { GoogleSvgIcon, Loader } from "@shared/index";
 import { STRINGS } from "./constants";
 
 export const LoginScreen = () => {
@@ -23,7 +20,7 @@ export const LoginScreen = () => {
     return (
         <View style={[styles.container, { width: windowWidth }]}>
             <View style={{ alignItems: 'center', width: windowWidth, height: 328, marginVertical: 24, }}>
-                <StartLogotype />
+                <Image source={require('../../../assets/startLogotype.png')} />
             </View>
             <View style={{ width: 328, gap: 12, alignItems: 'center', marginTop: 32 }}>
                 <Text style={{
@@ -78,7 +75,7 @@ export const LoginScreen = () => {
                     onPress={onAuthWithGoogle}
                     testID='myButton'
                 >
-                    <GoogleIcon width={36} height={36} />
+                    <GoogleSvgIcon />
                     <Text style={{
                         color: '#1D1D1D',
                         fontSize: 18,
