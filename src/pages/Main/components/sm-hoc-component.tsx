@@ -1,5 +1,6 @@
+import { Movie } from 'features';
 import React from 'react';
-import { View } from 'react-native';
+import { Dimensions, View } from 'react-native';
 
 
 type ListProps<Data> = {
@@ -9,9 +10,12 @@ type ListProps<Data> = {
 };
 
 type MyListItemType = {
-    id: number;
-    title: string;
+    id: string;
+    label: string;
+    movies: Movie[];
 };
+
+const { width } = Dimensions.get('window');
 
 export const withListOrEmptyState = <Data,>(Component: React.ComponentType<ListProps<Data>>) => {
     return (props: ListProps<Data>) => {
@@ -27,7 +31,10 @@ export const withListOrEmptyState = <Data,>(Component: React.ComponentType<ListP
 
 export const MyMovieListComponent = ({ data, renderItem }: ListProps<MyListItemType>) => {
     return (
-        <View>
+        <View style={{
+            width: width - 32,
+            paddingVertical: 12,
+        }}>
             {data.map((item) => renderItem(item))}
         </View>
     );

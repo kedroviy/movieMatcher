@@ -13,6 +13,10 @@ export const store = configureStore({
     userSlice: userSliceReducer,
     moviesSlice: moviesSliceReducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

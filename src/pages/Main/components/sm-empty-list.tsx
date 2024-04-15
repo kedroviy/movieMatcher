@@ -1,10 +1,10 @@
 import { View, Image, Text, StyleSheet } from "react-native";
 import { Color } from "styles/colors";
-import SvgIcon from '../../../../assets/image31.svg';
+
 
 export const EmptyListComponent = () => (
     <View style={styles.emptyStateContainer}>
-        <SvgIcon />
+        <Image source={require('../../../../assets/image33.png')}/>
         <Text style={styles.emptyStateText}>Ваш список фильмов пуст</Text>
     </View>
 );

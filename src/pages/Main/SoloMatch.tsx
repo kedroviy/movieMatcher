@@ -1,39 +1,37 @@
 import React, { FC, useEffect, useState } from "react";
-import { StyleSheet, Text, View, Dimensions } from "react-native";
+import { StyleSheet, Text, View, Dimensions, ScrollView } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useDispatch, } from "react-redux";
 import { useTranslation } from "react-i18next";
 
 import { NavigationProp, ParamListBase, useNavigation } from "@react-navigation/native";
-import { AppDispatch } from "redux/configure-store";
 import { MyMovieListComponent, withListOrEmptyState } from "./components/sm-hoc-component";
 import { EmptyListComponent } from "./components/sm-empty-list";
 import { Color } from "styles/colors";
 import { SimpleButton } from "shared";
 import { AppRoutes } from "app/constants";
+import { MoviesSavedType } from "features/selection-movies/selection-movies.model";
+import { MovieCard } from "./ui/sm-movie-list-card";
 
-const { width } = Dimensions.get('window')
-
-const renderMovieCard = (movie: any) => (
-    <Text key={movie.id}>{movie.title}</Text>
-);
+const { width } = Dimensions.get('window');
 
 const MyListWithEmptyState = withListOrEmptyState(MyMovieListComponent);
 
 export const SoloMatchScreen: FC = () => {
-    const dispatch: AppDispatch = useDispatch();
     const navigation: NavigationProp<ParamListBase> = useNavigation();
     const { t } = useTranslation();
-    const [moviesList, setMoviesList] = useState<any[]>([]);
+    const [moviesList, setMoviesList] = useState<MoviesSavedType[]>([]);
 
     useEffect(() => {
         const fetchMoviesList = async () => {
-            const listString = await AsyncStorage.getItem('my-movie_lists');
-            const list = listString ? JSON.parse(listString) : null;
+            const listString = await AsyncStorage.getItem('@mymovies');
+            const listObj = listString ? JSON.parse(listString) : {};
+            const list: any = Object.values(listObj);
             setMoviesList(list);
         };
 
         fetchMoviesList();
+
+        moviesList.map(item => console.log(item))
     }, []);
 
     const onNavigate = () => navigation.navigate(
@@ -46,7 +44,7 @@ export const SoloMatchScreen: FC = () => {
             <View style={{
                 flexDirection: 'row',
                 justifyContent: 'space-between',
-                alignItems: 'center',
+                alignItems: 'flex-start',
                 width: width - 33,
                 height: 48,
                 marginTop: 10,
@@ -54,14 +52,27 @@ export const SoloMatchScreen: FC = () => {
             >
                 <Text style={styles.headerText}>{t('selection_movie.my_movie_list')}</Text>
             </View>
-            <MyListWithEmptyState
-                data={moviesList || []}
-                renderItem={renderMovieCard}
-                EmptyListComponent={EmptyListComponent}
-            />
+            <View style={styles.contentContainer}>
+                <ScrollView style={{ width: '100%', height: '100%' }}>
+                    <MyListWithEmptyState
+                        data={moviesList}
+                        renderItem={({ id, label, movies }) => (
+                            <MovieCard
+                                key={id}
+                                id={id}
+                                label={label}
+                                moviesCount={movies.length}
+                                onHandlePress={() => console.log("Clicked on Movie Card")}
+                            />
+                        )}
+                        EmptyListComponent={EmptyListComponent}
+                    />
+                </ScrollView>
+            </View>
             <SimpleButton
                 color={Color.BUTTON_RED}
                 titleColor={Color.WHITE}
+                buttonWidth={width - 32}
                 title={t('selection_movie.create_list_button')}
                 onHandlePress={onNavigate}
             />
@@ -76,6 +87,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         paddingVertical: 32,
+    },
+    contentContainer: {
+        flex: 1,
     },
     swiperContainer: {
         flex: 0.8,

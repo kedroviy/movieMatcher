@@ -1,5 +1,5 @@
 import React, { FC, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions, ScrollView, Modal } from 'react-native';
 import { FilterOption, Option } from '../sm.model';
 import { Checkbox, Chip } from 'react-native-ui-lib';
 import { Color } from 'styles/colors';
@@ -34,6 +34,8 @@ export const SMMultiSelectInput: FC<MultiSelectInputProps<FilterOption>> = ({
     );
   };
 
+  // const dropdownZIndex = isOpen ? 1000 : 0;
+
   const handleToggleDropdown = () => setIsOpen(!isOpen);
 
   const handleSelectOption = (option: Option) => {
@@ -45,7 +47,6 @@ export const SMMultiSelectInput: FC<MultiSelectInputProps<FilterOption>> = ({
       onSelectionChange([...selectedOptions, option]);
     }
   };
-
 
   const handleRemoveOption = (optionId: string | number) => {
     onSelectionChange(selectedOptions.filter((option) => option.id !== optionId));
@@ -60,7 +61,7 @@ export const SMMultiSelectInput: FC<MultiSelectInputProps<FilterOption>> = ({
     );
 
     return (
-      <View key={option.id} style={{ paddingLeft: level * 20, zIndex: 1000 }}>
+      <View key={option.id} style={{ paddingLeft: level * 20 }}>
         <View style={styles.dropdownItemContainer}>
           <Checkbox
             value={isSelected}
@@ -91,21 +92,10 @@ export const SMMultiSelectInput: FC<MultiSelectInputProps<FilterOption>> = ({
   const renderDropdown = () => {
     if (!isOpen) return null;
 
-    const handleSelectOption = (option: Option) => {
-      const isSelected = selectedOptions.find((selected) => selected.id === option.id);
-      if (isSelected) {
-        onSelectionChange(selectedOptions.filter((selected) => selected.id !== option.id));
-      } else {
-        onSelectionChange([...selectedOptions, option]);
-      }
-    };
-
     return (
-
       <ScrollView style={styles.dropdown}>
         {options.map((option) => renderItemWithChildren(option))}
       </ScrollView>
-
     );
   };
 
@@ -151,13 +141,20 @@ export const SMMultiSelectInput: FC<MultiSelectInputProps<FilterOption>> = ({
           </TouchableOpacity>
         </View>
       </View>
-      {renderDropdown()}
+      <View style={{
+        position: 'absolute',
+        zIndex: 1000,
+        top: 75,
+      }}>
+        {renderDropdown()}
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+    position: 'relative',
     width: windowWidth - 32,
     marginBottom: 15,
   },
@@ -196,20 +193,16 @@ const styles = StyleSheet.create({
     right: 0,
   },
   dropdown: {
-    position: 'absolute',
-    top: 75,
     left: 0,
     width: windowWidth - 32,
     backgroundColor: Color.INPUT_GREY,
     maxHeight: 200,
     borderRadius: 5,
-    zIndex: 1000,
   },
   dropdownItemContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 10,
-    zIndex: 1000,
   },
   dropdownItem: {
     flexDirection: 'row',

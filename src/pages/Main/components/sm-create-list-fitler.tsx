@@ -1,48 +1,64 @@
-import { FC, useReducer, useState } from "react"
+import { FC, useEffect, useReducer, useState } from "react"
 import { NavigationProp, ParamListBase, useNavigation } from "@react-navigation/native";
-import { View, StyleSheet, ScrollView, Dimensions, ActivityIndicator } from "react-native"
+import { View, StyleSheet, ScrollView, Dimensions } from "react-native"
 import { useTranslation } from "react-i18next";
+import { format } from 'date-fns';
 
 import { AppRoutes } from "app/constants";
-import { AppConstants, SimpleButton, SimpleInput } from "shared";
+import { AlertCircleSvgIcon, Loader, SimpleButton, SimpleNotification } from "shared";
 import { Color } from "styles/colors";
 import { SMMultiSelectInput } from "../ui/sm-multi-select-input";
 import { FILTERS_DATA } from "../constants";
-import { reducer, FilterOption, initialState, ISMFormData, SelectMovieType, Genre, Country, Year } from "../sm.model";
+import { reducer, FilterOption, initialState, ISMFormData, SelectMovieType, Country, Year } from "../sm.model";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "redux/configure-store";
-import { loadMovies } from "redux/moviesSlice";
+import { clearError, clearResponse, loadMovies } from "redux/moviesSlice";
 
-const windowHeight = Dimensions.get('window').height;
+const { width, height } = Dimensions.get('window');
 
 export const SMCreateMovieListFilter: FC = () => {
     const [state, SMdispatch] = useReducer(reducer<FilterOption>, initialState);
     const dispatch: AppDispatch = useDispatch();
     const { t } = useTranslation();
-    const { data, loading } = useSelector((state: any) => state.moviesSlice);
-    const navigation: NavigationProp<ParamListBase> = useNavigation();
-    const [isFormValidInput, setIsFormValidInput] = useState<boolean>(false);
+    const { data, loading, error, currentPage } = useSelector((state: any) => state.moviesSlice);
+    const navigation = useNavigation<NavigationProp<ParamListBase>>();
+    const [isNotificationHide, setIsNotificationHide] = useState<boolean>(true);
 
-    const handleValidationInput = (isValid: boolean) => {
-        setIsFormValidInput(isValid);
-    };
-
-    const handleSubmit = () => {
-        const formData = transformToISMFormData(state);
-        dispatch(loadMovies(formData));
-        if (data) {
-            navigation.navigate(
-                AppRoutes.SELF_SELECT_NAVIGATOR, {
+    useEffect(() => {
+        if (!loading && data.total > 0) {
+            navigation.navigate(AppRoutes.SELF_SELECT_NAVIGATOR, {
                 screen: AppRoutes.SM_SELECTION_MOVIE,
-            })
+            });
         }
-        console.log('Form data:', state);
+
+        if (error) {
+            setIsNotificationHide(false)
+        }
+
+        navigation.setOptions({
+            headerShown: isNotificationHide,
+        });
+
+    }, [loading, data, error, navigation, isNotificationHide]);
+
+    const handleSubmit = async () => {
+        await dispatch(clearResponse());
+        const formData = transformToISMFormData(state);
+
+        await dispatch(loadMovies({ formData, sessionLabel: formatDate(), page: 1 }));
     };
 
+    function formatDate(): string {
+        return format(new Date(), 'dd-MM-yyyy HH:mm');
+    }
+
+    const handleClearError = () => {
+        dispatch(clearError());
+        setIsNotificationHide(true);
+    };
 
     function transformToISMFormData(state: SelectMovieType<FilterOption>): ISMFormData {
         const transformedState: ISMFormData = {
-            name: state.name,
             excludeGenre: state.excludeGenre.map(genre => ({ ...genre, type: 'genre' })),
             genres: state.genres?.map(genre => ({ ...genre, type: 'genre' })),
             selectedCountries: state.selectedCountries as Country[],
@@ -52,11 +68,6 @@ export const SMCreateMovieListFilter: FC = () => {
 
         return transformedState;
     }
-
-
-    const handleNameChange = (name: string) => {
-        SMdispatch({ type: 'SET_NAME', payload: name });
-    };
 
     const handleCountrySelectionChange = (selectedCountries: any[]) => {
         SMdispatch({ type: 'SET_SELECTED_COUNTRIES', payload: selectedCountries });
@@ -89,17 +100,8 @@ export const SMCreateMovieListFilter: FC = () => {
         <View style={styles.container}>
             <ScrollView style={styles.scrollView}>
                 <View style={{
-                    height: windowHeight / 1.3,
+                    height: height / 1.3,
                 }}>
-                    <SimpleInput
-                        label={t('selection_movie.create_list_component.list_name')}
-                        onValidationChange={handleValidationInput}
-                        value={state.name}
-                        onChangeText={handleNameChange}
-                        placeholder={t('selection_movie.create_list_component.list_name')}
-                        textError={t('acc_settings.changeName.textError')}
-                    />
-
                     <SMMultiSelectInput
                         label='Страна'
                         options={FILTERS_DATA.country.options}
@@ -136,14 +138,25 @@ export const SMCreateMovieListFilter: FC = () => {
             <SimpleButton
                 color={Color.BUTTON_RED}
                 titleColor={Color.WHITE}
+                buttonWidth={width - 32}
                 title={t('selection_movie.create_list_component.start_select')}
                 onHandlePress={handleSubmit}
             />
             {loading ? (
-                <View style={{ width: '100%', height: windowHeight, backgroundColor: Color.BLACK, opacity: 0.5 }}>
-                    <ActivityIndicator />
+                <View style={styles.loader}>
+                    <Loader />
                 </View>
             ) : null}
+            {!isNotificationHide ?
+                <SimpleNotification
+                    icon={<AlertCircleSvgIcon />}
+                    label='Упс, что-то пошло не так'
+                    description='По вашему запросу ничего не найдено'
+                    buttonText='Назад'
+                    buttonColor={Color.BUTTON_RED}
+                    onHandlePress={handleClearError}
+                />
+                : null}
         </View>
     )
 };
@@ -158,5 +171,14 @@ const styles = StyleSheet.create({
     },
     scrollView: {
 
+    },
+    loader: {
+        position: 'absolute',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+        height: height,
+        backgroundColor: Color.BLACK,
+        opacity: 0.5
     }
 });

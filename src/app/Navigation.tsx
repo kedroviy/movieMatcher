@@ -23,7 +23,6 @@ export const AppNavigation: React.FC<AppNavigatorType> = ({ onboarded }) => {
 
   return (
     <Stack.Navigator screenOptions={defaultScreenOptions}>
-      <Stack.Group>
         {!onboarded ?
           <Stack.Screen
             name={AppRoutes.ONBOARDING_SCREEN}
@@ -56,7 +55,6 @@ export const AppNavigation: React.FC<AppNavigatorType> = ({ onboarded }) => {
             />
           </>
         }
-      </Stack.Group>
     </Stack.Navigator>
   );
 };

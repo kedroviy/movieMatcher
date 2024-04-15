@@ -4,11 +4,9 @@ import { NavigationProp, ParamListBase, useNavigation } from "@react-navigation/
 
 import { PAGES } from './constants';
 import { OnboardingCard } from "./ui";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "redux/configure-store";
+import { AppRoutes } from "app/constants";
 
 export const OnboardingScreen: FC = () => {
-    const dispatch: AppDispatch = useDispatch();
     const [currentPageIndex, setCurrentPageIndex] = useState(0);
     const navigation: NavigationProp<ParamListBase> = useNavigation();
 
@@ -17,7 +15,7 @@ export const OnboardingScreen: FC = () => {
             setCurrentPageIndex(currentPageIndex + 1);
         } else {
             await AsyncStorage.setItem('ONBOARDED', 'onboarded');
-            navigation.navigate('SoloMatchScreen');
+            navigation.navigate(AppRoutes.TAB_NAVIGATOR);
         }
     };
 

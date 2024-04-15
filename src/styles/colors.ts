@@ -32,6 +32,7 @@ export enum Color {
     DISABLED_RED = '#940C0C',
     LIGHT_BROWN = '#746655',
     MEDIUM_BROWN = '#5D5244',
+    DESCRIPTION_GREY = '#5D5D5D',
     WHITE = '#F9F9F9',
     FADED_WHITE = '#c2c0c0',
   }

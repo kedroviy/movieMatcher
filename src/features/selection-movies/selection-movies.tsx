@@ -1,44 +1,22 @@
-import { create } from 'apisauce';
-import { SMApiResponse } from './selection-movies.model';
 import { ISMFormData } from 'pages';
+import { constructUrl } from './selection-movie-utils';
+import { fetchMoviesApi } from './selection-movie-service';
+import { updateStorageWithSession } from './selection-movies-storage-service';
+import { SMApiResponse } from './selection-movies.model';
 
-const BASE_URL = 'https://api.kinopoisk.dev/v1.4/movie?page=1&limit=10';
-const API_KEY = 'XYNPWWX-0VZ4EF2-HS2W1FV-JNA4H0J';
-
-const api = create({
-  baseURL: BASE_URL,
-  headers: { 'X-API-KEY': API_KEY },
-});
-
-export const fetchMovies = async (formData: ISMFormData): Promise<SMApiResponse> => {
-  const params = new URLSearchParams();
-
-  formData.selectedYears.forEach(year => {
-    params.append('year', year.label);
-  });
-
-  formData.selectedGenres.forEach(genre => {
-    params.append('genres.name', genre.label.toLocaleLowerCase());
-  });
-
-  formData.excludeGenre.forEach(genre => {
-    params.append('genres.name', `%21${genre.label.toLocaleLowerCase()}`);
-  });
-
-  formData.selectedCountries.forEach(country => {
-    params.append('countries.name', country.label);
-  });
-
-  const url = `${api.getBaseURL()}&${params.toString()}`;
-  console.log(url);
-
-  const response = await api.get<SMApiResponse>(url, params);
-  console.log(response);
-
-  if (!response.ok || !response.data) {
-    console.error(response.problem || 'Unknown API error');
-    throw new Error(response.problem || 'Unknown API error');
+export const fetchMovies = async (formData: ISMFormData, sessionLabel: string, page: number): Promise<SMApiResponse> => {
+  const url = constructUrl('https://api.kinopoisk.dev/v1.4/movie?limit=10', formData, page);
+  try {
+    const data = await fetchMoviesApi(url);
+    await updateStorageWithSession(sessionLabel, url);
+    return data;
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error('Error fetching movies:', error.message);
+      throw new Error('Failed to fetch movies with given parameters');
+    } else {
+      console.error('Unknown error occurred');
+      throw new Error('An unknown error occurred');
+    }
   }
-
-  return response.data;
 };

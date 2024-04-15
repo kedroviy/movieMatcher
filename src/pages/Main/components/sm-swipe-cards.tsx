@@ -1,8 +1,7 @@
 import React, { FC } from 'react';
-import { Text, StyleSheet, Dimensions, View, Image } from 'react-native';
+import { Text, StyleSheet, View, Image } from 'react-native';
 
 import { Color } from "../../../styles/colors";
-const { height } = Dimensions.get('window')
 
 type SMSwipeCardType = {
     card: any,

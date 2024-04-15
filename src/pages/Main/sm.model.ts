@@ -14,7 +14,6 @@ export type Year = SMFormItem<number | string>;
 export interface ISMFormData {
     excludeGenre: Genre[];
     genres?: Genre[];
-    name: string;
     selectedCountries: Country[];
     selectedGenres: Genre[];
     selectedYears: Year[];
@@ -28,14 +27,12 @@ export type Option = {
 };
 
 export type Action<T> =
-    | { type: 'SET_NAME'; payload: string }
     | { type: 'SET_SELECTED_COUNTRIES'; payload: T[] }
     | { type: 'SET_SELECTED_GENRES'; payload: T[] }
     | { type: 'SET_SELECTED_YEARS'; payload: T[] }
     | { type: 'SET_EXCLUDE_GENRE'; payload: T[] }
 
 export type SelectMovieType<T> = {
-    name: string;
     selectedCountries: T[];
     selectedGenres: T[];
     selectedYears: T[];
@@ -44,7 +41,6 @@ export type SelectMovieType<T> = {
 };
 
 export const initialState: SelectMovieType<FilterOption> = {
-    name: '',
     selectedCountries: [],
     selectedGenres: [],
     selectedYears: [],
@@ -56,8 +52,6 @@ export function reducer<T>(state: SelectMovieType<T>, action: Action<T>): Select
     let newState = { ...state };
 
     switch (action.type) {
-        case 'SET_NAME':
-            return { ...state, name: action.payload };
         case 'SET_SELECTED_COUNTRIES':
             return { ...state, selectedCountries: action.payload };
         case 'SET_SELECTED_GENRES':
