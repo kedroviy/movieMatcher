@@ -4,6 +4,7 @@ import recoveryPasswordReducer from './recoveryPasswordSlice';
 import appSliceReducer from './appSlice';
 import userSliceReducer from './userSlice';
 import moviesSliceReducer from './moviesSlice';
+import matchSliceReducer from './matchSlice';
 
 export const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ export const store = configureStore({
     appSlice: appSliceReducer,
     userSlice: userSliceReducer,
     moviesSlice: moviesSliceReducer,
+    matchSlice: matchSliceReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

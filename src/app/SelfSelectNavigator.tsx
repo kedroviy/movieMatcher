@@ -60,8 +60,6 @@ export const SelfSelectNavigator: FC = () => {
                 }}
                 key={AppRoutes.SM_SELECTION_MOVIE}
             />
-
-
         </SelfSelectStack.Navigator>
     )
 }
