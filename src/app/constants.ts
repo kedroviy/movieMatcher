@@ -12,17 +12,17 @@ export enum AppRoutes {
     LOGIN_ACC_RECOVERY_NEW_PASSWORD = 'LoginAccRecoveryChangePassword',
     LOGIN_RESULT = 'LoginResult',
     ONBOARDING_SCREEN = 'OnboardingScreen',
-
     PROFILE_NAVIGATOR = 'ProfileNavigator',
     USER_PROFILE_SCREEN = 'UserProfileScreen',
     USER_PROFILE_ABOUT_SCREEN = 'UPAboutApplication',
     USER_PROFILE_LANGUAGE = 'UPLanguage',
     USER_PROFILE_ACC_SETTINGS = 'UPAccountSettings',
     USER_PROFILE_CHANGENAME = 'UPChangeName',
-
     SELF_SELECT_NAVIGATOR = 'SelfSelectNavigator',
     SM_CREATE_MOVIE_LIST_SCREEN = 'SMCreateMovieListFilter',
     SM_SELECTION_MOVIE = 'SMSelectionMovie',
+    MATCH_NAVIGATOR = 'MatchNavigator',
+    MATCH_LOBBY = 'MatchLobby',
 };
 
 export const defaultScreenOptions: StackNavigationOptions = {
@@ -95,7 +95,7 @@ export type RootStackParamList = {
     TabNavigator: undefined;
     SelfSelectNavigator: undefined;
     ProfileNavigator: undefined;
-
+    MatchNavigator: undefined;
     SoloMatchScreen: undefined;
     LoginScreen: undefined;
     LoginAuth: undefined;
@@ -112,13 +112,12 @@ export type RootStackParamList = {
         onHandlePress: () => void;
     };
     OnboardingScreen: undefined;
-
     UserProfileScreen: undefined;
     UPAboutApplication: undefined;
     UPLanguage: undefined;
     UPAccountSettings: undefined;
     UPChangeName: undefined;
-
     SMCreateMovieListFilter: undefined;
     SMSelectionMovie: undefined;
+    MatchLobby: { lobbyName: string };
 };

@@ -32,7 +32,7 @@ const resources = {
                     label: 'User name',
                     textError: 'Fill in the field',
                 },
-                logout_acc: 'Log out of your account' 
+                logout_acc: 'Log out of your account'
             },
             selection_movie: {
                 my_movie_list: 'My movie lists',
@@ -41,6 +41,14 @@ const resources = {
                     crc_header: 'Create list',
                     start_select: 'Start select',
                     list_name: 'List name',
+                }
+            },
+            match_movie: {
+                main_match_screen: {
+                    create_lobby_btn: 'Create new lobby',
+                    join_lobby_btn: 'Join to lobby',
+                    main_text: 'Create a lobby to jointly select a movie to watch using the coincidence method!',
+                    greetings: 'Hello'
                 }
             }
         }
@@ -74,7 +82,7 @@ const resources = {
                     label: 'Имя пользователя',
                     textError: 'Заполните поле',
                 },
-                logout_acc: 'Выйти из аккаунта' 
+                logout_acc: 'Выйти из аккаунта'
             },
             selection_movie: {
                 my_movie_list: 'Мои списки фильмов',
@@ -83,6 +91,14 @@ const resources = {
                     crc_header: 'Создание списка',
                     start_select: 'Начать подбор',
                     list_name: 'Название списка',
+                }
+            },
+            match_movie: {
+                main_match_screen: {
+                    create_lobby_btn: 'Создать новое лобби',
+                    join_lobby_btn: 'Присоединиться к лобби',
+                    main_text: 'Создавайте лобби для совместного выбора фильма к просмотру методом совпадения!',
+                    greetings: 'Привет'
                 }
             }
         }

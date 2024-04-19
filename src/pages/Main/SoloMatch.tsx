@@ -31,7 +31,6 @@ export const SoloMatchScreen: FC = () => {
 
         fetchMoviesList();
 
-        moviesList.map(item => console.log(item))
     }, []);
 
     const onNavigate = () => navigation.navigate(
@@ -60,6 +59,7 @@ export const SoloMatchScreen: FC = () => {
                             <MovieCard
                                 key={id}
                                 id={id}
+                                movies={movies}
                                 label={label}
                                 moviesCount={movies.length}
                                 onHandlePress={() => console.log("Clicked on Movie Card")}
@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
         paddingVertical: 32,
     },
     contentContainer: {
-        flex: 1,
+        flex: 0.9,
     },
     swiperContainer: {
         flex: 0.8,

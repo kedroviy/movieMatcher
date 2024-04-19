@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { StyleSheet, Text, TouchableOpacity } from "react-native"
+import { StyleSheet, Text, TouchableOpacity, ViewStyle } from "react-native"
 
 type WidthType = number | `${number}%` | undefined;
 
@@ -7,12 +7,13 @@ type SimpleButtonType = {
     title: string;
     color: string;
     titleColor: string,
-    buttonWidth: WidthType
+    buttonWidth: WidthType,
     onHandlePress: () => void,
+    buttonStyle?: ViewStyle,
 };
 
 export const SimpleButton: FC<SimpleButtonType> =
-    ({ title, color, onHandlePress, titleColor, buttonWidth }) => {
+    ({ title, color, onHandlePress, titleColor, buttonWidth, buttonStyle }) => {
 
         return (
             <TouchableOpacity
@@ -25,7 +26,8 @@ export const SimpleButton: FC<SimpleButtonType> =
                         backgroundColor: color,
                         alignItems: 'center',
                         justifyContent: 'center',
-                    }
+                    },
+                    buttonStyle
                 ]}
                 onPress={onHandlePress}
             >
