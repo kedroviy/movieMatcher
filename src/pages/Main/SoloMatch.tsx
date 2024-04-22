@@ -2,8 +2,9 @@ import React, { FC, useEffect, useState } from "react";
 import { StyleSheet, Text, View, Dimensions, ScrollView } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useTranslation } from "react-i18next";
-
+import { useDispatch, useSelector } from "react-redux";
 import { NavigationProp, ParamListBase, useNavigation } from "@react-navigation/native";
+
 import { MyMovieListComponent, withListOrEmptyState } from "./components/sm-hoc-component";
 import { EmptyListComponent } from "./components/sm-empty-list";
 import { Color } from "styles/colors";
@@ -11,6 +12,8 @@ import { SimpleButton } from "shared";
 import { AppRoutes } from "app/constants";
 import { MoviesSavedType } from "features/selection-movies/selection-movies.model";
 import { MovieCard } from "./ui/sm-movie-list-card";
+import { AppDispatch } from "redux/configure-store";
+import { fetchUserProfile } from "redux/userSlice";
 
 const { width } = Dimensions.get('window');
 
@@ -18,10 +21,16 @@ const MyListWithEmptyState = withListOrEmptyState(MyMovieListComponent);
 
 export const SoloMatchScreen: FC = () => {
     const navigation: NavigationProp<ParamListBase> = useNavigation();
+    const dispatch: AppDispatch = useDispatch();
+    const { user } = useSelector((state: any) => state.userSlice);
     const { t } = useTranslation();
     const [moviesList, setMoviesList] = useState<MoviesSavedType[]>([]);
 
     useEffect(() => {
+        if (!user) {
+            dispatch(fetchUserProfile())
+        }
+
         const fetchMoviesList = async () => {
             const listString = await AsyncStorage.getItem('@mymovies');
             const listObj = listString ? JSON.parse(listString) : {};
@@ -30,8 +39,8 @@ export const SoloMatchScreen: FC = () => {
         };
 
         fetchMoviesList();
-
-    }, []);
+        console.log(user)
+    }, [user]);
 
     const onNavigate = () => navigation.navigate(
         AppRoutes.SELF_SELECT_NAVIGATOR, {

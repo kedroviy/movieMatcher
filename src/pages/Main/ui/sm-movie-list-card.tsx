@@ -24,7 +24,7 @@ export const MovieCard: React.FC<MovieCardProps> = ({ id, label, moviesCount, mo
         const scrollOffset = event.nativeEvent.contentOffset.x;
         const pageWidth = width - 32;
         const newPageIndex = Math.floor(scrollOffset / pageWidth) + 1;
-        console.log(newPageIndex)
+
         setCurrentPage(newPageIndex);
     };
 

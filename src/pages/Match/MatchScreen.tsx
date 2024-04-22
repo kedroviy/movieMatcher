@@ -16,6 +16,7 @@ export const MatchScreen: FC = () => {
     const dispatch: AppDispatch = useDispatch();
     const { t } = useTranslation();
     const { loading, error, room } = useSelector((state: any) => state.matchSlice);
+    const { user } = useSelector((state: any) => state.userSlice);
 
     const handleCreateRoom = async (userId: number) => {
         dispatch(createRoom(userId))
@@ -42,7 +43,7 @@ export const MatchScreen: FC = () => {
                     lineHeight: 28.8,
                 }
                 ]}>
-                    {t('match_movie.main_match_screen.greetings')}, Username!
+                    {t('match_movie.main_match_screen.greetings')}, {user ? user.username : 'Username'}!
                 </Text>
             </View>
             <View style={styles.mainContainer}>
@@ -76,7 +77,9 @@ export const MatchScreen: FC = () => {
                     color={Color.BACKGROUND_GREY}
                     titleColor={Color.WHITE}
                     buttonWidth={width - 32}
-                    onHandlePress={() => console.log('join')}
+                    onHandlePress={() => (navigation.navigate(AppRoutes.MATCH_NAVIGATOR, {
+                        screen: AppRoutes.MATCH_JOIN_LOBBY,
+                    }))}
                     buttonStyle={{
                         borderWidth: 1,
                         borderStyle: 'solid',
@@ -106,7 +109,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'flex-start',
         flex: 0.8,
-        width: width -32
+        width: width - 32
     },
     controlsContainer: {
         gap: 16,

@@ -17,6 +17,7 @@ const screenOptions: BottomTabNavigationOptions = {
     tabBarInactiveTintColor: Color.GREY,
     tabBarActiveTintColor: Color.WHITE,
     tabBarStyle: {
+        borderTopWidth: 0,
         elevation: 0,
         backgroundColor: Color.GRAY_BROWN,
         height: 86,

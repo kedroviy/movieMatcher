@@ -23,6 +23,7 @@ export enum AppRoutes {
     SM_SELECTION_MOVIE = 'SMSelectionMovie',
     MATCH_NAVIGATOR = 'MatchNavigator',
     MATCH_LOBBY = 'MatchLobby',
+    MATCH_JOIN_LOBBY = 'MatchJoinLobby',
 };
 
 export const defaultScreenOptions: StackNavigationOptions = {
@@ -120,4 +121,5 @@ export type RootStackParamList = {
     SMCreateMovieListFilter: undefined;
     SMSelectionMovie: undefined;
     MatchLobby: { lobbyName: string };
+    MatchJoinLobby: undefined;
 };

@@ -9,7 +9,7 @@ import {
     animationOptions,
     defaultScreenOptions,
 } from "./constants";
-import { MatchLobby } from "pages";
+import { MatchJoinLobby, MatchLobby } from "pages";
 import { Color } from "styles/colors";
 
 const MatchStack = createStackNavigator<RootStackParamList>();
@@ -22,7 +22,7 @@ export const MatchNavigator: FC = () => {
             <MatchStack.Screen
                 name={AppRoutes.MATCH_LOBBY}
                 component={MatchLobby}
-                options={({ route }: {route: RouteProp<RootStackParamList, 'MatchLobby'>}) => ({
+                options={({ route }: { route: RouteProp<RootStackParamList, 'MatchLobby'> }) => ({
                     headerTitle: `Lobby #${route.params.lobbyName}`,
                     headerStyle: {
                         backgroundColor: Color.BACKGROUND_GREY,
@@ -41,6 +41,27 @@ export const MatchNavigator: FC = () => {
                 key={AppRoutes.MATCH_LOBBY}
             />
 
+            <MatchStack.Screen
+                name={AppRoutes.MATCH_JOIN_LOBBY}
+                component={MatchJoinLobby}
+                options={{
+                    headerTitle: t('profile.about_application'),
+                    headerStyle: {
+                        backgroundColor: '#353535',
+                    },
+                    headerTitleStyle: {
+                        marginTop: 24,
+                    },
+                    headerTintColor: '#F9F9F9',
+                    headerLeftContainerStyle: {
+                        marginLeft: -3,
+                        marginTop: 24,
+                    },
+                    cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+                    ...animationOptions
+                }}
+                key={AppRoutes.MATCH_JOIN_LOBBY}
+            />
         </MatchStack.Navigator>
     )
 }

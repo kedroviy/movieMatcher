@@ -6,7 +6,7 @@ export const createApi = async () => {
     const token = credentials ? credentials.password : null;
 
     const api = create({
-        baseURL: 'http://192.168.100.71:6001/',
+        baseURL: 'https://movie-match-x5ue.onrender.com/',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',

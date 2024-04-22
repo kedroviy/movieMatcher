@@ -39,8 +39,11 @@ export const joinRoom = createAsyncThunk(
     'match/joinRoom',
     async ({ key, userId }: { key: number; userId: number }, { rejectWithValue }) => {
         try {
-            return await joinRoomService(key, userId);
+            console.log('response redux: ', {key, userId})
+            const response = await joinRoomService(key, userId);
+            return response;
         } catch (error) {
+            console.log(error)
             return rejectWithValue((error as any).message);
         }
     }
@@ -81,6 +84,7 @@ const matchSlice = createSlice({
         });
         builder.addCase(joinRoom.fulfilled, (state, action) => {
             state.loading = false;
+            state.room = action.payload;
         });
         builder.addCase(joinRoom.rejected, (state, action) => {
             state.error = action.payload as string;
