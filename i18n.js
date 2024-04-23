@@ -35,7 +35,7 @@ const resources = {
                 logout_acc: 'Log out of your account'
             },
             selection_movie: {
-                my_movie_list: 'My movie lists',
+                my_movie_list: 'My movies',
                 create_list_button: 'Create List',
                 create_list_component: {
                     crc_header: 'Create list',
@@ -85,7 +85,7 @@ const resources = {
                 logout_acc: 'Выйти из аккаунта'
             },
             selection_movie: {
-                my_movie_list: 'Мои списки фильмов',
+                my_movie_list: 'Мои фильмы',
                 create_list_button: 'Создать список',
                 create_list_component: {
                     crc_header: 'Создание списка',

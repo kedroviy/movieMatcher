@@ -39,11 +39,9 @@ export const joinRoom = createAsyncThunk(
     'match/joinRoom',
     async ({ key, userId }: { key: number; userId: number }, { rejectWithValue }) => {
         try {
-            console.log('response redux: ', {key, userId})
             const response = await joinRoomService(key, userId);
             return response;
         } catch (error) {
-            console.log(error)
             return rejectWithValue((error as any).message);
         }
     }

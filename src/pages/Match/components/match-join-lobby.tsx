@@ -1,6 +1,9 @@
 import { FC, useEffect, useState } from "react";
 import { Dimensions, StyleSheet, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
+import { NavigationProp, ParamListBase, useNavigation } from "@react-navigation/native";
+
+import { AppRoutes } from "app/constants";
 import { AppDispatch } from "redux/configure-store";
 import { joinRoom } from "redux/matchSlice";
 import { AppConstants, Loader, SimpleButton, SimpleInput } from "shared"
@@ -9,15 +12,21 @@ import { Color } from "styles/colors";
 const { width } = Dimensions.get('window');
 
 export const MatchJoinLobby: FC = () => {
-    const [key, setKey] = useState<string>(AppConstants.EMPTY_VALUE);
     const dispatch: AppDispatch = useDispatch();
+    const navigation = useNavigation<NavigationProp<ParamListBase>>();
     const { user } = useSelector((state: any) => state.userSlice);
     const { loading, error, room } = useSelector((state: any) => state.matchSlice);
+    const [key, setKey] = useState<string>(AppConstants.EMPTY_VALUE);
     const [isFormValidInput, setIsFormValidInput] = useState<boolean>(false);
 
     useEffect(() => {
-        console.log(error)
-        console.log(loading)
+        console.log('room key: ', room)
+        if (room.roomKey && !loading) {
+            navigation.navigate(AppRoutes.MATCH_NAVIGATOR, {
+                screen: AppRoutes.MATCH_LOBBY,
+                params: { lobbyName: room.roomKey },
+            });
+        }
     }, [loading, error]);
 
     const onChangeKey = (input: string) => {

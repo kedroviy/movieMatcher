@@ -72,11 +72,5 @@ export function reducer<T>(state: SelectMovieType<T>, action: Action<T>): Select
             return state;
     }
 
-    // const allGenres = newState.selectedGenres.concat(newState.excludeGenre);
-    // newState.genres = newState.genres.map((genre: any) => ({
-    //     ...genre,
-    //     disabled: allGenres.some((selectedOrExcluded: any) => selectedOrExcluded.id === genre.id),
-    // }));
-
     return newState;
 };

@@ -1,4 +1,5 @@
 import { StackNavigationOptions } from '@react-navigation/stack';
+import { Movie } from 'features';
 
 export enum AppRoutes {
     TAB_NAVIGATOR = 'TabNavigator',
@@ -21,6 +22,8 @@ export enum AppRoutes {
     SELF_SELECT_NAVIGATOR = 'SelfSelectNavigator',
     SM_CREATE_MOVIE_LIST_SCREEN = 'SMCreateMovieListFilter',
     SM_SELECTION_MOVIE = 'SMSelectionMovie',
+    SM_MOVIE_FULL_LIST = 'SMMovieFullList',
+    SM_MOVIE_DETAILS = 'SMMovieDetails',
     MATCH_NAVIGATOR = 'MatchNavigator',
     MATCH_LOBBY = 'MatchLobby',
     MATCH_JOIN_LOBBY = 'MatchJoinLobby',
@@ -120,6 +123,8 @@ export type RootStackParamList = {
     UPChangeName: undefined;
     SMCreateMovieListFilter: undefined;
     SMSelectionMovie: undefined;
+    SMMovieFullList: { headerText: string };
+    SMMovieDetails: { movie: Movie };
     MatchLobby: { lobbyName: string };
     MatchJoinLobby: undefined;
 };

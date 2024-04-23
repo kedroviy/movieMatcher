@@ -5,7 +5,7 @@ export type SMMovieChipsType = {
     label: string | number;
     color: string;
     labelColor: string;
-    type: 'time' | 'age';
+    type?: 'time' | 'age';
 }
 
 export const SMMovieChips: FC<SMMovieChipsType> = ({ label, color, labelColor, type }) => {

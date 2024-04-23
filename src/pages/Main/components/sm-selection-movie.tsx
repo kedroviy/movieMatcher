@@ -78,27 +78,6 @@ export const SMSelectionMovie: FC = () => {
 
     return (
         <View style={styles.container}>
-            {/* <View style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                width: width - 33,
-                height: 48,
-                marginTop: 10,
-            }}
-            >
-                <Text style={styles.headerText}>{t('movieSelection')}</Text>
-                <TouchableOpacity
-                    style={{
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: 48,
-                        height: 48
-                    }}
-                >
-                    <FiltersSvgIcon width={24} height={24} />
-                </TouchableOpacity>
-            </View> */}
             {allCardsSwiped ? (
                 <>
                     <Text style={{

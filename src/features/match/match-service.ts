@@ -19,7 +19,7 @@ export const joinRoomService = async (key: number, userId: number): Promise<any>
     const response = await api.post<ApiResponse<Room>>(`/rooms/join/${key}`, { userId });
     console.log('response service: ', response)
     if (!response.ok) throw new Error(`Failed to join room: ${response.problem}`);
-    return response.data;
+    return handleApiResponse(response);
 };
 
 export const leaveRoomService = async (key: number, userId: number): Promise<any> => {

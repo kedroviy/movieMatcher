@@ -26,9 +26,10 @@ class SocketService {
         this.socket.emit("join", callback);
     }
 
-    subscribeToMatchUpdates(callback: (data: any) => void): void {
+    subscribeToMatchUpdates(data: any): void {
         if (!this.socket) return;
-        this.socket.on("matchUpdate", callback);
+        console.log('match go go')
+        this.socket.on("matchUpdate", data);
     }
 
     unsubscribeFromRoomUpdates(): void {

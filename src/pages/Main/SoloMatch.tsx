@@ -1,5 +1,13 @@
-import React, { FC, useEffect, useState } from "react";
-import { StyleSheet, Text, View, Dimensions, ScrollView } from "react-native";
+import React, { FC, useCallback, useEffect, useState } from "react";
+import {
+    StyleSheet,
+    Text,
+    View,
+    Dimensions,
+    FlatList,
+    ActivityIndicator,
+    RefreshControl,
+} from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
@@ -24,23 +32,67 @@ export const SoloMatchScreen: FC = () => {
     const dispatch: AppDispatch = useDispatch();
     const { user } = useSelector((state: any) => state.userSlice);
     const { t } = useTranslation();
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const [moviesList, setMoviesList] = useState<MoviesSavedType[]>([]);
+    const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
 
     useEffect(() => {
         if (!user) {
             dispatch(fetchUserProfile())
         }
 
-        const fetchMoviesList = async () => {
-            const listString = await AsyncStorage.getItem('@mymovies');
-            const listObj = listString ? JSON.parse(listString) : {};
-            const list: any = Object.values(listObj);
-            setMoviesList(list);
-        };
-
         fetchMoviesList();
-        console.log(user)
+
+        return () => {
+            setMoviesList([]);
+        }
     }, [user]);
+
+    const fetchMoviesList = async () => {
+        setIsLoading(true);
+        const listString = await AsyncStorage.getItem('@mymovies');
+        if (listString) {
+            const listObj: { [key: string]: MoviesSavedType } = JSON.parse(listString);
+            let isModified = false;
+
+            const updatedListObj: { [key: string]: MoviesSavedType } = Object.entries(listObj)
+                .reduce<{ [key: string]: MoviesSavedType }>((acc, [key, session]) => {
+                    if (session.movies.length > 0) {
+                        acc[key] = session;
+                    } else {
+                        isModified = true;
+                    }
+                    return acc;
+                }, {});
+
+            if (isModified) {
+                await AsyncStorage.setItem('@mymovies', JSON.stringify(updatedListObj));
+            }
+
+            setMoviesList(Object.values(updatedListObj));
+        }
+        setIsLoading(false);
+        setIsRefreshing(false);
+    };
+
+    const onRefresh = useCallback(() => {
+        setIsRefreshing(true);
+        fetchMoviesList();
+    }, []);
+
+    const renderItem = ({ item }: { item: MoviesSavedType }) => (
+        <MovieCard
+            key={item.id}
+            id={item.id}
+            movies={item.movies}
+            label={item.label}
+            moviesCount={item.movies.length}
+            onHandlePress={() => navigation.navigate(`${AppRoutes.SELF_SELECT_NAVIGATOR}`, {
+                screen: `${AppRoutes.SM_MOVIE_FULL_LIST}`,
+                params: { headerText: item.label },
+            })}
+        />
+    );
 
     const onNavigate = () => navigation.navigate(
         AppRoutes.SELF_SELECT_NAVIGATOR, {
@@ -60,23 +112,35 @@ export const SoloMatchScreen: FC = () => {
             >
                 <Text style={styles.headerText}>{t('selection_movie.my_movie_list')}</Text>
             </View>
-            <View style={styles.contentContainer}>
-                <ScrollView style={{ width: '100%', height: '100%' }}>
-                    <MyListWithEmptyState
+            <View style={{
+                flex: 1,
+                bottom: 16,
+            }}>
+                {isLoading ?
+                    <View style={styles.loader}>
+                        <ActivityIndicator size='large' color={Color.BUTTON_RED} />
+                    </View>
+                    :
+                    <FlatList
                         data={moviesList}
-                        renderItem={({ id, label, movies }) => (
-                            <MovieCard
-                                key={id}
-                                id={id}
-                                movies={movies}
-                                label={label}
-                                moviesCount={movies.length}
-                                onHandlePress={() => console.log("Clicked on Movie Card")}
-                            />
+                        renderItem={renderItem}
+                        keyExtractor={(item: any) => item.id}
+                        ListEmptyComponent={EmptyListComponent}
+                        contentContainerStyle={styles.contentContainer}
+                        initialNumToRender={4}
+                        getItemLayout={(data, index) => (
+                            { length: 255, offset: 255 * index, index }
                         )}
-                        EmptyListComponent={EmptyListComponent}
-                    />
-                </ScrollView>
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={isRefreshing}
+                                onRefresh={onRefresh}
+                                colors={[Color.BUTTON_RED]}
+                            />
+                        }
+                        showsVerticalScrollIndicator={false}
+                        showsHorizontalScrollIndicator={false}
+                    />}
             </View>
             <SimpleButton
                 color={Color.BUTTON_RED}
@@ -98,7 +162,10 @@ const styles = StyleSheet.create({
         paddingVertical: 32,
     },
     contentContainer: {
-        flex: 0.9,
+        flexGrow: 0.7,
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: width - 32,
     },
     swiperContainer: {
         flex: 0.8,
@@ -122,4 +189,11 @@ const styles = StyleSheet.create({
         lineHeight: 28.8,
         color: Color.WHITE
     },
+    loader: {
+        position: 'absolute',
+        flex: 1,
+        height: '100%',
+        alignItems: 'center',
+        justifyContent: 'center',
+    }
 });

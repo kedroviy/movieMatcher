@@ -16,38 +16,44 @@ const { width } = Dimensions.get('window')
 
 export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
     const { lobbyName } = route.params;
-    const { room } = useSelector((state: any) => state.matchSlice);
+    const { loading, room } = useSelector((state: any) => state.matchSlice);
     const [roomUsers, setRoomUsers] = useState<any>([]);
-    const [matchDetails, setMatchDetails] = useState(null);
+    // const [matchDetails, setMatchDetails] = useState(null);
 
     useEffect(() => {
-        if (!roomUsers.length) {
+        if (room && Array.isArray(room)) {
+            console.log('room is array')
             setRoomUsers(room);
         }
         const serverUrl = "https://movie-match-x5ue.onrender.com/rooms";
         socketService.connect(serverUrl);
 
-        socketService.subscribeToRoomUpdates((data) => {
-            console.log('room updated 2')
-            if (data) {
-                console.log('room updated 1')
-                setRoomUsers(data.matchDetails);
-            }
-        });
+        // socketService.subscribeToRoomUpdates((data) => {
+        //     console.log('room updated 2')
+        //     if (data) {
+        //         console.log('room updated 1')
+        //         setRoomUsers(data.matchDetails);
+        //     }
+        // });
 
-        socketService.subscribeToMatchUpdates(handleMatchUpdate);
+        if (!roomUsers.length) {
+            console.log('match update')
+            socketService.subscribeToMatchUpdates(room.roomKey);
+        }
+        socketService.subscribeToMatchUpdates(room.roomKey);
+        
 
-        console.log('roomdetails: ', room);
+        console.log('roomdetails: ', roomUsers);
 
         return () => {
             socketService.unsubscribeFromRoomUpdates();
             socketService.disconnect();
         };
-    }, [roomUsers, socketService, room]);
+    }, [socketService, room]);
 
     const handleMatchUpdate = (data: any) => {
         console.log('Received match update:', data);
-        setRoomUsers((prevUsers: any) => [...prevUsers, data]);
+        setRoomUsers(data);
     };
 
     return (
