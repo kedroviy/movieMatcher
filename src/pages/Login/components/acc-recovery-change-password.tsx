@@ -10,6 +10,7 @@ import { CheckSvgIcon, Loader } from "../../../shared";
 import { Input } from "../ui";
 import { AppRoutes } from "app/constants";
 import { Color } from "styles/colors";
+import { useTranslation } from "react-i18next";
 
 const initialState: RecoveryPasswordType = {
     password: '',
@@ -41,9 +42,10 @@ function reducer(state: RecoveryPasswordType, action: RecoveryPasswordActionType
 export const LoginAccRecoveryChangePassword: FC = () => {
     const windowWidth = Dimensions.get('window').width;
     const stateDispatch: AppDispatch = useDispatch();
+    const { t } = useTranslation();
+    const [state, dispatch] = useReducer(reducer, initialState);
     const navigation: NavigationProp<ParamListBase> = useNavigation();
     const { loading, email, code } = useSelector((state: RootState) => state.recoveryPasswordSlice);
-    const [state, dispatch] = useReducer(reducer, initialState);
 
     const handleChangePassword = (password: string) => {
         dispatch({ type: 'SET_PASSWORD', payload: password });
@@ -62,8 +64,8 @@ export const LoginAccRecoveryChangePassword: FC = () => {
                 if (sendRecoveryNewPasswordEffect.fulfilled.match(actionResult)) {
                     navigation.navigate(AppRoutes.LOGIN_RESULT, {
                         icon: <CheckSvgIcon />,
-                        resultText: 'Поздравляем, пароль успешно изменен!',
-                        buttonText: 'Войти в аккаунт',
+                        resultText: t('auth.password_recovery.recovery_succ_result'),
+                        buttonText: t('general.enter_in_account'),
                         buttonColor: Color.BUTTON_RED,
                         onHandlePress: () => {
                             navigation.reset({

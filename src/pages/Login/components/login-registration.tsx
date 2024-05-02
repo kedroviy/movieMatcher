@@ -10,19 +10,25 @@ import {
     Alert,
     ScrollView,
 } from "react-native"
+import { NavigationProp, ParamListBase, useNavigation } from "@react-navigation/native";
 
 import { Input } from "../ui";
 import { authRegistrationUser } from "../../../redux/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../redux/configure-store";
-import { Loader } from "../../../shared";
+import { CheckSvgIcon, Loader } from "../../../shared";
+import { AppRoutes } from "app/constants";
+import { Color } from "styles/colors";
+import { useTranslation } from "react-i18next";
 
 export const LoginRegistration: FC = () => {
     const windowWidth = Dimensions.get('window').width;
     const dispatch: AppDispatch = useDispatch();
     const { loading } = useSelector((state: RootState) => state.authSlice);
+    const { t } = useTranslation();
     const [email, onChangeEmail] = useState<string>('');
     const [password, onChangePassword] = useState<string>('');
+    const navigation: NavigationProp<ParamListBase> = useNavigation();
     const [confirmPassword, setConfirmPassword] = useState<string>('');
     const [isFormValidEmail, setIsFormValidEmail] = useState<boolean>(false);
     const [isFormValidPassword, setIsFormValidPassword] = useState<boolean>(false);
@@ -38,7 +44,20 @@ export const LoginRegistration: FC = () => {
 
         try {
             if (authRegistrationUser.fulfilled.match(actionResult)) {
-                console.log(actionResult)
+                navigation.navigate(AppRoutes.LOGIN_RESULT, {
+                    icon: <CheckSvgIcon />,
+                    resultText: t('auth.registration.reg_result'),
+                    buttonText: t('general.enter_in_account'),
+                    buttonColor: Color.BUTTON_RED,
+                    onHandlePress: () => {
+                        navigation.reset({
+                            index: 0,
+                            routes: [
+                                { name: AppRoutes.LOGIN_SCREEN },
+                            ],
+                        })
+                    },
+                });
             } else if (authRegistrationUser.rejected.match(actionResult)) {
                 Alert.alert('Неудачно!', 'Что-то пошло не так', [
                     { text: 'OK', onPress: () => console.log('OK Pressed') },
@@ -133,7 +152,6 @@ export const LoginRegistration: FC = () => {
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: '#353535',
         flex: 1,
         alignItems: 'center',
     },

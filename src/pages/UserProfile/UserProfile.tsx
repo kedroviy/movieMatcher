@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "redux/configure-store";
 import { UPAvatarContainer, UPMenuItems } from "./ui";
 import { useLocalizedMenuItems } from "./hooks";
+import { Color } from "styles/colors";
 
 const fakeImage = 'https://drive.google.com/uc?export=download&id=1XyvtSH--FxiGK67-Q9pPcKRCYxDfqGfF'
 
@@ -44,7 +45,7 @@ export const UserProfileScreen: FC = () => {
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: '#353535',
+        backgroundColor: Color.BACKGROUND_GREY,
         flex: 1,
         alignItems: 'center',
     },

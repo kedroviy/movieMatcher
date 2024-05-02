@@ -20,8 +20,8 @@ const screenOptions: BottomTabNavigationOptions = {
         borderTopWidth: 0,
         elevation: 0,
         backgroundColor: Color.GRAY_BROWN,
-        height: 86,
-        paddingBottom: 5,
+        height: 66,
+        paddingTop: 5,
     },
     headerShown: false,
 };

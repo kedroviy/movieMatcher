@@ -67,6 +67,7 @@ export const SMMultiSelectInput: FC<MultiSelectInputProps<FilterOption>> = ({
             value={isSelected}
             onValueChange={() => !option.disabled && handleSelectOption(option)}
             color={Color.BUTTON_RED}
+            style={{ borderRadius: 5 }}
             disabled={option.disabled}
           />
           <TouchableOpacity
@@ -144,7 +145,7 @@ export const SMMultiSelectInput: FC<MultiSelectInputProps<FilterOption>> = ({
       <View style={{
         position: 'absolute',
         zIndex: 1000,
-        top: 75,
+        top: 85,
       }}>
         {renderDropdown()}
       </View>
@@ -163,7 +164,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     borderRadius: 5,
-    backgroundColor: Color.INPUT_GREY,
+    backgroundColor: Color.GRAY_BROWN,
     marginBottom: 5,
     width: windowWidth - 32,
     height: 48,
@@ -195,7 +196,7 @@ const styles = StyleSheet.create({
   dropdown: {
     left: 0,
     width: windowWidth - 32,
-    backgroundColor: Color.INPUT_GREY,
+    backgroundColor: Color.EXTRA_DARK_GRAY,
     maxHeight: 200,
     borderRadius: 5,
   },

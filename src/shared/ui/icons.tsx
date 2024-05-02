@@ -5,6 +5,7 @@ type SVGIconType = {
     stroke?: string,
     width?: number,
     height?: number,
+    fill?: string,
 }
 export const MatchSvgIcon: FC<SVGIconType> = ({ stroke, width, height }) => (
     <Svg width={width} height={height} viewBox="0 0 24 24" fill="none">
@@ -41,8 +42,8 @@ export const CloseSvgIcon: FC<SVGIconType> = ({ stroke, width, height }) => (
     </Svg>
 );
 
-export const LikeSvgIcon: FC<SVGIconType> = ({ stroke, width, height }) => (
-    <Svg width={width} height={height} viewBox="0 0 32 32" fill="none">
+export const LikeSvgIcon: FC<SVGIconType> = ({ stroke, width, height, fill }) => (
+    <Svg width={width} height={height} viewBox="0 0 32 32" fill={fill}>
         <Path d="M27.7871 6.14715C27.1061 5.46582 26.2976 4.92534 25.4076 4.55659C24.5177 4.18784 23.5638 3.99805 22.6005 3.99805C21.6372 3.99805 20.6833 4.18784 19.7933 4.55659C18.9034 4.92534 18.0948 5.46582 17.4138 6.14715L16.0005 7.56048L14.5871 6.14715C13.2116 4.77156 11.3459 3.99876 9.40048 3.99876C7.45511 3.99876 5.58941 4.77156 4.21382 6.14715C2.83823 7.52274 2.06543 9.38844 2.06543 11.3338C2.06543 13.2792 2.83823 15.1449 4.21382 16.5205L5.62715 17.9338L16.0005 28.3071L26.3738 17.9338L27.7871 16.5205C28.4685 15.8395 29.009 15.0309 29.3777 14.141C29.7465 13.251 29.9362 12.2971 29.9362 11.3338C29.9362 10.3705 29.7465 9.41662 29.3777 8.52667C29.009 7.63673 28.4685 6.82816 27.7871 6.14715Z" stroke={stroke} stroke-width="4.66667" stroke-linecap="round" stroke-linejoin="round" />
     </Svg>
 );

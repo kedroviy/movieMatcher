@@ -17,7 +17,7 @@ export default function AppContainer() {
     const { isAuthenticated, loadingApplication, onboarded } = useSelector((state: any) => state.authSlice);
     const isDarkMode = useColorScheme() === 'light';
     const backgroundStyle = {
-        backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+        backgroundColor: isDarkMode ? Color.BACKGROUND_GREY : Colors.lighter,
     };
 
     useEffect(() => {
@@ -43,7 +43,7 @@ export default function AppContainer() {
             >
                 <StatusBar
                     barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-                    backgroundColor="#353535"
+                    backgroundColor={Color.BACKGROUND_GREY}
                 />
                 {
                     !isAuthenticated ?

@@ -48,7 +48,6 @@ export const loadMovieDetails = createAsyncThunk
         async (movieId, { rejectWithValue }) => {
             try {
                 const movieDetails = await fetchMovieDetails(movieId);
-                console.log(movieDetails)
                 return movieDetails;
             } catch (error) {
                 console.log(error);

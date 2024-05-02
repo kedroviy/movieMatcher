@@ -1,5 +1,6 @@
 import { StackNavigationOptions } from '@react-navigation/stack';
 import { Movie } from 'features';
+import { Color } from 'styles/colors';
 
 export enum AppRoutes {
     TAB_NAVIGATOR = 'TabNavigator',
@@ -37,6 +38,10 @@ export const defaultScreenOptions: StackNavigationOptions = {
     headerLeftContainerStyle: {
         paddingLeft: 16,
     },
+    headerStyle: {
+        backgroundColor: Color.BACKGROUND_GREY,
+    },
+    cardStyle: { backgroundColor: Color.BACKGROUND_GREY },
     headerRightContainerStyle: {
         paddingRight: 16,
     },

@@ -1,4 +1,6 @@
+import { Movie } from "features";
 import { Option } from "./sm.model";
+import { BASE_KP_URL } from "shared";
 
 const generateYearOptionsWithNestedYears = () => {
     const currentYear = new Date().getFullYear();
@@ -20,5 +22,8 @@ const generateYearOptionsWithNestedYears = () => {
 
     return options;
 };
+
+export const generateKpUrl = (movie: Movie): string =>
+    `${BASE_KP_URL}${movie.isSeries ? '/series/' : '/film/'}${movie.id}`;
 
 export const yearOptions = generateYearOptionsWithNestedYears();

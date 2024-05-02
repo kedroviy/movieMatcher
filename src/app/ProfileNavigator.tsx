@@ -8,6 +8,7 @@ import {
     defaultScreenOptions,
 } from "./constants";
 import { UPAboutApplication, UPAccountSettings, UPChangeName, UPLanguage } from "pages";
+import { Color } from "styles/colors";
 
 const ProfileStack = createStackNavigator();
 
@@ -21,11 +22,11 @@ export const ProfileNavigator: FC = () => {
                 component={UPAboutApplication}
                 options={{
                     headerTitle: t('profile.about_application'),
-                    headerStyle: {
-                        backgroundColor: '#353535',
-                    },
                     headerTitleStyle: {
                         marginTop: 24,
+                    },
+                    headerStyle: {
+                        backgroundColor: Color.BACKGROUND_GREY,
                     },
                     headerTintColor: '#F9F9F9',
                     headerLeftContainerStyle: {
@@ -42,11 +43,11 @@ export const ProfileNavigator: FC = () => {
                 component={UPLanguage}
                 options={{
                     headerTitle: t('profile.language'),
-                    headerStyle: {
-                        backgroundColor: '#353535',
-                    },
                     headerTitleStyle: {
                         marginTop: 24,
+                    },
+                    headerStyle: {
+                        backgroundColor: Color.BACKGROUND_GREY,
                     },
                     headerTintColor: '#F9F9F9',
                     headerLeftContainerStyle: {
@@ -64,11 +65,11 @@ export const ProfileNavigator: FC = () => {
                 component={UPAccountSettings}
                 options={{
                     headerTitle: t('profile.account_settings'),
-                    headerStyle: {
-                        backgroundColor: '#353535',
-                    },
                     headerTitleStyle: {
                         marginTop: 24,
+                    },
+                    headerStyle: {
+                        backgroundColor: Color.BACKGROUND_GREY,
                     },
                     headerTintColor: '#F9F9F9',
                     headerLeftContainerStyle: {
@@ -86,9 +87,6 @@ export const ProfileNavigator: FC = () => {
                 component={UPChangeName}
                 options={{
                     headerTitle: t('acc_settings.changeName.change_name'),
-                    headerStyle: {
-                        backgroundColor: '#353535',
-                    },
                     headerTitleStyle: {
                         marginTop: 24,
                     },

@@ -149,6 +149,9 @@ const authSlice = createSlice({
             state.token = null;
             removeToken();
         },
+        setOnboardedStatus: (state, action) => {
+            state.onboarded = action.payload;
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -233,5 +236,5 @@ const authSlice = createSlice({
     },
 });
 
-export const { logout } = authSlice.actions;
+export const { logout, setOnboardedStatus } = authSlice.actions;
 export default authSlice.reducer;

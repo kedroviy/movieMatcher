@@ -13,4 +13,6 @@ const AppConstants = {
     EMPTY_VALUE: '',
 }
 
-export { API, AppConstants }
+const BASE_KP_URL = 'https://www.kinopoisk.ru';
+
+export { API, AppConstants, BASE_KP_URL }

@@ -20,7 +20,7 @@ export const SMMovieChips: FC<SMMovieChipsType> = ({ label, color, labelColor, t
             marginRight: 12,
         }}>
             <Text style={{
-                fontSize: 12,
+                fontSize: 14,
                 color: labelColor,
                 fontWeight: '500',
                 lineHeight: 15.6

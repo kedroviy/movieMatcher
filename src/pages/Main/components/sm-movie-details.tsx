@@ -1,7 +1,7 @@
 import { RouteProp } from "@react-navigation/native";
 import { RootStackParamList } from "app/constants";
 import { FC, useEffect, useState } from "react"
-import { ActivityIndicator, Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { ActivityIndicator, Alert, Dimensions, Image, Linking, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { ScrollView } from "react-native-gesture-handler";
 import { Color } from "styles/colors";
 import { SMMovieChips } from "../ui/sm-movie-chips";
@@ -11,6 +11,9 @@ import { fetchMovieDetails } from "features";
 import { Actor } from "../sm.model";
 import { loadMovieDetails } from "redux/moviesSlice";
 import { AppDispatch } from "redux/configure-store";
+import { BASE_KP_URL, SimpleButton } from "shared";
+import { useTranslation } from "react-i18next";
+import { generateKpUrl } from "../sm.utils";
 
 type SMMovieDetailsType = {
     route: RouteProp<RootStackParamList, 'SMMovieDetails'>;
@@ -21,7 +24,7 @@ const { width } = Dimensions.get('window');
 export const SMMovieDetails: FC<SMMovieDetailsType> = ({ route }) => {
     const dispatch: AppDispatch = useDispatch();
     const { movieDetails, loading } = useSelector((state: any) => state.moviesSlice);
-
+    const { t } = useTranslation();
     const { movie } = route.params;
     const [isExpanded, setIsExpanded] = useState<boolean>(false);
 
@@ -35,6 +38,15 @@ export const SMMovieDetails: FC<SMMovieDetailsType> = ({ route }) => {
         setIsExpanded(!isExpanded);
     };
 
+    const handlePress = async () => {
+        const url = generateKpUrl(movie);
+        try {
+            await Linking.openURL(url);
+        } catch (error) {
+            Alert.alert('Не удалось открыть URL: ' + url);
+        }
+    };
+
     const renderActorsInColumns = () => {
         const columns = [];
         const actors = movieDetails.persons.filter((person: Actor) => person.profession === "актеры");
@@ -46,7 +58,7 @@ export const SMMovieDetails: FC<SMMovieDetailsType> = ({ route }) => {
                     {columnActors.map((actor: Actor, index: number) => (
                         <View key={`actor-${actor.id}`} style={styles.actorItem}>
                             <Image source={{ uri: actor.photo }} style={styles.actorPhoto} />
-                            <View style={{paddingLeft: 10,}}>
+                            <View style={{ paddingLeft: 10, }}>
                                 <Text style={styles.actorName}>{actor.name}</Text>
                                 <Text style={styles.actorRole}>{actor.description}</Text>
                             </View>
@@ -168,6 +180,15 @@ export const SMMovieDetails: FC<SMMovieDetailsType> = ({ route }) => {
                     </View>
                 }
             </ScrollView>
+            <View>
+                <SimpleButton
+                    title={t('selection_movie.movie_details.watch')}
+                    color={Color.BUTTON_RED}
+                    titleColor={Color.WHITE}
+                    buttonWidth={width - 32}
+                    onHandlePress={handlePress}
+                />
+            </View>
         </View>
     );
 };

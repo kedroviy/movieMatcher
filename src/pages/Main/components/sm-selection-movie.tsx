@@ -1,5 +1,5 @@
 import { FC, useCallback, useEffect, useRef, useState } from "react"
-import { Dimensions, StyleSheet, Text, View } from "react-native";
+import { Dimensions, Image, StyleSheet, Text, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import Swiper from "react-native-deck-swiper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -11,20 +11,19 @@ import { Color } from "styles/colors";
 import { AppDispatch } from "redux/configure-store";
 import { loadMovies, setPage } from "redux/moviesSlice";
 import { Loader, SimpleButton } from "shared";
+import { t } from "i18next";
 
 const { width } = Dimensions.get('window')
 
 export const SMSelectionMovie: FC = () => {
-    const { loading, data, currentSessionLabel, currentPage, currentFormData } = useSelector((state: any) => state.moviesSlice);
+    const { loading, data, currentSessionLabel, currentPage, currentFormData } = useSelector((state: any) =>
+        state.moviesSlice);
     const dispatch: AppDispatch = useDispatch();
     const [allCardsSwiped, setAllCardsSwiped] = useState<boolean>(false);
     const [currentIndex, setCurrentIndex] = useState<number>(0);
     const useSwiper = useRef<Swiper<any>>(null);
 
-    useEffect(() => {
-
-
-    }, [loading, data]);
+    useEffect(() => { }, [loading, data]);
 
     const handleOnSwipedLeft = (cardIndex: any) => {
         console.log(`Свайп влево на карточке с индексом ${cardIndex}`);
@@ -46,7 +45,6 @@ export const SMSelectionMovie: FC = () => {
 
         storageData[currentSessionLabel].movies.push(likedMovie);
         await AsyncStorage.setItem('@mymovies', JSON.stringify(storageData));
-        console.log('Movie liked and data updated');
     };
 
     const handleOnSwiped = () => {
@@ -80,73 +78,80 @@ export const SMSelectionMovie: FC = () => {
         <View style={styles.container}>
             {allCardsSwiped ? (
                 <>
+                    <Image source={require('../../../../assets/image53.png')} />
                     <Text style={{
                         fontSize: 22,
                         color: 'white',
-                        marginTop: 20
-                    }}>Пусто</Text>
+                        marginTop: 20,
+                        textAlign: 'center',
+                    }}>{t('selection_movie.selection_list_end')}</Text>
                     <SimpleButton
-                        title='Продолжить'
+                        title={t('general.next_page')}
                         color={Color.BUTTON_RED}
                         titleColor={Color.WHITE}
                         buttonWidth={width - 32}
+                        buttonStyle={{ bottom: 40 }}
                         onHandlePress={handleLoadMore}
                     />
                 </>
-
             ) : (
                 <>
-                    {!loading ? <><View style={{
-                        width: width,
-                        flex: 0.70,
-                    }}>
-                        <Swiper
-                            ref={useSwiper}
-                            animateCardOpacity
-                            containerStyle={styles.swiperContainer}
-                            cards={data.docs}
-                            renderCard={card => <SMSwipeCards card={card} />}
-                            cardIndex={0}
-                            backgroundColor={Color.BACKGROUND_GREY}
-                            stackSize={3}
-                            stackSeparation={-25}
-                            showSecondCard
-                            animateOverlayLabelsOpacity
-                            onSwipedLeft={handleOnSwipedLeft}
-                            onSwipedRight={handleOnSwipedRight}
-                            onSwiped={handleOnSwiped}
-                            overlayLabels={{
-                                left: {
-                                    title: 'NOPE',
-                                    element: <OverlayLabel label="NOPE" color="#E5566D" />,
-                                    style: {
-                                        wrapper: styles.overlayWrapper,
-                                    },
-                                },
-                                right: {
-                                    title: 'LIKE',
-                                    element: <OverlayLabel label="LIKE" color="#4CCC93" />,
-                                    style: {
-                                        wrapper: {
-                                            ...styles.overlayWrapper,
-                                            alignItems: 'flex-start',
-                                            marginLeft: 30,
+                    {!loading ?
+                        <>
+                            <View style={{
+                                width: width,
+                                flex: 1,
+                            }}>
+                                <Swiper
+                                    ref={useSwiper}
+                                    animateCardOpacity
+                                    containerStyle={styles.swiperContainer}
+                                    cards={data.docs}
+                                    renderCard={card => <SMSwipeCards card={card} />}
+                                    cardIndex={0}
+                                    backgroundColor={Color.BACKGROUND_GREY}
+                                    stackSize={2}
+                                    stackSeparation={-20}
+                                    horizontalSwipe
+                                    verticalSwipe={false}
+                                    showSecondCard
+                                    animateOverlayLabelsOpacity
+                                    onSwipedLeft={handleOnSwipedLeft}
+                                    onSwipedRight={handleOnSwipedRight}
+                                    onSwiped={handleOnSwiped}
+                                    overlayLabels={{
+                                        left: {
+                                            title: 'NOPE',
+                                            element: <OverlayLabel label="NOPE" color="#E5566D" />,
+                                            style: {
+                                                wrapper: styles.overlayWrapper,
+                                            },
                                         },
-                                    },
-                                },
-                            }} />
-                    </View><View style={{
-                        flex: 0.17,
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'space-evenly',
-                        width: width / 2.2,
-                        bottom: 20,
-                    }}>
-                            <SMControlBar
-                                onHandleLike={() => useSwiper.current?.swipeRight()}
-                                onHandleDislike={() => useSwiper.current?.swipeLeft()} />
-                        </View></> : <Loader />}
+                                        right: {
+                                            title: 'LIKE',
+                                            element: <OverlayLabel label="LIKE" color="#4CCC93" />,
+                                            style: {
+                                                wrapper: {
+                                                    ...styles.overlayWrapper,
+                                                    alignItems: 'flex-start',
+                                                    marginLeft: 30,
+                                                },
+                                            },
+                                        },
+                                    }} />
+                            </View>
+                            <View style={{
+                                flex: 0.17,
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                justifyContent: 'space-evenly',
+                                width: width / 2.2,
+                                bottom: 5,
+                            }}>
+                                <SMControlBar
+                                    onHandleLike={() => useSwiper.current?.swipeRight()}
+                                    onHandleDislike={() => useSwiper.current?.swipeLeft()} />
+                            </View></> : <Loader />}
                 </>
             )}
         </View>

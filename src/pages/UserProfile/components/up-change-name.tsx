@@ -4,7 +4,7 @@ import { Dimensions, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Tex
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "redux/configure-store";
 import { fetchUserProfile, updateUsername } from "redux/userSlice";
-import { AppConstants, Loader, SimpleInput } from "shared"
+import { AppConstants, SimpleInput } from "shared"
 
 export const UPChangeName: FC = () => {
     const { t } = useTranslation();
@@ -70,7 +70,6 @@ export const UPChangeName: FC = () => {
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: '#353535',
         flex: 1,
         alignItems: 'center',
         justifyContent: 'space-between',

@@ -45,7 +45,7 @@ export const SelfSelectNavigator: FC = () => {
                 name={AppRoutes.SM_SELECTION_MOVIE}
                 component={SMSelectionMovie}
                 options={{
-                    headerTitle: 'Подбор фильма',
+                    headerTitle: t('selection_movie.movie_selection'),
                     headerStyle: {
                         backgroundColor: Color.BACKGROUND_GREY,
                     },
@@ -88,7 +88,7 @@ export const SelfSelectNavigator: FC = () => {
                 name={AppRoutes.SM_MOVIE_DETAILS}
                 component={SMMovieDetails}
                 options={{
-                    headerTitle: 'Детали фильма',
+                    headerTitle: t('selection_movie.movie_details.header'),
                     headerStyle: {
                         backgroundColor: Color.BACKGROUND_GREY,
                     },

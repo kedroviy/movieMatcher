@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useState } from "react";
+import React, { FC, useCallback } from "react";
 import {
     StyleSheet,
     Text,
@@ -8,11 +8,10 @@ import {
     ActivityIndicator,
     RefreshControl,
 } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useTranslation } from "react-i18next";
-import { useDispatch, useSelector } from "react-redux";
 import { NavigationProp, ParamListBase, useNavigation } from "@react-navigation/native";
 
+import { useMoviesList } from './hooks';
 import { MyMovieListComponent, withListOrEmptyState } from "./components/sm-hoc-component";
 import { EmptyListComponent } from "./components/sm-empty-list";
 import { Color } from "styles/colors";
@@ -20,8 +19,6 @@ import { SimpleButton } from "shared";
 import { AppRoutes } from "app/constants";
 import { MoviesSavedType } from "features/selection-movies/selection-movies.model";
 import { MovieCard } from "./ui/sm-movie-list-card";
-import { AppDispatch } from "redux/configure-store";
-import { fetchUserProfile } from "redux/userSlice";
 
 const { width } = Dimensions.get('window');
 
@@ -29,51 +26,8 @@ const MyListWithEmptyState = withListOrEmptyState(MyMovieListComponent);
 
 export const SoloMatchScreen: FC = () => {
     const navigation: NavigationProp<ParamListBase> = useNavigation();
-    const dispatch: AppDispatch = useDispatch();
-    const { user } = useSelector((state: any) => state.userSlice);
     const { t } = useTranslation();
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [moviesList, setMoviesList] = useState<MoviesSavedType[]>([]);
-    const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
-
-    useEffect(() => {
-        if (!user) {
-            dispatch(fetchUserProfile())
-        }
-
-        fetchMoviesList();
-
-        return () => {
-            setMoviesList([]);
-        }
-    }, [user]);
-
-    const fetchMoviesList = async () => {
-        setIsLoading(true);
-        const listString = await AsyncStorage.getItem('@mymovies');
-        if (listString) {
-            const listObj: { [key: string]: MoviesSavedType } = JSON.parse(listString);
-            let isModified = false;
-
-            const updatedListObj: { [key: string]: MoviesSavedType } = Object.entries(listObj)
-                .reduce<{ [key: string]: MoviesSavedType }>((acc, [key, session]) => {
-                    if (session.movies.length > 0) {
-                        acc[key] = session;
-                    } else {
-                        isModified = true;
-                    }
-                    return acc;
-                }, {});
-
-            if (isModified) {
-                await AsyncStorage.setItem('@mymovies', JSON.stringify(updatedListObj));
-            }
-
-            setMoviesList(Object.values(updatedListObj));
-        }
-        setIsLoading(false);
-        setIsRefreshing(false);
-    };
+    const { moviesList, isLoading, isRefreshing, setIsRefreshing, fetchMoviesList } = useMoviesList();
 
     const onRefresh = useCallback(() => {
         setIsRefreshing(true);
@@ -115,13 +69,14 @@ export const SoloMatchScreen: FC = () => {
             <View style={{
                 flex: 1,
                 bottom: 16,
+                justifyContent: 'flex-start',
             }}>
                 {isLoading ?
                     <View style={styles.loader}>
                         <ActivityIndicator size='large' color={Color.BUTTON_RED} />
                     </View>
                     :
-                    <FlatList
+                    <FlatList<MoviesSavedType>
                         data={moviesList}
                         renderItem={renderItem}
                         keyExtractor={(item: any) => item.id}

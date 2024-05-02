@@ -1,13 +1,18 @@
+import { useTranslation } from "react-i18next";
 import { View, Image, Text, StyleSheet } from "react-native";
 import { Color } from "styles/colors";
 
 
-export const EmptyListComponent = () => (
-    <View style={styles.emptyStateContainer}>
-        <Image source={require('../../../../assets/image33.png')}/>
-        <Text style={styles.emptyStateText}>Ваш список фильмов пуст</Text>
-    </View>
-);
+export const EmptyListComponent = () => {
+    const { t } = useTranslation();
+
+    return (
+        <View style={styles.emptyStateContainer}>
+            <Image source={require('../../../../assets/image52.png')} />
+            <Text style={styles.emptyStateText}>{t('selection_movie.empty_list')}</Text>
+        </View>
+    );
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -23,6 +28,7 @@ const styles = StyleSheet.create({
     emptyStateText: {
         marginTop: 20,
         fontSize: 18,
+        textAlign: 'center',
         color: Color.WHITE,
     },
     image: {

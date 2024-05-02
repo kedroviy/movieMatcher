@@ -6,12 +6,16 @@ import { AppDispatch } from "../../redux/configure-store";
 import { authenticateWithGoogle } from "../../redux/authSlice";
 import { GoogleSvgIcon, Loader } from "@shared/index";
 import { STRINGS } from "./constants";
+import { Color } from "styles/colors";
+import { useTranslation } from "react-i18next";
+
+const windowWidth = Dimensions.get('window').width;
 
 export const LoginScreen = () => {
     const dispatch: AppDispatch = useDispatch();
+    const { t } = useTranslation();
     const { loading } = useSelector((state: any) => state.authSlice);
     const navigation: NavigationProp<ParamListBase> = useNavigation();
-    const windowWidth = Dimensions.get('window').width;
 
     const onAuthWithGoogle = async () => {
         await dispatch(authenticateWithGoogle());
@@ -19,8 +23,18 @@ export const LoginScreen = () => {
 
     return (
         <View style={[styles.container, { width: windowWidth }]}>
-            <View style={{ alignItems: 'center', width: windowWidth, height: 328, marginVertical: 24, }}>
-                <Image source={require('../../../assets/startLogotype.png')} />
+            <View style={{
+                alignItems: 'center',
+                width: '100%',
+                height: 328,
+                marginVertical: 24,
+            }}>
+                <Image
+                    source={require('../../../assets/11223.png')}
+                    style={{
+                        width: windowWidth - 32, height: '100%'
+                    }}
+                />
             </View>
             <View style={{ width: 328, gap: 12, alignItems: 'center', marginTop: 32 }}>
                 <Text style={{
@@ -29,14 +43,14 @@ export const LoginScreen = () => {
                     fontWeight: '700',
                     lineHeight: 27.5,
                     textAlign: 'center'
-                }}>{STRINGS.WELCOME}</Text>
+                }}>{t('auth.welcome')}</Text>
                 <Text style={{
                     color: '#FFFFFF',
                     fontSize: 16,
                     fontWeight: '400',
                     lineHeight: 21.6,
                     textAlign: 'center'
-                }}>{STRINGS.SUB_WELCOME}</Text>
+                }}>{t('auth.sub_welcome')}</Text>
             </View>
             <View style={{ width: '100%', alignItems: 'center', gap: 16, marginTop: 32, }}>
                 <TouchableOpacity
@@ -58,7 +72,7 @@ export const LoginScreen = () => {
                         color: '#FFF',
                         fontSize: 18,
                         fontWeight: '500',
-                    }}>Войти</Text>
+                    }}>{t('auth.login.btn_title')}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={[
@@ -81,7 +95,7 @@ export const LoginScreen = () => {
                         fontSize: 18,
                         fontWeight: '500',
                         left: (windowWidth / 6),
-                    }}>Войти с Google</Text>
+                    }}>{t('auth.login.btn_google')}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={[
@@ -102,7 +116,7 @@ export const LoginScreen = () => {
                         color: '#FFF',
                         fontSize: 18,
                         fontWeight: '500',
-                    }}>Зарегистрироваться</Text>
+                    }}>{t('auth.registration.btn_title')}</Text>
                 </TouchableOpacity>
             </View>
             {loading ? <Loader /> : null}
@@ -112,8 +126,9 @@ export const LoginScreen = () => {
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: '#353535',
+        backgroundColor: Color.BACKGROUND_GREY,
         flex: 1,
+        width: windowWidth - 32,
         alignItems: 'center',
     },
     button: {

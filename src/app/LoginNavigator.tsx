@@ -15,6 +15,7 @@ import {
     LoginResult,
     LoginScreen,
 } from "pages";
+import { Color } from "styles/colors";
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -36,7 +37,7 @@ export const LoginNavigator = () => (
             component={LoginAuth}
             options={{
                 headerStyle: {
-                    backgroundColor: '#353535',
+                    backgroundColor: Color.BACKGROUND_GREY,
                 },
                 headerTintColor: '#F9F9F9',
                 headerLeftContainerStyle: {
@@ -53,7 +54,7 @@ export const LoginNavigator = () => (
             component={LoginRegistration}
             options={{
                 headerStyle: {
-                    backgroundColor: '#353535',
+                    backgroundColor: Color.BACKGROUND_GREY,
                 },
                 headerTintColor: '#F9F9F9',
                 headerLeftContainerStyle: {
@@ -70,7 +71,7 @@ export const LoginNavigator = () => (
             component={LoginAccRecovery}
             options={{
                 headerStyle: {
-                    backgroundColor: '#353535',
+                    backgroundColor: Color.BACKGROUND_GREY,
                 },
                 headerTintColor: '#F9F9F9',
                 headerLeftContainerStyle: {
@@ -87,7 +88,7 @@ export const LoginNavigator = () => (
             component={LoginAccRecoveryCode}
             options={{
                 headerStyle: {
-                    backgroundColor: '#353535',
+                    backgroundColor: Color.BACKGROUND_GREY,
                 },
                 headerTintColor: '#F9F9F9',
                 headerLeftContainerStyle: {
@@ -104,7 +105,7 @@ export const LoginNavigator = () => (
             component={LoginAccRecoveryChangePassword}
             options={{
                 headerStyle: {
-                    backgroundColor: '#353535',
+                    backgroundColor: Color.BACKGROUND_GREY,
                 },
                 headerTintColor: '#F9F9F9',
                 headerLeftContainerStyle: {
