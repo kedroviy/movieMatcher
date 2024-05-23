@@ -10,10 +10,11 @@ type SimpleButtonType = {
     buttonWidth: WidthType,
     onHandlePress: () => void,
     buttonStyle?: ViewStyle,
+    disabled?: boolean;
 };
 
 export const SimpleButton: FC<SimpleButtonType> =
-    ({ title, color, onHandlePress, titleColor, buttonWidth, buttonStyle }) => {
+    ({ title, color, onHandlePress, titleColor, buttonWidth, buttonStyle, disabled }) => {
 
         return (
             <TouchableOpacity
@@ -30,6 +31,7 @@ export const SimpleButton: FC<SimpleButtonType> =
                     buttonStyle
                 ]}
                 onPress={onHandlePress}
+                disabled={disabled}
             >
                 <Text style={{
                     color: titleColor,

@@ -3,6 +3,7 @@ import { FC } from "react"
 import { Dimensions, Image, StyleSheet, Text, View } from "react-native"
 import { Color } from "styles/colors";
 import { SMMovieChips } from "./sm-movie-chips";
+import { getRatingColor, roundDownToOneTenth } from "../utils";
 
 export interface MovieCardItemProps {
     movie: Movie;
@@ -11,15 +12,6 @@ export interface MovieCardItemProps {
 const { width } = Dimensions.get('window');
 
 export const SMCard: FC<MovieCardItemProps> = ({ movie }) => {
-    const getRatingColor = (rating: number) => {
-        if (rating >= 7) return Color.GREEN;
-        if (rating >= 5) return Color.INPUT_GREY;
-        return Color.BUTTON_RED;
-    };
-
-    const roundDownToOneTenth = (num: number) => {
-        return Math.floor(num * 10) / 10;
-    };
 
     return (
         <View style={styles.movieItem}>

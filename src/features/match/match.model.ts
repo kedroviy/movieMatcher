@@ -43,3 +43,9 @@ export interface Favorite {
     movieId: string;
     user: User;
 }
+
+export interface UserRoomResponse {
+    message: string;
+    match?: Match[];
+    key?: string;
+}

@@ -1,7 +1,9 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { SMApiResponse, createRoomService, joinRoomService, leaveRoomService } from 'features';
+import { doesUserHaveRoomService, updateRoomFilters } from 'features/match/match-service';
 import { Room } from 'features/match/match.model';
 import { ISMFormData } from 'pages';
+import { FilterOption } from 'pages/Main/sm.model';
 
 interface MatchState {
     data: SMApiResponse | [];
@@ -11,6 +13,8 @@ interface MatchState {
     currentPage: number;
     currentSessionLabel: string | null;
     currentFormData: ISMFormData | null;
+    role: number;
+    roomKey: string | null;
 }
 
 const initialState: MatchState = {
@@ -21,6 +25,8 @@ const initialState: MatchState = {
     currentPage: 1,
     currentSessionLabel: null,
     currentFormData: null,
+    role: 0,
+    roomKey: null,
 };
 
 export const createRoom = createAsyncThunk<Room, number, { rejectValue: string }>(
@@ -58,10 +64,56 @@ export const leaveRoom = createAsyncThunk(
     }
 );
 
+export const leaveFromMatch = createAsyncThunk(
+    'match/leaveFromMatch',
+    async ({ roomKey, userId }: { roomKey: number, userId: number }, { rejectWithValue }) => {
+        try {
+            const response = await leaveRoomService(roomKey, userId);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error || 'An unexpected error occurred');
+        }
+    }
+);
+
+export const handleReduxMatchUpdate = (matchData: any) =>
+    (dispatch: (arg0: { payload: any; type: "match/updateRoomUsers"; }) => void, getState: any) => {
+        dispatch(updateRoomUsers(matchData));
+    };
+
+export const updateRoomFiltersRedux = createAsyncThunk(
+    'match/updateRoomFilters',
+    async ({ roomId, filters }: { roomId: string, filters: FilterOption }, { rejectWithValue }) => {
+        try {
+            const response = await updateRoomFilters(roomId, filters);
+            console.log('response in redux: ', response)
+            if (response.ok) {
+                return response.data;
+            }
+        } catch (error) {
+            return rejectWithValue(error || 'An unexpected error occurred');
+        }
+    }
+);
+
+export const doesUserHaveRoomRedux = createAsyncThunk(
+    'match/doesUserHaveRoom',
+    async (userId: number, { rejectWithValue }) => {
+        try {
+            return await doesUserHaveRoomService(userId);
+        } catch (error) {
+            return rejectWithValue('Failed to fetch user room');
+        }
+    }
+);
+
 const matchSlice = createSlice({
     name: 'match',
     initialState,
     reducers: {
+        updateRoomUsers: (state, action) => {
+            state.room = action.payload;
+        },
     },
     extraReducers: (builder) => {
         builder.addCase(createRoom.pending, (state) => {
@@ -69,7 +121,8 @@ const matchSlice = createSlice({
             state.error = null;
         });
         builder.addCase(createRoom.fulfilled, (state, action) => {
-            state.room.push(action.payload);
+            state.room = [action.payload];
+            state.role = 1;
             state.loading = false;
         });
         builder.addCase(createRoom.rejected, (state, action) => {
@@ -82,6 +135,7 @@ const matchSlice = createSlice({
         });
         builder.addCase(joinRoom.fulfilled, (state, action) => {
             state.loading = false;
+            state.role = 0;
             state.room = action.payload;
         });
         builder.addCase(joinRoom.rejected, (state, action) => {
@@ -98,8 +152,51 @@ const matchSlice = createSlice({
         builder.addCase(leaveRoom.rejected, (state, action) => {
             state.error = action.payload as string;
             state.loading = false;
+        })
+        builder.addCase(leaveFromMatch.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        })
+        builder.addCase(leaveFromMatch.fulfilled, (state, action) => {
+            state.loading = false;
+            state.room = state.room.filter((room: any) => room.roomKey !== action.meta.arg.roomKey);
+        })
+        builder.addCase(leaveFromMatch.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.error.message as string;
+        })
+        builder.addCase(updateRoomFiltersRedux.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        });
+        builder.addCase(updateRoomFiltersRedux.fulfilled, (state, action) => {
+            state.loading = false;
+            state.data = action.payload;
+        });
+        builder.addCase(updateRoomFiltersRedux.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.error.message || 'Unknown error occurred';
+        });
+        builder.addCase(doesUserHaveRoomRedux.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        });
+        builder.addCase(doesUserHaveRoomRedux.fulfilled, (state, action) => {
+            state.loading = false;
+            if (action.payload.key) {
+                state.roomKey = action.payload.key;
+                state.role = 1;
+            }
+            if (action.payload.match) {
+                state.room = action.payload.match as any;
+            }
+        });
+        builder.addCase(doesUserHaveRoomRedux.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload as string;
         });
     }
 });
 
+export const { updateRoomUsers } = matchSlice.actions;
 export default matchSlice.reducer;

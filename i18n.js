@@ -69,9 +69,14 @@ const resources = {
             match_movie: {
                 main_match_screen: {
                     create_lobby_btn: 'Create new lobby',
+                    reconnect_lobby_btn: 'Reconnect to lobby',
                     join_lobby_btn: 'Join to lobby',
                     main_text: 'Create a lobby to jointly select a movie to watch using the coincidence method!',
-                    greetings: 'Hello'
+                    greetings: 'Hello',
+                    loading: 'Connecting to the server, please wait...',
+                },
+                lobby: {
+                    lobby_members: 'Lobby members'
                 }
             },
             general: {
@@ -146,9 +151,14 @@ const resources = {
             match_movie: {
                 main_match_screen: {
                     create_lobby_btn: 'Создать новое лобби',
+                    reconnect_lobby_btn: 'Переподключиться к лобби',
                     join_lobby_btn: 'Присоединиться к лобби',
                     main_text: 'Создавайте лобби для совместного выбора фильма к просмотру методом совпадения!',
-                    greetings: 'Привет'
+                    greetings: 'Привет',
+                    loading: 'Идёт подключение к серверу, подождите...'
+                },
+                lobby: {
+                    lobby_members: 'Участники лобби'
                 }
             },
             general: {

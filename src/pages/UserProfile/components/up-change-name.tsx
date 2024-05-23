@@ -63,7 +63,6 @@ export const UPChangeName: FC = () => {
                     <Text style={styles.text}>Войти</Text>
                 </TouchableOpacity>
             </ScrollView>
-            {/* {loading ? <Loader /> : null} */}
         </KeyboardAvoidingView >
     )
 };

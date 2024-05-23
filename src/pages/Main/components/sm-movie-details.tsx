@@ -7,11 +7,11 @@ import { Color } from "styles/colors";
 import { SMMovieChips } from "../ui/sm-movie-chips";
 import { getRatingColor, roundDownToOneTenth } from "../utils";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchMovieDetails } from "features";
+
 import { Actor } from "../sm.model";
 import { loadMovieDetails } from "redux/moviesSlice";
 import { AppDispatch } from "redux/configure-store";
-import { BASE_KP_URL, SimpleButton } from "shared";
+import { SimpleButton } from "shared";
 import { useTranslation } from "react-i18next";
 import { generateKpUrl } from "../sm.utils";
 

@@ -1,4 +1,4 @@
-export type FilterOption = { id: number; name: string; label: string; };
+export type FilterOption = { id: number; name?: string; label: string; };
 
 export interface SMFormItem<T> {
     id: T;
@@ -47,6 +47,16 @@ export const initialState: SelectMovieType<FilterOption> = {
     excludeGenre: [],
     genres: [],
 };
+
+export interface Actor {
+    id: number;
+    photo: string;
+    name: string;
+    enName: string;
+    description: string;
+    profession: string;
+    enProfession: string;
+}
 
 export function reducer<T>(state: SelectMovieType<T>, action: Action<T>): SelectMovieType<T> {
     let newState = { ...state };

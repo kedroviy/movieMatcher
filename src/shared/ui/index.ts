@@ -15,6 +15,8 @@ export {
     CrossSvgIcon,
     AlertCircleSvgIcon,
     GoogleSvgIcon,
+    SettingSvgIcon,
+    DeleteSvgIcon,
 } from './icons';
 export { RadioButton } from './radio-button';
 export { SimpleInput } from './text-input';

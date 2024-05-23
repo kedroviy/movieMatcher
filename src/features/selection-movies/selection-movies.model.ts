@@ -43,6 +43,7 @@ export interface Logo {
 }
 
 export interface Movie {
+    movies: any;
     status: string | null;
     rating: Rating;
     votes: Votes;

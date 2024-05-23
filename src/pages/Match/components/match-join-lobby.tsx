@@ -40,8 +40,20 @@ export const MatchJoinLobby: FC = () => {
     };
 
     const onHandleSubmit = (userId: number) => {
-        if (isFormValidInput && user.id) {
-            dispatch(joinRoom({ key: Number(key), userId: userId }));
+        if (isFormValidInput) {
+            console.log({key, userId})
+            dispatch(joinRoom({ key: Number(key), userId: userId }))
+            .unwrap()
+                .then((newRoom: any) => {
+                    console.log('join to room:', newRoom);
+                    navigation.navigate(AppRoutes.MATCH_NAVIGATOR, {
+                        screen: AppRoutes.MATCH_LOBBY,
+                        params: { lobbyName: key },
+                    });
+                })
+                .catch((errMsg) => {
+                    console.error('Error creating room:', errMsg);
+                });
         }
     }
 
@@ -60,7 +72,7 @@ export const MatchJoinLobby: FC = () => {
                 color={Color.BUTTON_RED}
                 titleColor={Color.WHITE}
                 buttonWidth={width - 32}
-                onHandlePress={() => onHandleSubmit(user.id)}
+                onHandlePress={() => onHandleSubmit(1)}
             />
             {loading ? <Loader /> : null}
         </View>

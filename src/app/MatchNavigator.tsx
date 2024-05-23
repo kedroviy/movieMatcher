@@ -45,9 +45,9 @@ export const MatchNavigator: FC = () => {
                 name={AppRoutes.MATCH_JOIN_LOBBY}
                 component={MatchJoinLobby}
                 options={{
-                    headerTitle: t('profile.about_application'),
+                    headerTitle: t('match_movie.main_match_screen.join_lobby_btn'),
                     headerStyle: {
-                        backgroundColor: '#353535',
+                        backgroundColor: Color.BACKGROUND_GREY,
                     },
                     headerTitleStyle: {
                         marginTop: 24,

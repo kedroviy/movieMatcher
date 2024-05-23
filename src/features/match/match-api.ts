@@ -7,10 +7,12 @@ export const createApi = async () => {
 
     const api = create({
         baseURL: 'https://movie-match-x5ue.onrender.com/',
+        // 'http://192.168.100.71:6001/',
+        // http://192.168.100.71/rooms
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-            Authorization: token ? `Bearer ${token}` : 'Bearer your_fallback_token',
+            Authorization: token ? `Bearer ${token}` : undefined,
         },
     });
 

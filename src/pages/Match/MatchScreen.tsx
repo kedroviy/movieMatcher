@@ -2,12 +2,14 @@ import { NavigationProp, ParamListBase, useNavigation } from "@react-navigation/
 import { AppRoutes } from "app/constants";
 import { FC } from "react"
 import { useTranslation } from "react-i18next";
-import { View, Text, StyleSheet, Image, Dimensions } from "react-native"
+import { View, Text, StyleSheet, Image, Dimensions, ActivityIndicator } from "react-native"
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "redux/configure-store";
 import { createRoom } from "redux/matchSlice";
 import { SimpleButton } from "shared";
+import useFetchUserProfile from "shared/hooks/getUserProfile";
 import { Color } from "styles/colors";
+import useUserHasRoom from "./hooks/useUserHasRoom";
 
 const { width } = Dimensions.get('window');
 
@@ -15,22 +17,30 @@ export const MatchScreen: FC = () => {
     const navigation = useNavigation<NavigationProp<ParamListBase>>();
     const dispatch: AppDispatch = useDispatch();
     const { t } = useTranslation();
-    const { loading, error, room } = useSelector((state: any) => state.matchSlice);
-    const { user } = useSelector((state: any) => state.userSlice);
+    const { user, loading: userLoading, error: userError } = useFetchUserProfile();
+    const { roomKey, loading: roomLoading, error: roomError } = useUserHasRoom(user?.id);
+    const { loading: matchLoading, error: matchError } = useSelector((state: any) => state.matchSlice);
 
     const handleCreateRoom = async (userId: number) => {
-        dispatch(createRoom(userId))
-            .unwrap()
-            .then((newRoom) => {
-                console.log('Room created:', newRoom);
-                navigation.navigate(AppRoutes.MATCH_NAVIGATOR, {
-                    screen: AppRoutes.MATCH_LOBBY,
-                    params: { lobbyName: newRoom.key },
-                });
-            })
-            .catch((errMsg) => {
-                console.error('Error creating room:', errMsg);
+        if (roomKey) {
+            navigation.navigate(AppRoutes.MATCH_NAVIGATOR, {
+                screen: AppRoutes.MATCH_LOBBY,
+                params: { lobbyName: roomKey },
             });
+        } else {
+            dispatch(createRoom(userId))
+                .unwrap()
+                .then((newRoom: any) => {
+                    console.log('Room created:', newRoom);
+                    navigation.navigate(AppRoutes.MATCH_NAVIGATOR, {
+                        screen: AppRoutes.MATCH_LOBBY,
+                        params: { lobbyName: newRoom.roomKey },
+                    });
+                })
+                .catch((errMsg) => {
+                    console.error('Error creating room:', errMsg);
+                });
+        }
     };
 
     return (
@@ -65,13 +75,23 @@ export const MatchScreen: FC = () => {
                 </Text>
             </View>
             <View style={styles.controlsContainer}>
-                <SimpleButton
-                    title={t('match_movie.main_match_screen.create_lobby_btn')}
-                    color={Color.BUTTON_RED}
-                    titleColor={Color.WHITE}
-                    buttonWidth={width - 32}
-                    onHandlePress={() => handleCreateRoom(1)}
-                />
+                {roomLoading || userLoading ? (
+                    <ActivityIndicator color={Color.BUTTON_RED} />
+                ) : (
+                    <SimpleButton
+                        title={userLoading
+                            ? t('match_movie.main_match_screen.loading')
+                            : t(roomKey
+                                ? 'match_movie.main_match_screen.reconnect_lobby_btn'
+                                : 'match_movie.main_match_screen.create_lobby_btn'
+                            )}
+                        color={Color.BUTTON_RED}
+                        titleColor={Color.WHITE}
+                        buttonWidth={width - 32}
+                        onHandlePress={() => handleCreateRoom(user.id)}
+                        disabled={userLoading}
+                    />
+                )}
                 <SimpleButton
                     title={t('match_movie.main_match_screen.join_lobby_btn')}
                     color={Color.BACKGROUND_GREY}
@@ -87,8 +107,8 @@ export const MatchScreen: FC = () => {
                     }}
                 />
             </View>
-            {loading && <Text>Loading...</Text>}
-            {error && <Text>Error: {error}</Text>}
+            {matchLoading && <ActivityIndicator color={Color.BUTTON_RED} />}
+            {matchError && <Text>Error: {matchError}</Text>}
         </View>
     )
 };
