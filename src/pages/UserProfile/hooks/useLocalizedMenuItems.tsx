@@ -1,11 +1,11 @@
 import React from 'react';
 import Svg, { Path, G, Defs, ClipPath, Rect } from 'react-native-svg';
 import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
+import useFetchUserProfile from 'shared/hooks/getUserProfile';
 
 export const useLocalizedMenuItems = () => {
     const { t } = useTranslation();
-    const { user } = useSelector((state: any) => state.userSlice);
+    const { user, loading: userLoading, error: userError } = useFetchUserProfile();
 
     const menuItems = React.useMemo(() => [
         {

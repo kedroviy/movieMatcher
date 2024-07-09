@@ -20,7 +20,7 @@ export const MatchScreen: FC = () => {
     const { user, loading: userLoading, error: userError } = useFetchUserProfile();
     const { roomKey, loading: roomLoading, error: roomError } = useUserHasRoom(user?.id);
     const { loading: matchLoading, error: matchError } = useSelector((state: any) => state.matchSlice);
-
+    
     const handleCreateRoom = async (userId: number) => {
         if (roomKey) {
             navigation.navigate(AppRoutes.MATCH_NAVIGATOR, {

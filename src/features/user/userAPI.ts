@@ -9,6 +9,7 @@ export type UpdateUsernameArgs = {
 }
 
 export type ApiResponse<T = unknown> = {
+    ok?: boolean;
     success?: boolean;
     data?: T;
     message?: string;
@@ -38,11 +39,11 @@ export const getUserProfile = async () => {
 
 export const putUpdateUsername = async (args: UpdateUsernameArgs): Promise<ApiResponse> => {
     await setAuthToken();
-    const response = await api.put('/user/update-username', args);
+    const response = await api.patch('/user/update-username', args);
 
     if (!response.ok || !response.data) {
         throw new Error(response.problem || 'Unknown API error');
     }
 
-    return response.data;
+    return response;
 };

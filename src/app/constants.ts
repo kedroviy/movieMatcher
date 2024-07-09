@@ -5,6 +5,7 @@ import { Color } from 'styles/colors';
 export enum AppRoutes {
     TAB_NAVIGATOR = 'TabNavigator',
     SOLO_MATCH_SCREEN = 'SoloMatchScreen',
+    LOGIN_NAVIGATOR = 'LoginNavigator',
     LOGIN_SCREEN = 'LoginScreen',
     MATCH_SCREEN = 'MatchScreen',
     LOGIN_REGISTRATION_SCREEN = 'LoginRegistration',
@@ -20,6 +21,7 @@ export enum AppRoutes {
     USER_PROFILE_LANGUAGE = 'UPLanguage',
     USER_PROFILE_ACC_SETTINGS = 'UPAccountSettings',
     USER_PROFILE_CHANGENAME = 'UPChangeName',
+    PROFILE_RESULT = 'ProfileResult',
     SELF_SELECT_NAVIGATOR = 'SelfSelectNavigator',
     SM_CREATE_MOVIE_LIST_SCREEN = 'SMCreateMovieListFilter',
     SM_SELECTION_MOVIE = 'SMSelectionMovie',
@@ -28,6 +30,7 @@ export enum AppRoutes {
     MATCH_NAVIGATOR = 'MatchNavigator',
     MATCH_LOBBY = 'MatchLobby',
     MATCH_JOIN_LOBBY = 'MatchJoinLobby',
+    MATCH_SELECTION_MOVIE = 'MatchSelectionMovie',
 };
 
 export const defaultScreenOptions: StackNavigationOptions = {
@@ -106,6 +109,7 @@ export type RootStackParamList = {
     ProfileNavigator: undefined;
     MatchNavigator: undefined;
     SoloMatchScreen: undefined;
+    LoginNavigator: undefined;
     LoginScreen: undefined;
     LoginAuth: undefined;
     MatchScreen: undefined;
@@ -126,10 +130,18 @@ export type RootStackParamList = {
     UPLanguage: undefined;
     UPAccountSettings: undefined;
     UPChangeName: undefined;
+    ProfileResult: {
+        icon: JSX.Element;
+        resultText: string;
+        buttonText: string;
+        buttonColor: string;
+        onHandlePress: () => void;
+    };
     SMCreateMovieListFilter: undefined;
     SMSelectionMovie: undefined;
     SMMovieFullList: { headerText: string };
     SMMovieDetails: { movie: Movie };
     MatchLobby: { lobbyName: string };
     MatchJoinLobby: undefined;
+    MatchSelectionMovie: undefined;
 };

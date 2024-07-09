@@ -1,17 +1,16 @@
 import { FC } from "react";
 import { Dimensions, StyleSheet, View } from "react-native";
-import { useSelector } from "react-redux";
-import { RootState } from "redux/configure-store";
 import { UPAvatarContainer, UPMenuItems } from "./ui";
 import { useLocalizedMenuItems } from "./hooks";
 import { Color } from "styles/colors";
+import useFetchUserProfile from "shared/hooks/getUserProfile";
 
 const fakeImage = 'https://drive.google.com/uc?export=download&id=1XyvtSH--FxiGK67-Q9pPcKRCYxDfqGfF'
 
 export const UserProfileScreen: FC = () => {
     const windowWidth = Dimensions.get('window').width;
-    const { user } = useSelector((state: RootState) => state.userSlice);
     const { menuItems } = useLocalizedMenuItems();
+    const { user, loading: userLoading, error: userError } = useFetchUserProfile();
 
     return (
         <View style={[styles.container, { width: windowWidth }]}>

@@ -1,4 +1,3 @@
-import { ApiResponse } from './match.model';
 import { ApiResponse as ApiSauceResponse } from 'apisauce';
 
 export function handleApiResponse<T>(response: ApiSauceResponse<T>): T {

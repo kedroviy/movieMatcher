@@ -14,7 +14,7 @@ const { width } = Dimensions.get('window');
 export const MatchJoinLobby: FC = () => {
     const dispatch: AppDispatch = useDispatch();
     const navigation = useNavigation<NavigationProp<ParamListBase>>();
-    const { user } = useSelector((state: any) => state.userSlice);
+    // const { user } = useSelector((state: any) => state.userSlice);
     const { loading, error, room } = useSelector((state: any) => state.matchSlice);
     const [key, setKey] = useState<string>(AppConstants.EMPTY_VALUE);
     const [isFormValidInput, setIsFormValidInput] = useState<boolean>(false);
@@ -45,7 +45,6 @@ export const MatchJoinLobby: FC = () => {
             dispatch(joinRoom({ key: Number(key), userId: userId }))
             .unwrap()
                 .then((newRoom: any) => {
-                    console.log('join to room:', newRoom);
                     navigation.navigate(AppRoutes.MATCH_NAVIGATOR, {
                         screen: AppRoutes.MATCH_LOBBY,
                         params: { lobbyName: key },
@@ -88,7 +87,6 @@ const styles = StyleSheet.create({
         paddingVertical: 32,
     },
     text: {
-
         color: Color.WHITE
     }
 });

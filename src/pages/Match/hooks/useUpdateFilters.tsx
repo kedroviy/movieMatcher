@@ -1,4 +1,3 @@
-// hooks/useUpdateFilters.js
 import { Alert } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from 'redux/configure-store';

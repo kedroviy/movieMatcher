@@ -1,9 +1,21 @@
-export enum ClientType {
-    GOOGLE = 'GOOGLE',
-    NONE = 'NONE',
+export type ClientType = 'GOOGLE' | 'NONE'
+
+export type RoomStatus
+    = 'WAITING'
+    | 'ACTIVE'
+    | 'CLOSED';
+
+export type MatchUserRole = 'admin' | 'participant';
+
+export enum MatchUserStatusEnum {
+    ACTIVE = 'ACTIVE',
+    WAITING = 'WAITING',
+    CLOSED = 'CLOSED',
 }
 
 export interface ApiResponse<T> {
+    key: string | undefined;
+    match: Match[] | undefined;
     success: boolean;
     data: T;
     message?: string;
@@ -16,6 +28,8 @@ export interface Room {
     createdAt: Date;
     users: User[];
     matches: Match[];
+    status: RoomStatus;
+    filters: string;
 }
 
 export interface User {
@@ -31,11 +45,13 @@ export interface User {
 export interface Match {
     id: number;
     movieId?: string;
-    userId: string;
-    userName: string;
-    vote?: string;
+    userId: number;
     roomId: number;
-    room?: Room;
+    vote?: string;
+    userName: string;
+    role: MatchUserRole;
+    roomKey?: Room;
+    userStatus?: string;
 }
 
 export interface Favorite {
@@ -48,4 +64,12 @@ export interface UserRoomResponse {
     message: string;
     match?: Match[];
     key?: string;
+}
+
+export type MatchLikeFields = Pick<Match, 'userId' | 'roomKey' | 'movieId'>;
+
+export interface MatchUserStatus {
+    roomKey: string;
+    userId: number;
+    userStatus: MatchUserStatusEnum;
 }

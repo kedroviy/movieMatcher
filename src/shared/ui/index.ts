@@ -17,6 +17,7 @@ export {
     GoogleSvgIcon,
     SettingSvgIcon,
     DeleteSvgIcon,
+    WaitingSvgIcon,
 } from './icons';
 export { RadioButton } from './radio-button';
 export { SimpleInput } from './text-input';

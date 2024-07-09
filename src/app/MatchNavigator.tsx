@@ -9,7 +9,7 @@ import {
     animationOptions,
     defaultScreenOptions,
 } from "./constants";
-import { MatchJoinLobby, MatchLobby } from "pages";
+import { MatchJoinLobby, MatchLobby, MatchSelectionMovie } from "pages";
 import { Color } from "styles/colors";
 
 const MatchStack = createStackNavigator<RootStackParamList>();
@@ -61,6 +61,28 @@ export const MatchNavigator: FC = () => {
                     ...animationOptions
                 }}
                 key={AppRoutes.MATCH_JOIN_LOBBY}
+            />
+
+            <MatchStack.Screen
+                name={AppRoutes.MATCH_SELECTION_MOVIE}
+                component={MatchSelectionMovie}
+                options={{
+                    headerTitle: t('selection_movie.movie_selection'),
+                    headerStyle: {
+                        backgroundColor: Color.BACKGROUND_GREY,
+                    },
+                    headerTitleStyle: {
+                        marginTop: 24,
+                    },
+                    headerTintColor: Color.WHITE,
+                    headerLeftContainerStyle: {
+                        marginLeft: -3,
+                        marginTop: 24,
+                    },
+                    cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+                    ...animationOptions
+                }}
+                key={AppRoutes.MATCH_SELECTION_MOVIE}
             />
         </MatchStack.Navigator>
     )

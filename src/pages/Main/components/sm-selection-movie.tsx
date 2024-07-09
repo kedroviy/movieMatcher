@@ -13,7 +13,7 @@ import { loadMovies, setPage } from "redux/moviesSlice";
 import { Loader, SimpleButton } from "shared";
 import { t } from "i18next";
 
-const { width } = Dimensions.get('window')
+const { width } = Dimensions.get('window');
 
 export const SMSelectionMovie: FC = () => {
     const { loading, data, currentSessionLabel, currentPage, currentFormData } = useSelector((state: any) =>

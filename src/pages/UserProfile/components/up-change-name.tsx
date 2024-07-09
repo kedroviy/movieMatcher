@@ -1,15 +1,28 @@
+import {
+    Alert,
+    Dimensions,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+} from "react-native"
+import { NavigationProp, ParamListBase, useNavigation } from "@react-navigation/native";
+import { AppRoutes } from "app/constants";
 import { FC, useState } from "react"
 import { useTranslation } from "react-i18next";
-import { Dimensions, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "redux/configure-store";
-import { fetchUserProfile, updateUsername } from "redux/userSlice";
-import { AppConstants, SimpleInput } from "shared"
+import { updateUsername } from "redux/userSlice";
+import { AppConstants, CheckSvgIcon, SimpleInput } from "shared"
+import { Color } from "styles/colors";
 
 export const UPChangeName: FC = () => {
     const { t } = useTranslation();
     const { user, loading } = useSelector((state: RootState) => state.userSlice);
     const dispatch: AppDispatch = useDispatch();
+    const navigation: NavigationProp<ParamListBase> = useNavigation();
     const windowWidth = Dimensions.get('window').width;
     const [name, onChangeName] = useState<string>(AppConstants.EMPTY_VALUE);
     const [isFormValidInput, setIsFormValidInput] = useState<boolean>(false);
@@ -18,16 +31,32 @@ export const UPChangeName: FC = () => {
         setIsFormValidInput(isValid);
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (name.trim() && user?.id) {
-            dispatch(updateUsername({ userId: user.id, newUsername: name }))
-                .unwrap()
-                .then((updatedUser) => {
-                    dispatch(fetchUserProfile())
-                })
-                .catch((errorResponse: any) => {
-                    console.log(errorResponse)
-                });
+            const actionResult = await dispatch(updateUsername({ userId: user.id, newUsername: name }));
+
+            try {
+                if (updateUsername.fulfilled.match(actionResult)) {
+                    navigation.navigate(
+                        AppRoutes.PROFILE_RESULT, {
+                        icon: <CheckSvgIcon />,
+                        resultText: t('acc_settings.changeName.success'),
+                        buttonText: t('general.continue'),
+                        buttonColor: Color.BUTTON_RED,
+                        onHandlePress: () => {
+                            navigation.reset({
+                                index: 0,
+                                routes: [
+                                    { name: AppRoutes.USER_PROFILE_ACC_SETTINGS },
+                                ],
+                            })
+                        },
+                    });
+                }
+            } catch (errorResponse) {
+                console.error('Error response:', errorResponse);
+                Alert.alert(t('errorTitle'), t('errorMessage'));
+            }
         }
     };
 
@@ -60,7 +89,7 @@ export const UPChangeName: FC = () => {
                     onPress={() => handleSubmit()}
                     testID='myButton'
                 >
-                    <Text style={styles.text}>Войти</Text>
+                    <Text style={styles.text}>{t('acc_settings.changeName.change_name')}</Text>
                 </TouchableOpacity>
             </ScrollView>
         </KeyboardAvoidingView >

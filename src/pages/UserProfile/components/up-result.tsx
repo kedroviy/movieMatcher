@@ -3,12 +3,12 @@ import { StackScreenProps } from "@react-navigation/stack";
 import { RootStackParamList } from "app/constants";
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-type Props = StackScreenProps<RootStackParamList, 'LoginResult'>;
+type Props = StackScreenProps<RootStackParamList, 'ProfileResult'>;
 
-export const LoginResult: FC<Props> = ({ route }) => {
+export const UserProfileResult: FC<Props> = ({ route }) => {
     const { icon, resultText, buttonText, buttonColor, onHandlePress } = route.params;
     const windowWidth = Dimensions.get('window').width;
-
+    
     return (
         <View style={[styles.container, { width: windowWidth }]}>
             <View style={{

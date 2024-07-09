@@ -11,7 +11,7 @@ import { MatchUserCard } from "./match-user-card";
 import { useTranslation } from "react-i18next";
 import { AppDispatch } from "redux/configure-store";
 import { MatchFilterModal } from "../ui";
-import { updateRoomFiltersRedux, updateRoomUsers } from "redux/matchSlice";
+import { getMoviesRedux, startMatchRedux, updateRoomFiltersRedux, updateRoomUsers } from "redux/matchSlice";
 import { useUpdateFilters, useWebSocket } from "../hooks";
 
 type MatchLobbyProps = {
@@ -27,9 +27,8 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
     const dataFromSocket = useWebSocket();
     const dispatch: AppDispatch = useDispatch();
     const { t } = useTranslation();
-    const { loading, room, role, roomKey } = useSelector((state: any) => state.matchSlice);
+    const { loading, room, role, roomKey, currentMovie, movies } = useSelector((state: any) => state.matchSlice);
     const { user } = useSelector((state: any) => state.userSlice);
-    const [roomUsers, setRoomUsers] = useState<any[]>([]);
     const [refreshing, setRefreshing] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
     const [filters, setFilters] = useState<any>({});
@@ -45,51 +44,55 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
 
     useEffect(() => {
         const handleFiltersUpdated = (data: any) => {
-            console.log('Filters updated for room:', data.roomId);
-            console.log('New filters:', data);
             setFilters(data.filters);
         };
 
-        console.log(user)
-        socketService.subscribeToBroadcastMessage((data: any) => {
-            Alert.alert(data)
-        });
         socketService.filtersUpdateBroadcast(handleFiltersUpdated);
 
         if (dataFromSocket) {
             dispatch(updateRoomUsers(dataFromSocket));
         }
 
+        socketService.subscribeToBroadcastMovies((data) => {
+            if(data) {
+                dispatch(getMoviesRedux({ roomKey }))
+                .then((action) => {
+                    const { payload } = action;
+                })
+                .catch((error) => {
+                    console.error('Ошибка при загрузке фильмов:', error);
+                });
+            }
+        });
+
+        if(movies.data?.docs) {
+            navigation.navigate('MatchSelectionMovie', { movie: currentMovie });
+        }
+
+        
         return () => {
             socketService.unsubscribeFromRequestMatchUpdate();
+            socketService.unsubscribeFromRequestMatchResponse();
+            // socketService.disconnect();
         };
-    }, [dataFromSocket, socketService, room, dispatch, user.id, role, filters]);
+    }, [dataFromSocket, socketService, room, dispatch, user.id, role, filters, currentMovie, movies.data?.docs]);
 
     const handleFiltersChange = (newFilters: SetStateAction<{}>) => {
         setFilters(newFilters);
     };
 
-    // const handleFilterSubmit = async (newFilters) => {
-    //     if (Object.keys(newFilters).length !== 0 && newFilters.constructor === Object) {
-    //         await dispatch(updateRoomFiltersRedux({ userId: user.id, roomId: room.roomId, filters: newFilters }))
-    //             .unwrap()
-    //             .then((response) => {
-    //                 console.log('Update successful:', response);
-    //                 Alert.alert("Success", "Filters updated successfully.");
-    //             })
-    //             .catch((error) => {
-    //                 console.error('Failed to update filters:', error);
-    //                 Alert.alert("Error", typeof error === 'string' ? error : 'Failed to update filters due to an unexpected error');
-    //             });
-    //     } else {
-    //         console.log('No filters to update');
-    //     }
-    // };
+    const handleOnSubmit = async () => {
+        const actionResult = await dispatch(startMatchRedux(roomKey));
 
-    const handleOnSubmit = () => {
-        console.log('user: ', user.id)
-        console.log(user.id, room[0].roomId, filters)
-        updateFilters(room[0].roomId, filters);
+        try {
+            if (startMatchRedux.fulfilled.match(actionResult)) {
+            }
+        } catch (error) {
+            console.error('Failed to start the match:', error);
+            Alert.alert('Error', 'Failed to start the match due to an unexpected error');
+        }
+
+
     };
 
     const handleModalClose = async (saveChanges: any) => {
@@ -98,8 +101,8 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
             const handleFiltersUpdated = (data: any) => {
                 try {
                     console.log('Filters updated for room:', data.roomId);
-                    console.log('New filters:', JSON.parse(data.filters));
-                    setFilters(JSON.parse(data.filters));
+                    console.log('New filters:', data.filters);
+                    setFilters(data.filters);
                 } catch (error) {
                     console.error('Error parsing filters:', error);
                 }

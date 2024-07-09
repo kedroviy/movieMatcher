@@ -4,13 +4,15 @@ import { useTranslation } from "react-i18next";
 
 import {
     AppRoutes,
+    RootStackParamList,
     animationOptions,
     defaultScreenOptions,
+    withoutHeader,
 } from "./constants";
-import { UPAboutApplication, UPAccountSettings, UPChangeName, UPLanguage } from "pages";
+import { UPAboutApplication, UPAccountSettings, UPChangeName, UPLanguage, UserProfileResult } from "pages";
 import { Color } from "styles/colors";
 
-const ProfileStack = createStackNavigator();
+const ProfileStack = createStackNavigator<RootStackParamList>();
 
 export const ProfileNavigator: FC = () => {
     const { t } = useTranslation();
@@ -99,6 +101,17 @@ export const ProfileNavigator: FC = () => {
                     ...animationOptions
                 }}
                 key={AppRoutes.USER_PROFILE_CHANGENAME}
+            />
+
+            <ProfileStack.Screen
+                name={AppRoutes.PROFILE_RESULT}
+                component={UserProfileResult}
+                options={{
+                    ...withoutHeader,
+                    cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+                    ...animationOptions
+                }}
+                key={AppRoutes.PROFILE_RESULT}
             />
 
         </ProfileStack.Navigator>

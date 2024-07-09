@@ -46,6 +46,8 @@ const resources = {
                     change_name: 'Change name',
                     label: 'User name',
                     textError: 'Fill in the field',
+                    success: 'Your username has been successfully changed',
+                    networkError: 'Something went wrong',
                 },
                 logout_acc: 'Log out of your account'
             },
@@ -81,7 +83,8 @@ const resources = {
             },
             general: {
                 next_page: 'Next page',
-                enter_in_account: 'Login to account'
+                enter_in_account: 'Login to account',
+                continue: 'Продолжить',
             }
         }
     },
@@ -128,6 +131,8 @@ const resources = {
                     change_name: 'Изменить имя',
                     label: 'Имя пользователя',
                     textError: 'Заполните поле',
+                    success: 'Ваше имя успешно изменено!',
+                    networkError: 'Что-то пошло не так!',
                 },
                 logout_acc: 'Выйти из аккаунта'
             },
@@ -163,7 +168,8 @@ const resources = {
             },
             general: {
                 next_page: 'Следующая страница',
-                enter_in_account: 'Войти в аккаунт'
+                enter_in_account: 'Войти в аккаунт',
+                continue: 'Продолжить'
             }
         }
     },

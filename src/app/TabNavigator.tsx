@@ -26,7 +26,6 @@ const screenOptions: BottomTabNavigationOptions = {
     headerShown: false,
 };
 
-
 export const TabNavigator = () => {
     const { t } = useTranslation();
 

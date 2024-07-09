@@ -1,7 +1,16 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { SMApiResponse, createRoomService, joinRoomService, leaveRoomService } from 'features';
-import { doesUserHaveRoomService, updateRoomFilters } from 'features/match/match-service';
-import { Room } from 'features/match/match.model';
+import {
+    checkStatus,
+    doesUserHaveRoomService,
+    getMovieData,
+    getUserStatusByUserId,
+    postLikeMovie,
+    startMatchService,
+    updateRoomFilters,
+    updateUserStatus,
+} from 'features/match/match-service';
+import { MatchLikeFields, MatchUserStatus, MatchUserStatusEnum, Room } from 'features/match/match.model';
 import { ISMFormData } from 'pages';
 import { FilterOption } from 'pages/Main/sm.model';
 
@@ -10,11 +19,14 @@ interface MatchState {
     loading: boolean;
     error: null | string;
     room: Room[];
+    movies: any[];
+    currentMovie: any;
     currentPage: number;
     currentSessionLabel: string | null;
     currentFormData: ISMFormData | null;
     role: number;
     roomKey: string | null;
+    userStatus: string;
 }
 
 const initialState: MatchState = {
@@ -22,11 +34,14 @@ const initialState: MatchState = {
     loading: false,
     error: null,
     room: [],
+    movies: [],
+    currentMovie: null,
     currentPage: 1,
     currentSessionLabel: null,
     currentFormData: null,
     role: 0,
     roomKey: null,
+    userStatus: MatchUserStatusEnum.ACTIVE,
 };
 
 export const createRoom = createAsyncThunk<Room, number, { rejectValue: string }>(
@@ -107,12 +122,94 @@ export const doesUserHaveRoomRedux = createAsyncThunk(
     }
 );
 
+export const startMatchRedux = createAsyncThunk(
+    'match/startMatch',
+    async (key: string, { rejectWithValue }) => {
+        try {
+            const response = await startMatchService(key);
+            return response.data;
+
+        } catch (error) {
+            return rejectWithValue('Failed to start match');
+        }
+    }
+)
+
+export const getMoviesRedux = createAsyncThunk(
+    'match/getMovies',
+    async ({ roomKey }: { roomKey: string }, { rejectWithValue }) => {
+        try {
+            const response = await getMovieData(roomKey);
+            return response;
+        } catch (error) {
+            return rejectWithValue('Failed to fetch movie data');
+        }
+    }
+)
+
+export const postLikeMovieRedux = createAsyncThunk(
+    'match/likeMovie',
+    async (like: MatchLikeFields, { rejectWithValue }) => {
+        try {
+            const response = await postLikeMovie(like);
+            return response;
+        } catch (error) {
+            return rejectWithValue('Failed to post movie like');
+        }
+    }
+)
+
+export const updateUserStatusRedux = createAsyncThunk(
+    'match/userStatus',
+    async (userStatus: MatchUserStatus, { rejectWithValue }) => {
+        try {
+            const response = await updateUserStatus(userStatus);
+            return response;
+        } catch (error) {
+            return rejectWithValue('Failed to post movie like');
+        }
+    }
+)
+
+export const getUserStatusByUserIdRedux = createAsyncThunk(
+    'match/getUserStatusByUserId',
+    async ({ roomKey, userId }: { roomKey: string, userId: number }, { rejectWithValue }) => {
+        try {
+            const response = await getUserStatusByUserId(roomKey, userId);
+            console.log(response);
+            return response;
+        } catch (error) {
+            return rejectWithValue('Failed to post movie like');
+        }
+    }
+)
+
+export const checkStatusRedux = createAsyncThunk(
+    'match/checkStatus',
+    async ({ roomKey, userId }: { roomKey: string, userId: number }, { rejectWithValue }) => {
+        try {
+            await checkStatus(roomKey, userId);
+        } catch (error) {
+            return rejectWithValue('Failed to check user status');
+        }
+    }
+);
+
 const matchSlice = createSlice({
     name: 'match',
     initialState,
     reducers: {
         updateRoomUsers: (state, action) => {
             state.room = action.payload;
+        },
+        setMovie(state, action) {
+            state.currentMovie = action.payload;
+        },
+        clearMovies(state) {
+            state.movies = [];
+        },
+        updateCurrentMovieReducer(state, action) {
+            state.currentMovie = action.payload;
         },
     },
     extraReducers: (builder) => {
@@ -186,6 +283,8 @@ const matchSlice = createSlice({
             if (action.payload.key) {
                 state.roomKey = action.payload.key;
                 state.role = 1;
+            } else {
+                state.roomKey = null;
             }
             if (action.payload.match) {
                 state.room = action.payload.match as any;
@@ -195,8 +294,73 @@ const matchSlice = createSlice({
             state.loading = false;
             state.error = action.payload as string;
         });
+        builder.addCase(startMatchRedux.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        });
+        builder.addCase(startMatchRedux.fulfilled, (state, action) => {
+            state.loading = false;
+            state.currentMovie = action.payload;
+        });
+        builder.addCase(startMatchRedux.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.error.message || 'Unknown error occurred';
+        });
+        builder.addCase(getMoviesRedux.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        });
+        builder.addCase(getMoviesRedux.fulfilled, (state, action) => {
+            state.loading = false;
+            state.movies = action.payload;
+        });
+        builder.addCase(getMoviesRedux.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload as string;
+        });
+        builder.addCase(postLikeMovieRedux.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        });
+        builder.addCase(postLikeMovieRedux.fulfilled, (state, action) => {
+            state.loading = false;
+        });
+        builder.addCase(postLikeMovieRedux.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload as string;
+        });
+        builder.addCase(updateUserStatusRedux.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        });
+        builder.addCase(updateUserStatusRedux.fulfilled, (state, action) => {
+            state.loading = false;
+        });
+        builder.addCase(updateUserStatusRedux.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload as string;
+        });
+        builder.addCase(getUserStatusByUserIdRedux.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        });
+        builder.addCase(getUserStatusByUserIdRedux.fulfilled, (state, action) => {
+            state.loading = false;
+            state.userStatus = action.payload?.userStatus as string;
+        });
+        builder.addCase(getUserStatusByUserIdRedux.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload as string;
+        });
+        builder
+            .addCase(checkStatusRedux.fulfilled, (state) => {
+                state.loading = false;
+            })
+            .addCase(checkStatusRedux.rejected, (state, action) => {
+                state.error = action.payload as string;
+            });
     }
 });
 
-export const { updateRoomUsers } = matchSlice.actions;
+export const { updateRoomUsers, updateCurrentMovieReducer, setMovie } = matchSlice.actions;
 export default matchSlice.reducer;
