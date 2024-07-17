@@ -6,6 +6,7 @@ import AppContainer from './src/app';
 import { store } from './src/redux/configure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import socketService from 'features/match/match-socketService';
+import { API } from 'shared';
 
 function App(): React.JSX.Element {
 
@@ -23,7 +24,7 @@ function App(): React.JSX.Element {
       i18n.changeLanguage(currentLanguage);
     }
     setLocalization();
-    socketService.connect('https://movie-match-x5ue.onrender.com');
+    socketService.connect(API.BASE_URL);
 
     return () => {
       socketService.disconnect();

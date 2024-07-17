@@ -8,19 +8,19 @@ import { AppDispatch } from "redux/configure-store";
 import { joinRoom } from "redux/matchSlice";
 import { AppConstants, Loader, SimpleButton, SimpleInput } from "shared"
 import { Color } from "styles/colors";
+import useFetchUserProfile from "shared/hooks/getUserProfile";
 
 const { width } = Dimensions.get('window');
 
 export const MatchJoinLobby: FC = () => {
     const dispatch: AppDispatch = useDispatch();
     const navigation = useNavigation<NavigationProp<ParamListBase>>();
-    // const { user } = useSelector((state: any) => state.userSlice);
     const { loading, error, room } = useSelector((state: any) => state.matchSlice);
+    const { user, loading: userLoading, error: userError } = useFetchUserProfile();
     const [key, setKey] = useState<string>(AppConstants.EMPTY_VALUE);
     const [isFormValidInput, setIsFormValidInput] = useState<boolean>(false);
 
     useEffect(() => {
-        console.log('room key: ', room)
         if (room.roomKey && !loading) {
             navigation.navigate(AppRoutes.MATCH_NAVIGATOR, {
                 screen: AppRoutes.MATCH_LOBBY,
@@ -41,7 +41,6 @@ export const MatchJoinLobby: FC = () => {
 
     const onHandleSubmit = (userId: number) => {
         if (isFormValidInput) {
-            console.log({key, userId})
             dispatch(joinRoom({ key: Number(key), userId: userId }))
             .unwrap()
                 .then((newRoom: any) => {
@@ -71,7 +70,7 @@ export const MatchJoinLobby: FC = () => {
                 color={Color.BUTTON_RED}
                 titleColor={Color.WHITE}
                 buttonWidth={width - 32}
-                onHandlePress={() => onHandleSubmit(1)}
+                onHandlePress={() => onHandleSubmit(user.id)}
             />
             {loading ? <Loader /> : null}
         </View>

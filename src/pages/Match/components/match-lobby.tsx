@@ -11,7 +11,7 @@ import { MatchUserCard } from "./match-user-card";
 import { useTranslation } from "react-i18next";
 import { AppDispatch } from "redux/configure-store";
 import { MatchFilterModal } from "../ui";
-import { getMoviesRedux, startMatchRedux, updateRoomFiltersRedux, updateRoomUsers } from "redux/matchSlice";
+import { getMatchDataRedux, getMoviesRedux, startMatchRedux, updateRoomFiltersRedux, updateRoomUsers } from "redux/matchSlice";
 import { useUpdateFilters, useWebSocket } from "../hooks";
 
 type MatchLobbyProps = {
@@ -47,32 +47,41 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
             setFilters(data.filters);
         };
 
+        const matchUpdateSocket = (data: any) => {
+            if (data) {
+                dispatch(getMatchDataRedux(roomKey))
+            }
+        };
+
         socketService.filtersUpdateBroadcast(handleFiltersUpdated);
+        socketService.subscribeToMatchUpdates(matchUpdateSocket);
 
         if (dataFromSocket) {
             dispatch(updateRoomUsers(dataFromSocket));
         }
 
         socketService.subscribeToBroadcastMovies((data) => {
-            if(data) {
+            if (data) {
                 dispatch(getMoviesRedux({ roomKey }))
-                .then((action) => {
-                    const { payload } = action;
-                })
-                .catch((error) => {
-                    console.error('Ошибка при загрузке фильмов:', error);
-                });
+                    .then((action) => {
+                        const { payload } = action;
+                    })
+                    .catch((error) => {
+                        console.error('Ошибка при загрузке фильмов:', error);
+                    });
             }
         });
 
-        if(movies.data?.docs) {
+        console.log('room: ', room)
+        if (movies.data?.docs) {
             navigation.navigate('MatchSelectionMovie', { movie: currentMovie });
         }
 
-        
+
         return () => {
             socketService.unsubscribeFromRequestMatchUpdate();
             socketService.unsubscribeFromRequestMatchResponse();
+            socketService.unsubscribeFromMatchUpdates();
             // socketService.disconnect();
         };
     }, [dataFromSocket, socketService, room, dispatch, user.id, role, filters, currentMovie, movies.data?.docs]);
@@ -85,8 +94,7 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
         const actionResult = await dispatch(startMatchRedux(roomKey));
 
         try {
-            if (startMatchRedux.fulfilled.match(actionResult)) {
-            }
+            startMatchRedux.fulfilled.match(actionResult);
         } catch (error) {
             console.error('Failed to start the match:', error);
             Alert.alert('Error', 'Failed to start the match due to an unexpected error');

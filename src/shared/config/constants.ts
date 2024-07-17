@@ -1,5 +1,6 @@
 const API = {
     BASE_URL: 'https://movie-match-x5ue.onrender.com',
+    // 'https://movie-match-x5ue.onrender.com',
     // 'http://192.168.100.71:6001' ,
     KINOPOISK_URL: 'https://api.kinopoisk.dev/v1.4',
     LOGIN: '/auth/login',

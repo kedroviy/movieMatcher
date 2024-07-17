@@ -95,7 +95,6 @@ export const getMovieData = async (roomKey: string): Promise<any> => {
     if (response.ok) {
         return response
     } else {
-        console.error('Failed to get movies:', response);
         throw new Error('Failed to get movies');
     }
 }
@@ -145,3 +144,13 @@ export const checkStatus = async (roomKey: string, userId: number): Promise<void
         throw new Error('Failed to check status');
     }
 };
+
+export const getMatchData = async (roomKey: string): Promise<any> => {
+    const api = await createApi();
+    const response = await api.get<any>(`/match/specific-key-info/${roomKey}`);
+    if (response.ok) {
+        return response
+    } else {
+        throw new Error('Failed to get movies');
+    }
+}

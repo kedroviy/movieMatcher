@@ -135,7 +135,6 @@ const styles = StyleSheet.create({
         gap: 16,
     },
     text: {
-
         color: Color.WHITE
     }
 });

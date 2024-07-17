@@ -3,6 +3,7 @@ import { SMApiResponse, createRoomService, joinRoomService, leaveRoomService } f
 import {
     checkStatus,
     doesUserHaveRoomService,
+    getMatchData,
     getMovieData,
     getUserStatusByUserId,
     postLikeMovie,
@@ -13,6 +14,7 @@ import {
 import { MatchLikeFields, MatchUserStatus, MatchUserStatusEnum, Room } from 'features/match/match.model';
 import { ISMFormData } from 'pages';
 import { FilterOption } from 'pages/Main/sm.model';
+import { RootState } from './configure-store';
 
 interface MatchState {
     data: SMApiResponse | [];
@@ -27,6 +29,7 @@ interface MatchState {
     role: number;
     roomKey: string | null;
     userStatus: string;
+    requestStatus: { [key: string]: boolean };
 }
 
 const initialState: MatchState = {
@@ -42,16 +45,26 @@ const initialState: MatchState = {
     role: 0,
     roomKey: null,
     userStatus: MatchUserStatusEnum.ACTIVE,
+    requestStatus: {},
 };
 
-export const createRoom = createAsyncThunk<Room, number, { rejectValue: string }>(
+export const createRoom = createAsyncThunk<Room, number, { state: RootState, rejectValue: string }>(
     'match/createRoom',
-    async (userId, { rejectWithValue }) => {
+    async (userId, { getState, dispatch, rejectWithValue }) => {
+        const state = getState().matchSlice;
+        if (state.requestStatus['createRoom']) {
+            return rejectWithValue('Room creation already in progress');
+        }
+
+        dispatch(setRequestStatus({ request: 'createRoom', status: true }));
+
         try {
             const room = await createRoomService(userId);
             return room;
         } catch (error) {
             return rejectWithValue((error as any).message);
+        } finally {
+            dispatch(setRequestStatus({ request: 'createRoom', status: false }));
         }
     }
 );
@@ -195,6 +208,17 @@ export const checkStatusRedux = createAsyncThunk(
     }
 );
 
+export const getMatchDataRedux = createAsyncThunk(
+    'match/getMatchData',
+    async (roomKey: string, { rejectWithValue }) => {
+        try {
+            await getMatchData(roomKey);
+        } catch (error) {
+            return rejectWithValue('Failed to check user status');
+        }
+    }
+);
+
 const matchSlice = createSlice({
     name: 'match',
     initialState,
@@ -211,6 +235,10 @@ const matchSlice = createSlice({
         updateCurrentMovieReducer(state, action) {
             state.currentMovie = action.payload;
         },
+        setRequestStatus: (state, action) => {
+            const { request, status } = action.payload;
+            state.requestStatus[request] = status;
+        }
     },
     extraReducers: (builder) => {
         builder.addCase(createRoom.pending, (state) => {
@@ -359,8 +387,20 @@ const matchSlice = createSlice({
             .addCase(checkStatusRedux.rejected, (state, action) => {
                 state.error = action.payload as string;
             });
+        builder
+            .addCase(getMatchDataRedux.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(getMatchDataRedux.fulfilled, (state, action) => {
+                state.loading = false;
+                state.room = action.payload as any;
+            })
+            .addCase(getMatchDataRedux.rejected, (state, action) => {
+                state.error = action.payload as string;
+            });
     }
 });
 
-export const { updateRoomUsers, updateCurrentMovieReducer, setMovie } = matchSlice.actions;
+export const { updateRoomUsers, updateCurrentMovieReducer, setMovie, setRequestStatus } = matchSlice.actions;
 export default matchSlice.reducer;

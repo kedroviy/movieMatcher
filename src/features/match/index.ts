@@ -7,4 +7,5 @@ export {
     getMovieData,
     getUserStatusByUserId,
     checkStatus,
+    getMatchData,
 } from './match-service';
