@@ -1,11 +1,11 @@
 import { NavigationProp, ParamListBase, useNavigation } from "@react-navigation/native";
 import { AppRoutes } from "app/constants";
-import { FC } from "react"
+import { FC, useEffect } from "react"
 import { useTranslation } from "react-i18next";
 import { View, Text, StyleSheet, Image, Dimensions, ActivityIndicator } from "react-native"
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "redux/configure-store";
-import { createRoom } from "redux/matchSlice";
+import { createRoom, resetMovies } from "redux/matchSlice";
 import { SimpleButton } from "shared";
 import useFetchUserProfile from "shared/hooks/getUserProfile";
 import { Color } from "styles/colors";
@@ -20,7 +20,11 @@ export const MatchScreen: FC = () => {
     const { user, loading: userLoading, error: userError } = useFetchUserProfile();
     const { roomKey, loading: roomLoading, error: roomError } = useUserHasRoom(user?.id);
     const { loading: matchLoading, error: matchError } = useSelector((state: any) => state.matchSlice);
-    
+
+    useEffect(() => {
+        dispatch(resetMovies())
+    }, []);
+
     const handleCreateRoom = async (userId: number) => {
         if (roomKey) {
             navigation.navigate(AppRoutes.MATCH_NAVIGATOR, {
@@ -28,18 +32,16 @@ export const MatchScreen: FC = () => {
                 params: { lobbyName: roomKey },
             });
         } else {
-            dispatch(createRoom(userId))
-                .unwrap()
-                .then((newRoom: any) => {
-                    console.log('Room created:', newRoom);
-                    navigation.navigate(AppRoutes.MATCH_NAVIGATOR, {
-                        screen: AppRoutes.MATCH_LOBBY,
-                        params: { lobbyName: newRoom.roomKey },
-                    });
-                })
-                .catch((errMsg) => {
-                    console.error('Error creating room:', errMsg);
+            try {
+                const newRoom: any = await dispatch(createRoom(userId)).unwrap();
+                console.log('Room created:', newRoom);
+                navigation.navigate(AppRoutes.MATCH_NAVIGATOR, {
+                    screen: AppRoutes.MATCH_LOBBY,
+                    params: { lobbyName: newRoom.roomKey },
                 });
+            } catch (errMsg) {
+                console.error('Error creating room:', errMsg);
+            }
         }
     };
 

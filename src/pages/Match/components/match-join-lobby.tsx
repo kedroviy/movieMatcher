@@ -41,8 +41,8 @@ export const MatchJoinLobby: FC = () => {
 
     const onHandleSubmit = (userId: number) => {
         if (isFormValidInput) {
-            dispatch(joinRoom({ key: Number(key), userId: userId }))
-            .unwrap()
+            dispatch(joinRoom({ key: key, userId: userId }))
+                .unwrap()
                 .then((newRoom: any) => {
                     navigation.navigate(AppRoutes.MATCH_NAVIGATOR, {
                         screen: AppRoutes.MATCH_LOBBY,

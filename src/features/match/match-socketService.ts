@@ -51,6 +51,10 @@ class SocketService {
         this.socket?.on('matchUpdated', callback);
     }
 
+    subscribeToJoinNewUser(callback: (data: any) => void) {
+        this.socket?.emit('Join new user to match', callback);
+    }
+
     subscribeToBroadcastMessage(callback: (data: any) => void) {
         console.log('broadcastMessage: ')
         this.socket?.on('broadcastMessage', callback);
@@ -82,6 +86,10 @@ class SocketService {
         this.socket?.on('filtersUpdated', callback);
     }
 
+
+    unsubscribeToJoinNewUser() {
+        this.socket?.off('Join new user to match');
+    };
 
     unsubscribeBroadcastMovies() {
         this.socket?.off('broadcastMovies');

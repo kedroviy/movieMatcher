@@ -20,7 +20,7 @@ export const createRoomService = async (userId: number): Promise<any> => {
     }
 };
 
-export const joinRoomService = async (key: number, userId: number): Promise<any> => {
+export const joinRoomService = async (key: string, userId: number): Promise<any> => {
     const api = await createApi();
     const response = await api.post<ApiResponse<Room>>(`/rooms/join/${key}`, { userId });
     console.log('response service: ', response)

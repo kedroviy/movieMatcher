@@ -71,9 +71,10 @@ export const createRoom = createAsyncThunk<Room, number, { state: RootState, rej
 
 export const joinRoom = createAsyncThunk(
     'match/joinRoom',
-    async ({ key, userId }: { key: number; userId: number }, { rejectWithValue }) => {
+    async ({ key, userId }: { key: string; userId: number }, { dispatch, rejectWithValue }) => {
         try {
             const response = await joinRoomService(key, userId);
+            dispatch(setRoomKey(key))
             return response;
         } catch (error) {
             return rejectWithValue((error as any).message);
@@ -150,7 +151,7 @@ export const startMatchRedux = createAsyncThunk(
 
 export const getMoviesRedux = createAsyncThunk(
     'match/getMovies',
-    async ({ roomKey }: { roomKey: string }, { rejectWithValue }) => {
+    async (roomKey: string, { rejectWithValue }) => {
         try {
             const response = await getMovieData(roomKey);
             return response;
@@ -238,6 +239,12 @@ const matchSlice = createSlice({
         setRequestStatus: (state, action) => {
             const { request, status } = action.payload;
             state.requestStatus[request] = status;
+        },
+        resetMovies: (state) => {
+            state.movies = [];
+        },
+        setRoomKey: (state, action) => {
+            state.roomKey = action.payload
         }
     },
     extraReducers: (builder) => {
@@ -402,5 +409,12 @@ const matchSlice = createSlice({
     }
 });
 
-export const { updateRoomUsers, updateCurrentMovieReducer, setMovie, setRequestStatus } = matchSlice.actions;
+export const {
+    updateRoomUsers,
+    updateCurrentMovieReducer,
+    setMovie,
+    setRequestStatus,
+    resetMovies,
+    setRoomKey,
+} = matchSlice.actions;
 export default matchSlice.reducer;

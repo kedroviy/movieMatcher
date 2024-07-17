@@ -43,28 +43,35 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
     }, [lobbyName, roomKey]);
 
     useEffect(() => {
+        dispatch(getMoviesRedux({ roomKey }))
+    }, []);
+
+    useEffect(() => {
         const handleFiltersUpdated = (data: any) => {
             setFilters(data.filters);
         };
 
         const matchUpdateSocket = (data: any) => {
+            console.log('match updated join:', data);
             if (data) {
                 dispatch(getMatchDataRedux(roomKey))
             }
         };
 
         socketService.filtersUpdateBroadcast(handleFiltersUpdated);
-        socketService.subscribeToMatchUpdates(matchUpdateSocket);
+        socketService.subscribeToJoinNewUser(matchUpdateSocket);
 
         if (dataFromSocket) {
             dispatch(updateRoomUsers(dataFromSocket));
         }
 
         socketService.subscribeToBroadcastMovies((data) => {
+            console.log('broadcast movies lobby: ', data)
             if (data) {
-                dispatch(getMoviesRedux({ roomKey }))
+                dispatch(getMoviesRedux(roomKey))
                     .then((action) => {
-                        const { payload } = action;
+                        console.log('action: ', action);
+                        // navigation.navigate('MatchSelectionMovie', { movie: currentMovie });
                     })
                     .catch((error) => {
                         console.error('Ошибка при загрузке фильмов:', error);
@@ -77,12 +84,11 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
             navigation.navigate('MatchSelectionMovie', { movie: currentMovie });
         }
 
-
         return () => {
             socketService.unsubscribeFromRequestMatchUpdate();
             socketService.unsubscribeFromRequestMatchResponse();
             socketService.unsubscribeFromMatchUpdates();
-            // socketService.disconnect();
+            socketService.unsubscribeToJoinNewUser();
         };
     }, [dataFromSocket, socketService, room, dispatch, user.id, role, filters, currentMovie, movies.data?.docs]);
 
@@ -174,7 +180,16 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
                     ))}
                 </ScrollView>
             </View>
-            {Boolean(role) &&
+            {movies.data?.docs ?
+                <SimpleButton
+                    title='Continue Match'
+                    color={Color.BUTTON_RED}
+                    titleColor={Color.WHITE}
+                    buttonWidth={width - 32}
+                    onHandlePress={() => navigation.navigate('MatchSelectionMovie', { movie: currentMovie })}
+                    disabled={loading}
+                /> :
+                Boolean(role) &&
                 <SimpleButton
                     title='Start Match'
                     color={Color.BUTTON_RED}
@@ -182,7 +197,8 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
                     buttonWidth={width - 32}
                     onHandlePress={handleOnSubmit}
                     disabled={loading}
-                />}
+                />
+            }
         </View >
     )
 };
