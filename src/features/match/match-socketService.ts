@@ -19,22 +19,18 @@ class SocketService {
     }
 
     isConnected(): boolean {
-        console.log(this.socket?.connected);
         return this.socket?.connected || false;
     }
 
     joinRoom(roomKey: string, userId: string): void {
-        console.log(`Attempting to join room: ${roomKey} with user ID: ${userId}`);
         this.socket?.emit("joinRoom", { roomKey, userId });
     }
 
     startMatch(roomKey: string) {
-        console.log('start match websocket svice', roomKey)
         this.socket?.emit('startMatch', { roomKey });
     }
 
     requestMatchUpdate(roomKey: string) {
-        console.log('requestMatchData: ', { roomKey })
         this.socket?.emit('requestMatchData', { roomKey });
     }
 
@@ -47,7 +43,6 @@ class SocketService {
     }
 
     subscribeToMatchUpdates(callback: (data: any) => void) {
-        console.log('match socket updates');
         this.socket?.on('matchUpdated', callback);
     }
 
@@ -56,12 +51,10 @@ class SocketService {
     }
 
     subscribeToBroadcastMessage(callback: (data: any) => void) {
-        console.log('broadcastMessage: ')
         this.socket?.on('broadcastMessage', callback);
     }
 
     subscribeToBroadcastMovies(callback: <T>(data: T) => void) {
-        console.log('broadcast movies work...');
         this.socket?.on('broadcastMovies', callback);
     }
 
@@ -82,7 +75,6 @@ class SocketService {
     };
 
     filtersUpdateBroadcast(callback: (data: any) => void): void {
-        console.log('soket filters update')
         this.socket?.on('filtersUpdated', callback);
     }
 

@@ -23,7 +23,6 @@ const { width } = Dimensions.get('window')
 export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
     const { lobbyName } = route.params;
     const navigation = useNavigation<NavigationProp<ParamListBase>>();
-    const updateFilters = useUpdateFilters();
     const dataFromSocket = useWebSocket();
     const dispatch: AppDispatch = useDispatch();
     const { t } = useTranslation();
@@ -43,7 +42,7 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
     }, [lobbyName, roomKey]);
 
     useEffect(() => {
-        dispatch(getMoviesRedux({ roomKey }))
+        dispatch(getMoviesRedux(roomKey))
     }, []);
 
     useEffect(() => {
@@ -52,7 +51,6 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
         };
 
         const matchUpdateSocket = (data: any) => {
-            console.log('match updated join:', data);
             if (data) {
                 dispatch(getMatchDataRedux(roomKey))
             }
@@ -70,8 +68,6 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
             if (data) {
                 dispatch(getMoviesRedux(roomKey))
                     .then((action) => {
-                        console.log('action: ', action);
-                        // navigation.navigate('MatchSelectionMovie', { movie: currentMovie });
                     })
                     .catch((error) => {
                         console.error('Ошибка при загрузке фильмов:', error);
@@ -79,7 +75,6 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
             }
         });
 
-        console.log('room: ', room)
         if (movies.data?.docs) {
             navigation.navigate('MatchSelectionMovie', { movie: currentMovie });
         }
@@ -98,15 +93,11 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
 
     const handleOnSubmit = async () => {
         const actionResult = await dispatch(startMatchRedux(roomKey));
-
         try {
             startMatchRedux.fulfilled.match(actionResult);
         } catch (error) {
-            console.error('Failed to start the match:', error);
             Alert.alert('Error', 'Failed to start the match due to an unexpected error');
         }
-
-
     };
 
     const handleModalClose = async (saveChanges: any) => {
@@ -114,22 +105,18 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
         if (saveChanges) {
             const handleFiltersUpdated = (data: any) => {
                 try {
-                    console.log('Filters updated for room:', data.roomId);
-                    console.log('New filters:', data.filters);
                     setFilters(data.filters);
                 } catch (error) {
-                    console.error('Error parsing filters:', error);
+                    throw new Error(error as string);
                 }
             };
             await dispatch(updateRoomFiltersRedux({ userId: user.id, roomId: room[0].roomId, filters: filters } as any))
                 .unwrap()
                 .then(response => {
-                    console.log('Update successful:', response);
                     socketService.filtersUpdateBroadcast(handleFiltersUpdated);
                     Alert.alert("Success", "Filters updated successfully.");
                 })
                 .catch(error => {
-                    console.error('Failed to update filters:', error);
                     Alert.alert("Error", typeof error === 'string' ? error : 'Failed to update filters due to an unexpected error');
                 });
         }

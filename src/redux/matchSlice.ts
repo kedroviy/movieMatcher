@@ -115,7 +115,6 @@ export const updateRoomFiltersRedux = createAsyncThunk(
     async ({ roomId, filters }: { roomId: string, filters: FilterOption }, { rejectWithValue }) => {
         try {
             const response = await updateRoomFilters(roomId, filters);
-            console.log('response in redux: ', response)
             if (response.ok) {
                 return response.data;
             }
@@ -190,7 +189,6 @@ export const getUserStatusByUserIdRedux = createAsyncThunk(
     async ({ roomKey, userId }: { roomKey: string, userId: number }, { rejectWithValue }) => {
         try {
             const response = await getUserStatusByUserId(roomKey, userId);
-            console.log(response);
             return response;
         } catch (error) {
             return rejectWithValue('Failed to post movie like');

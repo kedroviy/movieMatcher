@@ -10,8 +10,7 @@ import { Color } from "styles/colors";
 import { SMSwipeCards } from "pages/Main/components/sm-swipe-cards";
 import { AppDispatch } from "redux/configure-store";
 import { useIsLastCard, useLikeMovieQueue } from "../hooks";
-import { MatchUserStatus, MatchUserStatusEnum } from "features/match/match.model";
-import { checkStatusRedux, getMoviesRedux, updateUserStatusRedux } from "redux/matchSlice";
+import { checkStatusRedux, getMoviesRedux } from "redux/matchSlice";
 import { MatchStatusCard } from "../ui/match-status-card";
 import { useGetUserStatusByUserId } from "../hooks/useGetUserStatusByUserId";
 
@@ -30,16 +29,14 @@ export const MatchSelectionMovie: FC = () => {
     const isLastCard = useIsLastCard(currentCardIndex, movies.data?.docs.length || 0);
     const useSwiper = useRef<Swiper<any>>(null);
 
-    // console.log('render');
-    // console.log('isLastCard: ', isLastCard);
     useEffect(() => {
         if (movies.data?.docs.length > 0) {
             setIsInitialLoading(false);
         }
 
         socketService.subscribeToBroadcastMovies((data: any) => {
-            if (data.messageForClient === 'Get next page movies') {
-                dispatch(getMoviesRedux({ roomKey }))
+            if (data) {
+                dispatch(getMoviesRedux(roomKey))
                     .then((action) => {
                         const { payload } = action;
                         setIsWaitStatus(false);
@@ -50,12 +47,11 @@ export const MatchSelectionMovie: FC = () => {
                     });
             }
         });
-        console.log('movies in selection: ', JSON.stringify(movies.data?.docs));
 
         return () => {
             socketService.unsubscribeBroadcastMovies();
         };
-    }, [socketService, movies.data?.docs.length]);
+    }, [socketService, movies.data?.docs.length, currentCardIndex, isLastCard]);
 
     useEffect(() => {
         if (isLastCard) {
@@ -64,7 +60,7 @@ export const MatchSelectionMovie: FC = () => {
                     await dispatch(checkStatusRedux({ roomKey, userId: user.id })).unwrap();
                     setIsWaitStatus(true);
                 } catch (error) {
-                    console.error('Error updating user status or checking status:', error);
+                    throw new Error(error as string);
                 }
             };
 
@@ -136,8 +132,10 @@ export const MatchSelectionMovie: FC = () => {
                             onSwipedLeft={() => console.log('dislike')}
                             onSwipedRight={handleLike}
                             onSwiped={handleOnSwiped}
-                            overlayLabels={overlayLabels} />
-                    </View><View style={{
+                            overlayLabels={overlayLabels}
+                        />
+                    </View>
+                    <View style={{
                         flex: 0.2,
                         flexDirection: 'row',
                         alignItems: 'center',
@@ -146,13 +144,16 @@ export const MatchSelectionMovie: FC = () => {
                     }}>
                         <SMControlBar
                             onHandleLike={() => useSwiper.current?.swipeRight()}
-                            onHandleDislike={() => useSwiper.current?.swipeLeft()} />
-                    </View></> :
+                            onHandleDislike={() => useSwiper.current?.swipeLeft()}
+                        />
+                    </View>
+                </> :
                 <MatchStatusCard
                     imageSource={<WaitingSvgIcon />}
                     title="Wait until others make their choice"
                     description="Wait until others make their choice"
-                />}
+                />
+            }
         </View>
     )
 };
