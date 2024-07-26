@@ -30,6 +30,7 @@ interface MatchState {
     roomKey: string | null;
     userStatus: string;
     requestStatus: { [key: string]: boolean };
+    matchStatus: string;
 }
 
 const initialState: MatchState = {
@@ -46,6 +47,7 @@ const initialState: MatchState = {
     roomKey: null,
     userStatus: MatchUserStatusEnum.ACTIVE,
     requestStatus: {},
+    matchStatus: 'pending',
 };
 
 export const createRoom = createAsyncThunk<Room, number, { state: RootState, rejectValue: string }>(
@@ -140,7 +142,7 @@ export const startMatchRedux = createAsyncThunk(
     async (key: string, { rejectWithValue }) => {
         try {
             const response = await startMatchService(key);
-            return response.data;
+            return response.data.status;
 
         } catch (error) {
             return rejectWithValue('Failed to start match');
@@ -153,6 +155,7 @@ export const getMoviesRedux = createAsyncThunk(
     async (roomKey: string, { rejectWithValue }) => {
         try {
             const response = await getMovieData(roomKey);
+            console.log('get movies redux:', response);
             return response;
         } catch (error) {
             return rejectWithValue('Failed to fetch movie data');
@@ -211,7 +214,9 @@ export const getMatchDataRedux = createAsyncThunk(
     'match/getMatchData',
     async (roomKey: string, { rejectWithValue }) => {
         try {
-            await getMatchData(roomKey);
+            const response = await getMatchData(roomKey);
+            console.log('get match data: ', response)
+            return response;
         } catch (error) {
             return rejectWithValue('Failed to check user status');
         }
@@ -333,7 +338,7 @@ const matchSlice = createSlice({
         });
         builder.addCase(startMatchRedux.fulfilled, (state, action) => {
             state.loading = false;
-            state.currentMovie = action.payload;
+            state.matchStatus = action.payload;
         });
         builder.addCase(startMatchRedux.rejected, (state, action) => {
             state.loading = false;
@@ -392,18 +397,17 @@ const matchSlice = createSlice({
             .addCase(checkStatusRedux.rejected, (state, action) => {
                 state.error = action.payload as string;
             });
-        builder
-            .addCase(getMatchDataRedux.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
-            .addCase(getMatchDataRedux.fulfilled, (state, action) => {
-                state.loading = false;
-                state.room = action.payload as any;
-            })
-            .addCase(getMatchDataRedux.rejected, (state, action) => {
-                state.error = action.payload as string;
-            });
+        builder.addCase(getMatchDataRedux.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        })
+        builder.addCase(getMatchDataRedux.fulfilled, (state, action) => {
+            state.loading = false;
+            state.room = action.payload as any;
+        })
+        builder.addCase(getMatchDataRedux.rejected, (state, action) => {
+            state.error = action.payload as string;
+        });
     }
 });
 

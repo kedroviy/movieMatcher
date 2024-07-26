@@ -10,9 +10,10 @@ import { Color } from "styles/colors";
 import { SMSwipeCards } from "pages/Main/components/sm-swipe-cards";
 import { AppDispatch } from "redux/configure-store";
 import { useIsLastCard, useLikeMovieQueue } from "../hooks";
-import { checkStatusRedux, getMoviesRedux } from "redux/matchSlice";
+import { checkStatusRedux, getMoviesRedux, updateUserStatusRedux } from "redux/matchSlice";
 import { MatchStatusCard } from "../ui/match-status-card";
 import { useGetUserStatusByUserId } from "../hooks/useGetUserStatusByUserId";
+import { MatchUserStatusEnum } from "features/match/match.model";
 
 const { width } = Dimensions.get('window');
 
@@ -30,35 +31,38 @@ export const MatchSelectionMovie: FC = () => {
     const useSwiper = useRef<Swiper<any>>(null);
 
     useEffect(() => {
-        if (movies.data?.docs.length > 0) {
+        if (movies.data?.docs.length) {
             setIsInitialLoading(false);
         }
-
+    
         socketService.subscribeToBroadcastMovies((data: any) => {
-            if (data) {
-                dispatch(getMoviesRedux(roomKey))
-                    .then((action) => {
-                        const { payload } = action;
-                        setIsWaitStatus(false);
-                        setCurrentCardIndex(0);
-                    })
-                    .catch((error) => {
-                        console.error('Ошибка при загрузке фильмов:', error);
-                    });
-            }
+            console.log('broadcasting in selection component?: ', data)
+            dispatch(getMoviesRedux(roomKey))
+                .then((action) => {
+                    setCurrentCardIndex(0);
+                    setIsWaitStatus(false);
+                    const { payload } = action;
+                })
+                .catch((error) => {
+                    console.error('Ошибка при загрузке фильмов:', error);
+                });
         });
 
         return () => {
             socketService.unsubscribeBroadcastMovies();
         };
-    }, [socketService, movies.data?.docs.length, currentCardIndex, isLastCard]);
+    }, [socketService, movies.data?.docs.length, currentCardIndex, isLastCard, isWaitStatus]);
 
     useEffect(() => {
         if (isLastCard) {
+            setIsWaitStatus(true);
             const checkUserStatus = async () => {
                 try {
-                    await dispatch(checkStatusRedux({ roomKey, userId: user.id })).unwrap();
-                    setIsWaitStatus(true);
+                    console.log('update status')
+                    await dispatch(updateUserStatusRedux(
+                        { roomKey: roomKey, userId: user.id, userStatus: MatchUserStatusEnum.WAITING }
+                    ));
+                    await dispatch(checkStatusRedux({ roomKey: roomKey, userId: user.id })).unwrap();
                 } catch (error) {
                     throw new Error(error as string);
                 }
@@ -66,7 +70,7 @@ export const MatchSelectionMovie: FC = () => {
 
             checkUserStatus();
         }
-    }, [roomKey, user.id, currentCardIndex, isLastCard]);
+    }, [roomKey, user.id, isLastCard]);
 
     const handleOnSwiped = useCallback(() => {
         setCurrentCardIndex(prevIndex => prevIndex + 1);

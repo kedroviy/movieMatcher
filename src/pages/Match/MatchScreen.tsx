@@ -34,13 +34,13 @@ export const MatchScreen: FC = () => {
         } else {
             try {
                 const newRoom: any = await dispatch(createRoom(userId)).unwrap();
-                console.log('Room created:', newRoom);
+
                 navigation.navigate(AppRoutes.MATCH_NAVIGATOR, {
                     screen: AppRoutes.MATCH_LOBBY,
                     params: { lobbyName: newRoom.roomKey },
                 });
             } catch (errMsg) {
-                console.error('Error creating room:', errMsg);
+                throw new Error(errMsg as string);
             }
         }
     };

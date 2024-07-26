@@ -1,5 +1,14 @@
 import { FC, SetStateAction, useCallback, useEffect, useRef, useState } from "react"
-import { Alert, Dimensions, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { 
+    Alert, 
+    Dimensions, 
+    RefreshControl, 
+    ScrollView, 
+    StyleSheet, 
+    Text, 
+    TouchableOpacity, 
+    View,
+} from "react-native"
 import { NavigationProp, ParamListBase, RouteProp, useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -11,8 +20,14 @@ import { MatchUserCard } from "./match-user-card";
 import { useTranslation } from "react-i18next";
 import { AppDispatch } from "redux/configure-store";
 import { MatchFilterModal } from "../ui";
-import { getMatchDataRedux, getMoviesRedux, startMatchRedux, updateRoomFiltersRedux, updateRoomUsers } from "redux/matchSlice";
-import { useUpdateFilters, useWebSocket } from "../hooks";
+import { 
+    getMatchDataRedux, 
+    getMoviesRedux, 
+    startMatchRedux, 
+    updateRoomFiltersRedux, 
+    updateRoomUsers,
+} from "redux/matchSlice";
+import { useWebSocket } from "../hooks";
 
 type MatchLobbyProps = {
     route: RouteProp<RootStackParamList, 'MatchLobby'>;
@@ -23,14 +38,22 @@ const { width } = Dimensions.get('window')
 export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
     const { lobbyName } = route.params;
     const navigation = useNavigation<NavigationProp<ParamListBase>>();
-    const dataFromSocket = useWebSocket();
     const dispatch: AppDispatch = useDispatch();
     const { t } = useTranslation();
-    const { loading, room, role, roomKey, currentMovie, movies } = useSelector((state: any) => state.matchSlice);
+    const { 
+        loading, 
+        room, 
+        role, 
+        roomKey, 
+        currentMovie, 
+        movies,
+        matchStatus, 
+    } = useSelector((state: any) => state.matchSlice);
     const { user } = useSelector((state: any) => state.userSlice);
     const [refreshing, setRefreshing] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
     const [filters, setFilters] = useState<any>({});
+    const dataFromSocket = useWebSocket();
 
     const onRefresh = useCallback(async () => {
         setRefreshing(true);
@@ -42,7 +65,7 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
     }, [lobbyName, roomKey]);
 
     useEffect(() => {
-        dispatch(getMoviesRedux(roomKey))
+        dispatch(getMoviesRedux(room[0].roomKey))
     }, []);
 
     useEffect(() => {
@@ -50,54 +73,57 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
             setFilters(data.filters);
         };
 
-        const matchUpdateSocket = (data: any) => {
-            if (data) {
-                dispatch(getMatchDataRedux(roomKey))
-            }
+        const matchUpdateSocket = async () => {
+            await dispatch(getMatchDataRedux(room[0].roomKey))
         };
+
+        const handleBroadcasting = async () => {
+            await dispatch(getMoviesRedux(room[0].roomKey))
+        }
 
         socketService.filtersUpdateBroadcast(handleFiltersUpdated);
         socketService.subscribeToJoinNewUser(matchUpdateSocket);
+        socketService.subscribeToBroadcastMovies(handleBroadcasting);
 
         if (dataFromSocket) {
             dispatch(updateRoomUsers(dataFromSocket));
         }
 
-        socketService.subscribeToBroadcastMovies((data) => {
-            console.log('broadcast movies lobby: ', data)
-            if (data) {
-                dispatch(getMoviesRedux(roomKey))
-                    .then((action) => {
-                    })
-                    .catch((error) => {
-                        console.error('Ошибка при загрузке фильмов:', error);
-                    });
-            }
-        });
-
-        if (movies.data?.docs) {
+        if (movies.data?.docs.length) {
             navigation.navigate('MatchSelectionMovie', { movie: currentMovie });
         }
 
         return () => {
             socketService.unsubscribeFromRequestMatchUpdate();
             socketService.unsubscribeFromRequestMatchResponse();
+            socketService.unsubscribeBroadcastMovies();
             socketService.unsubscribeFromMatchUpdates();
             socketService.unsubscribeToJoinNewUser();
         };
-    }, [dataFromSocket, socketService, room, dispatch, user.id, role, filters, currentMovie, movies.data?.docs]);
+    }, [
+        dataFromSocket, 
+        socketService, 
+        room, 
+        dispatch, 
+        user.id, 
+        role, 
+        filters, 
+        movies.data?.docs.length,
+        matchStatus,
+    ]);
 
     const handleFiltersChange = (newFilters: SetStateAction<{}>) => {
         setFilters(newFilters);
     };
 
     const handleOnSubmit = async () => {
-        const actionResult = await dispatch(startMatchRedux(roomKey));
-        try {
-            startMatchRedux.fulfilled.match(actionResult);
-        } catch (error) {
-            Alert.alert('Error', 'Failed to start the match due to an unexpected error');
-        }
+        const actionResult = await dispatch(startMatchRedux(room[0].roomKey));
+        console.log('handleSubmit: ', actionResult);
+        // try {
+        //     startMatchRedux.fulfilled.match(actionResult);
+        // } catch (error) {
+        //     Alert.alert('Error', 'Failed to start the match due to an unexpected error');
+        // }
     };
 
     const handleModalClose = async (saveChanges: any) => {
@@ -110,7 +136,10 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
                     throw new Error(error as string);
                 }
             };
-            await dispatch(updateRoomFiltersRedux({ userId: user.id, roomId: room[0].roomId, filters: filters } as any))
+            await dispatch(updateRoomFiltersRedux(
+                { 
+                    userId: user.id, roomId: room[0].roomId, filters: filters
+                } as any))
                 .unwrap()
                 .then(response => {
                     socketService.filtersUpdateBroadcast(handleFiltersUpdated);
