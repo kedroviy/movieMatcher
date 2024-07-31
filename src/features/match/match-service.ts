@@ -1,6 +1,6 @@
 import { FilterOption } from "pages/Main/sm.model";
 import { createApi } from "./match-api";
-import { ApiResponse, MatchLikeFields, MatchUserStatus, MatchUserStatusEnum, Room, UserRoomResponse } from "./match.model";
+import { ApiResponse, Match, MatchLikeFields, MatchUserStatus, MatchUserStatusEnum, Room, UserRoomResponse } from "./match.model";
 import { handleApiResponse } from "./match.utils";
 
 export const createRoomService = async (userId: number): Promise<any> => {
@@ -48,16 +48,17 @@ export const updateRoomFilters = async (roomId: string, filters: FilterOption): 
     }
 }
 
-export const doesUserHaveRoomService = async (userId: number): Promise<UserRoomResponse> => {
+export const doesUserHaveRoomService = async (userId: number): Promise<Match | null> => {
     try {
         const api = await createApi();
-        const response = await api.get<ApiResponse<UserRoomResponse>>(`/rooms/user/${userId}/hasRoom`);
-        if (response.ok && response.data) {
-            return { message: 'room exist', match: response.data.match, key: response.data.key };
-        } else if (response.ok) {
-            return { message: 'room not found' };
+        const response: any = await api.get<ApiResponse<Match>>(`/match/${userId}`);
+        console.log(response);
+        if (response.ok) {
+            return response.data ?? null;
+        } else if (response.status === 404) {
+            return null;
         } else {
-            throw new Error('Failed to fetch room');
+            throw new Error(`Server Error: ${response.status}`);
         }
     } catch (error) {
         console.error('Failed to fetch room:', error);
@@ -92,7 +93,8 @@ export const getMovieData = async (roomKey: string): Promise<any> => {
 export const postLikeMovie = async (like: MatchLikeFields): Promise<any> => {
     const api = await createApi();
     const response = await api.post<any>(`/match/like`, like);
-    if (response.status === 200) {
+    console.log('like response: ', response);
+    if (response.status === 201) {
         return response;
     } else {
         throw new Error('Failed to like movie');

@@ -37,21 +37,30 @@ class SocketService {
     vote(roomKey: number, userId: string, movieId: number, vote: boolean) {
         this.socket?.emit('vote', { key: roomKey, userId, movieId, vote });
     }
-
+    
     subscribeToVoteEnded(callback: any) {
         this.socket?.emit('voteEnded', callback);
     }
 
+    requestBroadcatingMovies(message: string) {
+        this.socket?.emit('startBroadcastingMovies', message);
+    }
+
+    
     subscribeToMatchUpdates(callback: (data: any) => void) {
         this.socket?.on('matchUpdated', callback);
     }
-
+    
     subscribeToJoinNewUser(callback: (data: any) => void) {
         this.socket?.emit('Join new user to match', callback);
     }
-
+    
     subscribeToBroadcastMessage(callback: (data: any) => void) {
         this.socket?.on('broadcastMessage', callback);
+    }
+
+    subscribeToBroadcastMatchUpdate(callback: (data: any) => void ) {
+        this.socket?.emit('broadcastMatchDataUpdated', callback);
     }
 
     subscribeToBroadcastMovies(callback: <T>(data: T) => void) {
@@ -85,6 +94,10 @@ class SocketService {
 
     unsubscribeBroadcastMovies() {
         this.socket?.off('broadcastMovies');
+    }
+
+    unsubscribeToBroadcastMatchUpdate() {
+        this.socket?.off('broadcastMatchDataUpdated');
     }
 
     unsubscribeFromMatchUpdates() {

@@ -6,7 +6,7 @@ export function useWebSocket() {
     
     useEffect(() => {
         socketService.subscribeToMatchUpdates((dataFromSocket: any) => {
-            console.log(dataFromSocket)
+            console.log(dataFromSocket);
             setData(dataFromSocket);
         });
 

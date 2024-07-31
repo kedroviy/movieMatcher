@@ -5,7 +5,7 @@ import { doesUserHaveRoomRedux } from 'redux/matchSlice';
 
 const useUserHasRoom = (userId: number) => {
     const dispatch: AppDispatch = useDispatch();
-    const { roomKey, loading, error } = useSelector((state: RootState) => state.matchSlice);
+    const { currentUserMatch, loading, error } = useSelector((state: RootState) => state.matchSlice);
 
     useEffect(() => {
         if (userId) {
@@ -13,7 +13,7 @@ const useUserHasRoom = (userId: number) => {
         }
     }, [userId, dispatch]);
 
-    return { roomKey, loading, error };
+    return { currentUserMatch, loading, error };
 };
 
 export default useUserHasRoom;

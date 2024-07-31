@@ -19,7 +19,7 @@ const { width } = Dimensions.get('window');
 
 export const MatchSelectionMovie: FC = () => {
     const dispatch: AppDispatch = useDispatch();
-    const { roomKey, movies } = useSelector((state: any) => state.matchSlice);
+    const { currentUserMatch, movies } = useSelector((state: any) => state.matchSlice);
     const { user } = useSelector((state: any) => state.userSlice);
     const { likeMovie, isProcessing } = useLikeMovieQueue();
     const { userStatus } = useGetUserStatusByUserId(user?.id);
@@ -37,8 +37,9 @@ export const MatchSelectionMovie: FC = () => {
     
         socketService.subscribeToBroadcastMovies((data: any) => {
             console.log('broadcasting in selection component?: ', data)
-            dispatch(getMoviesRedux(roomKey))
+            dispatch(getMoviesRedux(currentUserMatch?.roomKey))
                 .then((action) => {
+                    console.log('get movies data, selection somponent: ', action);
                     setCurrentCardIndex(0);
                     setIsWaitStatus(false);
                     const { payload } = action;
@@ -60,9 +61,9 @@ export const MatchSelectionMovie: FC = () => {
                 try {
                     console.log('update status')
                     await dispatch(updateUserStatusRedux(
-                        { roomKey: roomKey, userId: user.id, userStatus: MatchUserStatusEnum.WAITING }
+                        { roomKey: currentUserMatch?.roomKey, userId: user.id, userStatus: MatchUserStatusEnum.WAITING }
                     ));
-                    await dispatch(checkStatusRedux({ roomKey: roomKey, userId: user.id })).unwrap();
+                    await dispatch(checkStatusRedux({ roomKey: currentUserMatch?.roomKey, userId: user.id })).unwrap();
                 } catch (error) {
                     throw new Error(error as string);
                 }
@@ -70,21 +71,22 @@ export const MatchSelectionMovie: FC = () => {
 
             checkUserStatus();
         }
-    }, [roomKey, user.id, isLastCard]);
+    }, [currentUserMatch?.roomKey, user.id, isLastCard]);
 
     const handleOnSwiped = useCallback(() => {
         setCurrentCardIndex(prevIndex => prevIndex + 1);
     }, []);
 
     const handleLike = useCallback(() => {
+        console.log(currentUserMatch?.roomKey)
         if (movies.data?.docs[currentCardIndex]) {
             likeMovie({
                 userId: user.id,
-                roomKey: roomKey!,
+                roomKey: currentUserMatch?.roomKey!,
                 movieId: movies.data.docs[currentCardIndex].id,
             });
         }
-    }, [currentCardIndex, likeMovie, movies.data?.docs, roomKey, user.id]);
+    }, [currentCardIndex, likeMovie, movies.data?.docs, currentUserMatch?.roomKey, user.id]);
 
     const overlayLabels = useMemo(() => ({
         left: {

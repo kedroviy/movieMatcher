@@ -18,7 +18,7 @@ export const MatchScreen: FC = () => {
     const dispatch: AppDispatch = useDispatch();
     const { t } = useTranslation();
     const { user, loading: userLoading, error: userError } = useFetchUserProfile();
-    const { roomKey, loading: roomLoading, error: roomError } = useUserHasRoom(user?.id);
+    const { currentUserMatch, loading: roomLoading, error: roomError } = useUserHasRoom(user?.id);
     const { loading: matchLoading, error: matchError } = useSelector((state: any) => state.matchSlice);
 
     useEffect(() => {
@@ -26,10 +26,10 @@ export const MatchScreen: FC = () => {
     }, []);
 
     const handleCreateRoom = async (userId: number) => {
-        if (roomKey) {
+        if (currentUserMatch?.roomKey) {
             navigation.navigate(AppRoutes.MATCH_NAVIGATOR, {
                 screen: AppRoutes.MATCH_LOBBY,
-                params: { lobbyName: roomKey },
+                params: { lobbyName: currentUserMatch?.roomKey },
             });
         } else {
             try {
@@ -83,7 +83,7 @@ export const MatchScreen: FC = () => {
                     <SimpleButton
                         title={userLoading
                             ? t('match_movie.main_match_screen.loading')
-                            : t(roomKey
+                            : t(currentUserMatch?.roomKey
                                 ? 'match_movie.main_match_screen.reconnect_lobby_btn'
                                 : 'match_movie.main_match_screen.create_lobby_btn'
                             )}

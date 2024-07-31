@@ -11,7 +11,7 @@ import {
     updateRoomFilters,
     updateUserStatus,
 } from 'features/match/match-service';
-import { MatchLikeFields, MatchUserStatus, MatchUserStatusEnum, Room } from 'features/match/match.model';
+import { Match, MatchLikeFields, MatchUserStatus, MatchUserStatusEnum, Role, Room } from 'features/match/match.model';
 import { ISMFormData } from 'pages';
 import { FilterOption } from 'pages/Main/sm.model';
 import { RootState } from './configure-store';
@@ -22,11 +22,12 @@ interface MatchState {
     error: null | string;
     room: Room[];
     movies: any[];
+    currentUserMatch: Match | null;
     currentMovie: any;
     currentPage: number;
     currentSessionLabel: string | null;
     currentFormData: ISMFormData | null;
-    role: number;
+    role: Role;
     roomKey: string | null;
     userStatus: string;
     requestStatus: { [key: string]: boolean };
@@ -39,11 +40,12 @@ const initialState: MatchState = {
     error: null,
     room: [],
     movies: [],
+    currentUserMatch: null,
     currentMovie: null,
     currentPage: 1,
     currentSessionLabel: null,
     currentFormData: null,
-    role: 0,
+    role: Role.PARTICIPANT,
     roomKey: null,
     userStatus: MatchUserStatusEnum.ACTIVE,
     requestStatus: {},
@@ -62,6 +64,7 @@ export const createRoom = createAsyncThunk<Room, number, { state: RootState, rej
 
         try {
             const room = await createRoomService(userId);
+            console.log(room);
             return room;
         } catch (error) {
             return rejectWithValue((error as any).message);
@@ -155,7 +158,6 @@ export const getMoviesRedux = createAsyncThunk(
     async (roomKey: string, { rejectWithValue }) => {
         try {
             const response = await getMovieData(roomKey);
-            console.log('get movies redux:', response);
             return response;
         } catch (error) {
             return rejectWithValue('Failed to fetch movie data');
@@ -216,7 +218,7 @@ export const getMatchDataRedux = createAsyncThunk(
         try {
             const response = await getMatchData(roomKey);
             console.log('get match data: ', response)
-            return response;
+            return response.data;
         } catch (error) {
             return rejectWithValue('Failed to check user status');
         }
@@ -248,7 +250,7 @@ const matchSlice = createSlice({
         },
         setRoomKey: (state, action) => {
             state.roomKey = action.payload
-        }
+        },
     },
     extraReducers: (builder) => {
         builder.addCase(createRoom.pending, (state) => {
@@ -257,7 +259,8 @@ const matchSlice = createSlice({
         });
         builder.addCase(createRoom.fulfilled, (state, action) => {
             state.room = [action.payload];
-            state.role = 1;
+            state.currentUserMatch = action.payload as any;
+            state.role = Role.ADMIN;
             state.loading = false;
         });
         builder.addCase(createRoom.rejected, (state, action) => {
@@ -270,7 +273,7 @@ const matchSlice = createSlice({
         });
         builder.addCase(joinRoom.fulfilled, (state, action) => {
             state.loading = false;
-            state.role = 0;
+            state.role = Role.PARTICIPANT;
             state.room = action.payload;
         });
         builder.addCase(joinRoom.rejected, (state, action) => {
@@ -318,14 +321,13 @@ const matchSlice = createSlice({
         });
         builder.addCase(doesUserHaveRoomRedux.fulfilled, (state, action) => {
             state.loading = false;
-            if (action.payload.key) {
-                state.roomKey = action.payload.key;
-                state.role = 1;
-            } else {
+            if (action.payload === null) {
+                state.currentUserMatch = null;
                 state.roomKey = null;
-            }
-            if (action.payload.match) {
-                state.room = action.payload.match as any;
+                state.role = Role.PARTICIPANT;
+            } else {
+                state.currentUserMatch = action.payload;
+                state.role = action.payload.role as Role;
             }
         });
         builder.addCase(doesUserHaveRoomRedux.rejected, (state, action) => {
@@ -403,7 +405,7 @@ const matchSlice = createSlice({
         })
         builder.addCase(getMatchDataRedux.fulfilled, (state, action) => {
             state.loading = false;
-            state.room = action.payload as any;
+            state.room = action.payload;
         })
         builder.addCase(getMatchDataRedux.rejected, (state, action) => {
             state.error = action.payload as string;

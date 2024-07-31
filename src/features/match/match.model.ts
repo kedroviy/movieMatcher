@@ -13,12 +13,26 @@ export enum MatchUserStatusEnum {
     CLOSED = 'CLOSED',
 }
 
+export enum Role {
+    ADMIN = 'admin',
+    PARTICIPANT = 'participant'
+}
+
 export interface ApiResponse<T> {
-    key: string | undefined;
-    match: Match[] | undefined;
+    ok: boolean;
     success: boolean;
-    data: T;
+    key?: string | undefined;
+    match?: Match | undefined;
+    data?: T;
     message?: string;
+    status?: number;
+    statusText?: string;
+}
+
+export interface ApiError {
+    success: boolean;
+    message: string;
+    statusCode: number;
 }
 
 export interface Room {
@@ -61,8 +75,8 @@ export interface Favorite {
 }
 
 export interface UserRoomResponse {
-    message: string;
-    match?: Match[];
+    message?: string;
+    match?: Match;
     key?: string;
 }
 
