@@ -79,7 +79,7 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
         };
 
         socketService.subscribeToRequestMatchUpdate(async () => {
-            if(currentUserMatch?.roomKey) {
+            if (currentUserMatch?.roomKey) {
                 await dispatch(getMatchDataRedux(currentUserMatch?.roomKey))
             } else if (room[0].roomKey) {
                 await dispatch(getMatchDataRedux(room[0].roomKey))
@@ -89,12 +89,11 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
         socketService.filtersUpdateBroadcast(handleFiltersUpdated);
 
         socketService.subscribeToBroadcastMovies(async () => {
-            if(currentUserMatch?.roomKey) {
+            if (currentUserMatch?.roomKey) {
                 await dispatch(getMoviesRedux(currentUserMatch?.roomKey))
             } else if (room[0].roomKey) {
                 await dispatch(getMoviesRedux(room[0].roomKey))
             }
-            
         });
 
         if (dataFromSocket) {
@@ -142,28 +141,29 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
         }
     };
 
-    const handleModalClose = async (saveChanges: any) => {
-        setModalVisible(false);
-        if (saveChanges) {
-            const handleFiltersUpdated = (data: any) => {
-                try {
-                    setFilters(data.filters);
-                } catch (error) {
-                    throw new Error(error as string);
-                }
-            };
-            await dispatch(updateRoomFiltersRedux(
-                {
-                    userId: user.id, roomId: currentUserMatch?.roomId, filters: filters
-                } as any))
-                .unwrap()
-                .then(() => {
-                    socketService.filtersUpdateBroadcast(handleFiltersUpdated);
-                    Alert.alert("Success", "Filters updated successfully.");
-                })
-                .catch(error => {
-                    Alert.alert("Error", typeof error === 'string' ? error : 'Failed to update filters due to an unexpected error');
-                });
+    const handleModalClose = async (filters: any) => {
+        console.log('filters: ', filters)
+        if (filters) {
+            try {
+                setFilters(filters);
+                console.log(filters)
+                await dispatch(updateRoomFiltersRedux(
+                    {
+                        userId: user.id, roomId: currentUserMatch?.roomId, filters: filters
+                    } as any))
+                    .unwrap()
+                    .then(() => {
+                        socketService.filtersUpdateBroadcast((filtersFromSocket: any) => {
+                            setFilters(filtersFromSocket)
+                        });
+                        Alert.alert("Success", "Filters updated successfully.");
+                    })
+                    .catch(error => {
+                        Alert.alert("Error", typeof error === 'string' ? error : 'Failed to update filters due to an unexpected error');
+                    });
+            } catch (error) {
+                throw new Error(error as string);
+            }
         }
     };
 
@@ -171,8 +171,8 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
         <View style={styles.container}>
             <MatchFilterModal
                 modalVisible={modalVisible}
-                setModalVisible={() => handleModalClose(filters)}
-                onFiltersChange={handleFiltersChange}
+                setModalVisible={() => setModalVisible(false)}
+                onFiltersChange={(filtersData) => handleModalClose(filtersData)}
             />
             <View style={styles.mainContainer}>
                 <View style={styles.headerContainer}>

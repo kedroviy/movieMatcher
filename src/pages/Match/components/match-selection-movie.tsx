@@ -14,11 +14,13 @@ import { checkStatusRedux, getMoviesRedux, updateUserStatusRedux } from "redux/m
 import { MatchStatusCard } from "../ui/match-status-card";
 import { useGetUserStatusByUserId } from "../hooks/useGetUserStatusByUserId";
 import { MatchUserStatusEnum } from "features/match/match.model";
+import { NavigationProp, ParamListBase, useNavigation } from "@react-navigation/native";
 
 const { width } = Dimensions.get('window');
 
 export const MatchSelectionMovie: FC = () => {
     const dispatch: AppDispatch = useDispatch();
+    const navigation = useNavigation<NavigationProp<ParamListBase>>();
     const { currentUserMatch, movies } = useSelector((state: any) => state.matchSlice);
     const { user } = useSelector((state: any) => state.userSlice);
     const { likeMovie, isProcessing } = useLikeMovieQueue();
@@ -26,7 +28,7 @@ export const MatchSelectionMovie: FC = () => {
     const [currentCardIndex, setCurrentCardIndex] = useState<number>(0);
     const [isInitialLoading, setIsInitialLoading] = useState<boolean>(true);
     const [isWaitStatus, setIsWaitStatus] = useState<boolean>(false);
-
+    const [isFinalResult, setIsFinalResult] = useState<boolean>(false);
     const isLastCard = useIsLastCard(currentCardIndex, movies.data?.docs.length || 0);
     const useSwiper = useRef<Swiper<any>>(null);
 
@@ -34,12 +36,14 @@ export const MatchSelectionMovie: FC = () => {
         if (movies.data?.docs.length) {
             setIsInitialLoading(false);
         }
-    
+
         socketService.subscribeToBroadcastMovies((data: any) => {
             console.log('broadcasting in selection component?: ', data)
             dispatch(getMoviesRedux(currentUserMatch?.roomKey))
                 .then((action) => {
-                    console.log('get movies data, selection somponent: ', action);
+                    if (data.messageForClient === 'Final movie selected') {
+                        navigation.navigate('MatchResult');
+                    }
                     setCurrentCardIndex(0);
                     setIsWaitStatus(false);
                     const { payload } = action;

@@ -39,7 +39,7 @@ export const LoginNavigator = () => (
                 headerStyle: {
                     backgroundColor: Color.BACKGROUND_GREY,
                 },
-                headerTintColor: '#F9F9F9',
+                headerTintColor: Color.WHITE,
                 headerLeftContainerStyle: {
                     marginLeft: -3,
                     marginTop: 24,
@@ -56,7 +56,7 @@ export const LoginNavigator = () => (
                 headerStyle: {
                     backgroundColor: Color.BACKGROUND_GREY,
                 },
-                headerTintColor: '#F9F9F9',
+                headerTintColor: Color.WHITE,
                 headerLeftContainerStyle: {
                     marginLeft: -3,
                     marginTop: 24,
@@ -73,7 +73,7 @@ export const LoginNavigator = () => (
                 headerStyle: {
                     backgroundColor: Color.BACKGROUND_GREY,
                 },
-                headerTintColor: '#F9F9F9',
+                headerTintColor: Color.WHITE,
                 headerLeftContainerStyle: {
                     marginLeft: -3,
                     marginTop: 24,
@@ -90,7 +90,7 @@ export const LoginNavigator = () => (
                 headerStyle: {
                     backgroundColor: Color.BACKGROUND_GREY,
                 },
-                headerTintColor: '#F9F9F9',
+                headerTintColor: Color.WHITE,
                 headerLeftContainerStyle: {
                     marginLeft: -3,
                     marginTop: 24,
@@ -107,7 +107,7 @@ export const LoginNavigator = () => (
                 headerStyle: {
                     backgroundColor: Color.BACKGROUND_GREY,
                 },
-                headerTintColor: '#F9F9F9',
+                headerTintColor: Color.WHITE,
                 headerLeftContainerStyle: {
                     marginLeft: -3,
                     marginTop: 24,

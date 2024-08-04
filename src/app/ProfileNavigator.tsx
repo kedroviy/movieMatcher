@@ -30,7 +30,7 @@ export const ProfileNavigator: FC = () => {
                     headerStyle: {
                         backgroundColor: Color.BACKGROUND_GREY,
                     },
-                    headerTintColor: '#F9F9F9',
+                    headerTintColor: Color.WHITE,
                     headerLeftContainerStyle: {
                         marginLeft: -3,
                         marginTop: 24,
@@ -51,7 +51,7 @@ export const ProfileNavigator: FC = () => {
                     headerStyle: {
                         backgroundColor: Color.BACKGROUND_GREY,
                     },
-                    headerTintColor: '#F9F9F9',
+                    headerTintColor: Color.WHITE,
                     headerLeftContainerStyle: {
                         marginLeft: -3,
                         marginTop: 24,
@@ -73,7 +73,7 @@ export const ProfileNavigator: FC = () => {
                     headerStyle: {
                         backgroundColor: Color.BACKGROUND_GREY,
                     },
-                    headerTintColor: '#F9F9F9',
+                    headerTintColor: Color.WHITE,
                     headerLeftContainerStyle: {
                         marginLeft: -3,
                         marginTop: 24,
@@ -92,7 +92,7 @@ export const ProfileNavigator: FC = () => {
                     headerTitleStyle: {
                         marginTop: 24,
                     },
-                    headerTintColor: '#F9F9F9',
+                    headerTintColor: Color.WHITE,
                     headerLeftContainerStyle: {
                         marginLeft: -3,
                         marginTop: 24,

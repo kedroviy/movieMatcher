@@ -58,7 +58,7 @@ export interface User {
 
 export interface Match {
     id: number;
-    movieId?: string;
+    movieId?: number;
     userId: number;
     roomId: number;
     vote?: string;
@@ -70,7 +70,7 @@ export interface Match {
 
 export interface Favorite {
     id: number;
-    movieId: string;
+    movieId: number;
     user: User;
 }
 

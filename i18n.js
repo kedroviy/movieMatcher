@@ -79,7 +79,8 @@ const resources = {
                 },
                 lobby: {
                     lobby_members: 'Lobby members'
-                }
+                },
+                match_result: 'Result of match'
             },
             general: {
                 next_page: 'Next page',
@@ -164,7 +165,8 @@ const resources = {
                 },
                 lobby: {
                     lobby_members: 'Участники лобби'
-                }
+                },
+                match_result: 'Результат'
             },
             general: {
                 next_page: 'Следующая страница',

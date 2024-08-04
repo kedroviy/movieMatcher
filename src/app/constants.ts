@@ -31,6 +31,7 @@ export enum AppRoutes {
     MATCH_LOBBY = 'MatchLobby',
     MATCH_JOIN_LOBBY = 'MatchJoinLobby',
     MATCH_SELECTION_MOVIE = 'MatchSelectionMovie',
+    MATCH_RESULT = 'MatchResult',
 };
 
 export const defaultScreenOptions: StackNavigationOptions = {
@@ -144,4 +145,5 @@ export type RootStackParamList = {
     MatchLobby: { lobbyName: string };
     MatchJoinLobby: undefined;
     MatchSelectionMovie: undefined;
+    MatchResult: undefined;
 };
