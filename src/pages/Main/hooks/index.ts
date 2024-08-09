@@ -1,0 +1,1 @@
+export { useMoviesList } from './useMoviesList';
