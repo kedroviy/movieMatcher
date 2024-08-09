@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { Dimensions, StyleSheet, Text, View } from "react-native"
+import { Dimensions, StyleSheet, View } from "react-native"
 import Swiper from "react-native-deck-swiper";
 import socketService from "features/match/match-socketService";
 import { OverlayLabel } from "pages/Main/ui/overlay-label";
@@ -28,7 +28,6 @@ export const MatchSelectionMovie: FC = () => {
     const [currentCardIndex, setCurrentCardIndex] = useState<number>(0);
     const [isInitialLoading, setIsInitialLoading] = useState<boolean>(true);
     const [isWaitStatus, setIsWaitStatus] = useState<boolean>(false);
-    const [isFinalResult, setIsFinalResult] = useState<boolean>(false);
     const isLastCard = useIsLastCard(currentCardIndex, movies.data?.docs.length || 0);
     const useSwiper = useRef<Swiper<any>>(null);
 

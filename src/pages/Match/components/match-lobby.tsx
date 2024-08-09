@@ -144,26 +144,26 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
     const handleModalClose = async (filters: any) => {
         console.log('filters: ', filters)
         if (filters) {
-            try {
-                setFilters(filters);
-                console.log(filters)
-                await dispatch(updateRoomFiltersRedux(
-                    {
-                        userId: user.id, roomId: currentUserMatch?.roomId, filters: filters
-                    } as any))
-                    .unwrap()
-                    .then(() => {
-                        socketService.filtersUpdateBroadcast((filtersFromSocket: any) => {
-                            setFilters(filtersFromSocket)
+                try {
+                    setFilters(filters);
+                    console.log(filters)
+                    await dispatch(updateRoomFiltersRedux(
+                        {
+                            userId: user.id, roomId: currentUserMatch?.roomId, filters: filters
+                        } as any))
+                        .unwrap()
+                        .then(() => {
+                            socketService.filtersUpdateBroadcast((filtersFromSocket: any) => {
+                                setFilters(filtersFromSocket)
+                            });
+                            Alert.alert("Success", "Filters updated successfully.");
+                        })
+                        .catch(error => {
+                            Alert.alert("Error", typeof error === 'string' ? error : 'Failed to update filters due to an unexpected error');
                         });
-                        Alert.alert("Success", "Filters updated successfully.");
-                    })
-                    .catch(error => {
-                        Alert.alert("Error", typeof error === 'string' ? error : 'Failed to update filters due to an unexpected error');
-                    });
-            } catch (error) {
-                throw new Error(error as string);
-            }
+                } catch (error) {
+                    throw new Error(error as string);
+                }
         }
     };
 
