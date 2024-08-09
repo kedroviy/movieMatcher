@@ -18,6 +18,7 @@ import { authUser } from "../../../redux/authSlice";
 import { AppConstants, Loader } from "@shared/index";
 import { Input } from "../ui";
 import { STRINGS } from "../constants";
+import { Color } from "styles/colors";
 
 export const LoginAuth: FC = () => {
     const windowWidth = Dimensions.get('window').width;
@@ -84,8 +85,8 @@ export const LoginAuth: FC = () => {
                     <TouchableOpacity
                         style={[styles.button,
                         (isFormValidPassword && isFormValidEmail) ?
-                            { backgroundColor: '#ED0E0E', width: windowWidth - 32, height: 48 } :
-                            { backgroundColor: '#940C0C', width: windowWidth - 32, height: 48 }
+                            { backgroundColor: Color.BUTTON_RED, width: windowWidth - 32, height: 48 } :
+                            { backgroundColor: Color.DISABLED_RED, width: windowWidth - 32, height: 48 }
                         ]}
                         disabled={(isFormValidPassword && isFormValidEmail) ? false : true}
                         onPress={() => onLoginUser({ email, password })}
