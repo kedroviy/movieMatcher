@@ -123,6 +123,7 @@ export const LoginAuth: FC = () => {
 
 const styles = StyleSheet.create({
     container: {
+        backgroundColor: '#353535',
         flex: 1,
         alignItems: 'center',
         justifyContent: 'space-between',

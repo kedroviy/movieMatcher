@@ -1,133 +1,28 @@
-import React, { FC, useState } from 'react';
-import { Text, StyleSheet, View, Image, Dimensions, TouchableOpacity } from 'react-native';
-import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import React, { FC } from 'react';
+import { Text, StyleSheet, Dimensions, View, Image } from 'react-native';
 
 import { Color } from "../../../styles/colors";
-import { getRatingColor, roundDownToOneTenth } from '../utils';
-import { SMMovieChips } from '../ui/sm-movie-chips';
+const { height } = Dimensions.get('window')
 
 type SMSwipeCardType = {
     card: any,
 }
-
-const { width } = Dimensions.get('window');
-
 export const SMSwipeCards: FC<SMSwipeCardType> = ({ card }) => {
-    const [isExpanded, setIsExpanded] = useState<boolean>(false);
-    const descriptionHeight = useSharedValue(80);
-
-    const animatedStyle = useAnimatedStyle(() => {
-        return {
-            height: withTiming(descriptionHeight.value, {
-                duration: 300,
-            }),
-        };
-    });
-
-    const toggleExpanded = () => {
-        setIsExpanded(!isExpanded);
-        descriptionHeight.value = isExpanded ? 80 : 200;
-    };
-
-    if (!card) {
-        return null;
-    }
-
-    const {
-        poster,
-        rating,
-        name,
-        year,
-        ageRating,
-        movieLength,
-        countries,
-        genres,
-        description
-    } = card;
-
-    console.log(card);
 
     return (
         <View style={styles.card}>
-            {card?.poster ? (
-                <><Image
-                    style={styles.image}
-                    source={{ uri: card?.poster?.previewUrl ?? './defaultpicture.png' }}
-                    resizeMode="cover" />
-                    <View style={{
-                        position: 'absolute',
-                        width: 41,
-                        height: 30,
-                        paddingVertical: 2,
-                        paddingHorizontal: 4,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        backgroundColor: getRatingColor(card.rating.kp),
-                        borderRadius: 5,
-                        right: 12,
-                        top: 16,
-                    }}>
-                        <Text style={[
-                            styles.text, {
-                                fontSize: 14,
-                            }
-                        ]}>
-                            {roundDownToOneTenth(card.rating.kp)}
-                        </Text>
-                    </View></>
-            ) : (
-                <View style={styles.placeholder} />
-            )}
+            <Image
+                style={styles.image}
+                source={{ uri: card.poster?.previewUrl }}
+                resizeMode="cover"
+            />
             <View style={styles.movieDescriptionContainer}>
                 <Text style={styles.headerText}>
-                    {`${card?.name}  (${card?.year})`}
+                    {`${card.name}  (${card.year})`}
                 </Text>
-                <View style={{ flexDirection: 'row', width: width - 32, marginVertical: 12, }}>
-
-                    <SMMovieChips
-                        label={card?.ageRating}
-                        color={Color.LIGHT_RED}
-                        labelColor={Color.WHITE}
-                        type="age"
-                    />
-                    <SMMovieChips
-                        label={card?.movieLength}
-                        color={Color.LIGHT_RED}
-                        labelColor={Color.WHITE}
-                        type="time"
-                    />
-                    {card?.countries[0] && (
-                        <SMMovieChips
-                            label={card.countries[0].name}
-                            color={Color.LIGHT_RED}
-                            labelColor={Color.WHITE}
-                        />
-                    )}
-                    {card?.genres[0] && (
-                        <SMMovieChips
-                            label={card.genres[0].name}
-                            color={Color.LIGHT_RED}
-                            labelColor={Color.WHITE}
-                        />
-                    )}
-
-                </View>
-                <Animated.View style={animatedStyle}>
-                    <Text
-                        style={[
-                            styles.text, { fontSize: 16, }
-                        ]}
-                        numberOfLines={isExpanded ? undefined : 4}
-                        ellipsizeMode='tail'
-                    >
-                        {card?.description}
-                    </Text>
-                </Animated.View>
-                <TouchableOpacity onPress={toggleExpanded}>
-                    <Text style={{ color: Color.GREY, fontSize: 16 }}>
-                        {isExpanded ? 'Свернуть' : 'Развернуть'}
-                    </Text>
-                </TouchableOpacity>
+                <Text style={styles.text}>
+                    {card.description}
+                </Text>
             </View>
         </View>
     );
@@ -135,46 +30,50 @@ export const SMSwipeCards: FC<SMSwipeCardType> = ({ card }) => {
 
 const styles = StyleSheet.create({
     card: {
-        height: 550,
+        height: height / 1.7,
         justifyContent: 'center',
         alignItems: 'center',
+        backgroundColor: Color.WHITE,
         borderRadius: 10,
-        bottom: 30,
-        backgroundColor: Color.BACKGROUND_GREY,
+        shadowColor: Color.BLACK,
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowRadius: 6,
+        shadowOpacity: 0.3,
+        elevation: 2,
     },
     image: {
-        flex: 0.88,
-        bottom: 24,
-        width: '100%',
-        borderRadius: 10,
-    },
-    placeholder: {
         borderTopLeftRadius: 10,
         borderTopRightRadius: 10,
         flex: 1,
         width: '100%',
-        backgroundColor: Color.NEW_BLACK
     },
     movieDescriptionContainer: {
         gap: 8,
-        flexDirection: 'column',
         overflow: 'hidden',
+        flexDirection: 'column',
+        height: '25%',
         width: '100%',
-        // paddingH: 12,
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        backgroundColor: Color.WHITE,
+        borderBottomRightRadius: 10,
+        borderBottomLeftRadius: 10,
         left: 0,
-        // bottom: 20,
-        backgroundColor: Color.BACKGROUND_GREY,
-        borderRadius: 10,
+        bottom: 0,
     },
     headerText: {
-        color: Color.WHITE,
+        color: Color.BLACK,
         fontSize: 20,
         fontWeight: '700',
         lineHeight: 28.8,
     },
     text: {
         textAlign: 'left',
-        color: Color.WHITE,
+        fontSize: 14,
+        color: Color.BLACK,
         fontFamily: 'Roboto',
 
     },

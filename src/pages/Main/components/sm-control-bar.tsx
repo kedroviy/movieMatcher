@@ -15,29 +15,29 @@ export const SMControlBar: FC<SMControlBarType> = ({ onHandleLike, onHandleDisli
                 style={{
                     width: 70,
                     height: 70,
-                    backgroundColor: Color.GRAY_BROWN,
+                    backgroundColor: '#FFF',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    borderRadius: 35,
+                    borderRadius: 10,
                     marginVertical: 8
                 }}
                 onPress={onHandleDislike}
             >
-                <CloseSvgIcon stroke={Color.WHITE} width={32} height={32} />
+                <CloseSvgIcon stroke={Color.BLACK} width={32} height={32} />
             </TouchableOpacity>
             <TouchableOpacity
                 style={{
                     width: 70,
                     height: 70,
-                    backgroundColor: Color.BUTTON_RED,
+                    backgroundColor: '#FFF',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    borderRadius: 35,
+                    borderRadius: 10,
                     marginVertical: 8
                 }}
                 onPress={onHandleLike}
             >
-                <LikeSvgIcon stroke={Color.WHITE} fill={Color.WHITE} width={32} height={32} />
+                <LikeSvgIcon stroke={Color.BLACK} width={32} height={32} />
             </TouchableOpacity>
         </>
     )

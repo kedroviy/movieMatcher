@@ -1,16 +1,20 @@
 import { FC } from "react";
-import { Dimensions, StyleSheet, View } from "react-native";
+import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useDispatch } from "react-redux";
+import { logout } from "redux/authSlice";
 import { UPAvatarContainer, UPMenuItems } from "./ui";
 import { useLocalizedMenuItems } from "./hooks";
-import { Color } from "styles/colors";
-import useFetchUserProfile from "shared/hooks/getUserProfile";
 
 const fakeImage = 'https://drive.google.com/uc?export=download&id=1XyvtSH--FxiGK67-Q9pPcKRCYxDfqGfF'
 
 export const UserProfileScreen: FC = () => {
     const windowWidth = Dimensions.get('window').width;
+    const dispatch = useDispatch();
     const { menuItems } = useLocalizedMenuItems();
-    const { user, loading: userLoading, error: userError } = useFetchUserProfile();
+
+    const handleLogout = () => {
+        dispatch(logout());
+    };
 
     return (
         <View style={[styles.container, { width: windowWidth }]}>
@@ -23,8 +27,8 @@ export const UserProfileScreen: FC = () => {
             }}
             >
                 <UPAvatarContainer
-                    name={user?.username as string}
-                    subName={user?.id as any}
+                    name='Enagtim'
+                    subName='122134'
                     imageUrl={fakeImage}
                 />
             </View>
@@ -38,13 +42,16 @@ export const UserProfileScreen: FC = () => {
                     return <UPMenuItems key={item.id} {...item} />
                 })}
             </View>
+            <TouchableOpacity style={{ width: 100, height: 48 }} onPress={handleLogout} testID='myButton'>
+                <Text style={{ fontSize: 20, color: '#FFF' }}>Logout</Text>
+            </TouchableOpacity>
         </View>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: Color.BACKGROUND_GREY,
+        backgroundColor: '#353535',
         flex: 1,
         alignItems: 'center',
     },

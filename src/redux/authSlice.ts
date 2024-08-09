@@ -29,7 +29,7 @@ const initialState: AuthState = {
     loading: false,
     loadingApplication: false,
     success: false,
-    onboarded: true,
+    onboarded: false,
 };
 
 GoogleSignin.configure({
@@ -149,9 +149,6 @@ const authSlice = createSlice({
             state.token = null;
             removeToken();
         },
-        setOnboardedStatus: (state, action) => {
-            state.onboarded = action.payload;
-        },
     },
     extraReducers: (builder) => {
         builder
@@ -236,5 +233,5 @@ const authSlice = createSlice({
     },
 });
 
-export const { logout, setOnboardedStatus } = authSlice.actions;
+export const { logout } = authSlice.actions;
 export default authSlice.reducer;

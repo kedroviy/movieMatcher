@@ -1,19 +1,7 @@
 import { create } from 'apisauce'
+import { API } from '../../shared';
+
 import * as Keychain from 'react-native-keychain';
-
-import { API, UserModelType } from '../../shared';
-
-export type UpdateUsernameArgs = {
-    userId: number;
-    newUsername: string;
-}
-
-export type ApiResponse<T = unknown> = {
-    ok?: boolean;
-    success?: boolean;
-    data?: T;
-    message?: string;
-}
 
 const api = create({
     baseURL: API.BASE_URL,
@@ -21,29 +9,13 @@ const api = create({
 });
 
 const setAuthToken = async () => {
-    const credentials = await Keychain.getGenericPassword({ service: 'token_guard' });
+    const credentials = await Keychain.getGenericPassword();
     if (credentials) {
         api.setHeader('Authorization', `Bearer ${credentials.password}`);
     }
 };
 
-export const getUserProfile = async () => {
+export const getUserProfile = async () => async () => {
     await setAuthToken();
-    const response = await api.get<UserModelType>(API.GET_USER_PROFILE_INFO);
-    if (response.ok && response.data) {
-        return { success: true, data: response.data };
-    } else {
-        throw new Error(response.problem || 'Unknown API error');
-    }
-};
-
-export const putUpdateUsername = async (args: UpdateUsernameArgs): Promise<ApiResponse> => {
-    await setAuthToken();
-    const response = await api.patch('/user/update-username', args);
-
-    if (!response.ok || !response.data) {
-        throw new Error(response.problem || 'Unknown API error');
-    }
-
-    return response;
+    return api.get(API.GET_USER_PROFILE_INFO);
 };

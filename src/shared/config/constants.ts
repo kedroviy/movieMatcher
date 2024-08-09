@@ -1,9 +1,5 @@
 const API = {
-    BASE_URL: 'https://beneficial-adaptation-prod.up.railway.app',
-    // 'https://movie-match-x5ue.onrender.com',
-    // 'http://192.168.100.71:6001' ,
-    // 'beneficial-adaptation-prod.up.railway.app',
-    KINOPOISK_URL: 'https://api.kinopoisk.dev/v1.4',
+    BASE_URL: 'https://movie-match-x5ue.onrender.com',
     LOGIN: '/auth/login',
     REGISTRATION: '/auth/register',
     EMAIL_TO_CHECK: '/auth/send-code-to-email',
@@ -16,6 +12,4 @@ const AppConstants = {
     EMPTY_VALUE: '',
 }
 
-const BASE_KP_URL = 'https://www.kinopoisk.ru';
-
-export { API, AppConstants, BASE_KP_URL }
+export { API, AppConstants }
