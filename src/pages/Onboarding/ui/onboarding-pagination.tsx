@@ -1,6 +1,5 @@
 import React, { FC } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Color } from 'styles/colors';
 
 type OnboardingPaginationType = {
     totalPages: number;
@@ -15,7 +14,7 @@ export const OnboardingPagination: FC<OnboardingPaginationType> = ({ totalPages,
                     key={index}
                     style={[
                         styles.dot,
-                        { backgroundColor: index === currentPage ? Color.BUTTON_RED : Color.WHITE }
+                        { backgroundColor: index === currentPage ? '#ED0E0E' : '#F9F9F9' }
                     ]}
                 />
             ))}

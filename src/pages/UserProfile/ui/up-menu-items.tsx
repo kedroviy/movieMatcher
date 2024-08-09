@@ -7,11 +7,10 @@ import { Color } from "styles/colors";
 
 type UPMenuItemsTYpe = {
     name: string;
-    subName?: string;
-    iconComponent?: ReactElement,
+    iconComponent: ReactElement,
     navigateScreen?: string;
 }
-export const UPMenuItems: FC<UPMenuItemsTYpe> = ({ iconComponent, name, navigateScreen, subName }) => {
+export const UPMenuItems: FC<UPMenuItemsTYpe> = ({ iconComponent, name, navigateScreen }) => {
     const windowWidth = Dimensions.get('window').width;
     const navigation: NavigationProp<ParamListBase> = useNavigation();
     let navigationScreen = navigateScreen!;
@@ -31,15 +30,8 @@ export const UPMenuItems: FC<UPMenuItemsTYpe> = ({ iconComponent, name, navigate
             marginBottom: 16,
             height: 46,
         }}>
-            <View style={{marginRight: 12}}>
-                {iconComponent}
-            </View>
-            <View style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                width: '85%',
-                overflow: 'hidden',
-            }}>
+            {iconComponent}
+            <View style={{ justifyContent: 'flex-start', width: '75%' }}>
                 <Text style={{
                     fontFamily: 'Roboto',
                     fontSize: 16,
@@ -50,17 +42,6 @@ export const UPMenuItems: FC<UPMenuItemsTYpe> = ({ iconComponent, name, navigate
                 >
                     {name}
                 </Text>
-                {subName ?
-                    <Text style={{
-                        fontFamily: 'Roboto',
-                        fontSize: 14,
-                        lineHeight: 18.2,
-                        fontWeight: '400',
-                        color: Color.GREY,
-                    }}>
-                        {subName}
-                    </Text>
-                    : null}
             </View>
             <TouchableOpacity
                 style={{

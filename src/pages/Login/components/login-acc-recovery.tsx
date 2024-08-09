@@ -34,6 +34,7 @@ export const LoginAccRecovery: FC = () => {
         } catch (error) {
             console.log(error)
         }
+        // navigation.navigate('LoginAccRecoveryCode');
     };
 
     return (
@@ -90,6 +91,7 @@ export const LoginAccRecovery: FC = () => {
 
 const styles = StyleSheet.create({
     container: {
+        backgroundColor: '#353535',
         flex: 1,
         alignItems: 'center',
         justifyContent: 'flex-start'

@@ -1,2 +1,2 @@
-export { API, AppConstants, BASE_KP_URL } from './constants';
+export { API, AppConstants } from './constants';
 export { LANGUAGES } from './languages';

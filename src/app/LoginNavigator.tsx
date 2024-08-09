@@ -15,7 +15,6 @@ import {
     LoginResult,
     LoginScreen,
 } from "pages";
-import { Color } from "styles/colors";
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -37,9 +36,9 @@ export const LoginNavigator = () => (
             component={LoginAuth}
             options={{
                 headerStyle: {
-                    backgroundColor: Color.BACKGROUND_GREY,
+                    backgroundColor: '#353535',
                 },
-                headerTintColor: Color.WHITE,
+                headerTintColor: '#F9F9F9',
                 headerLeftContainerStyle: {
                     marginLeft: -3,
                     marginTop: 24,
@@ -54,9 +53,9 @@ export const LoginNavigator = () => (
             component={LoginRegistration}
             options={{
                 headerStyle: {
-                    backgroundColor: Color.BACKGROUND_GREY,
+                    backgroundColor: '#353535',
                 },
-                headerTintColor: Color.WHITE,
+                headerTintColor: '#F9F9F9',
                 headerLeftContainerStyle: {
                     marginLeft: -3,
                     marginTop: 24,
@@ -71,9 +70,9 @@ export const LoginNavigator = () => (
             component={LoginAccRecovery}
             options={{
                 headerStyle: {
-                    backgroundColor: Color.BACKGROUND_GREY,
+                    backgroundColor: '#353535',
                 },
-                headerTintColor: Color.WHITE,
+                headerTintColor: '#F9F9F9',
                 headerLeftContainerStyle: {
                     marginLeft: -3,
                     marginTop: 24,
@@ -88,9 +87,9 @@ export const LoginNavigator = () => (
             component={LoginAccRecoveryCode}
             options={{
                 headerStyle: {
-                    backgroundColor: Color.BACKGROUND_GREY,
+                    backgroundColor: '#353535',
                 },
-                headerTintColor: Color.WHITE,
+                headerTintColor: '#F9F9F9',
                 headerLeftContainerStyle: {
                     marginLeft: -3,
                     marginTop: 24,
@@ -105,9 +104,9 @@ export const LoginNavigator = () => (
             component={LoginAccRecoveryChangePassword}
             options={{
                 headerStyle: {
-                    backgroundColor: Color.BACKGROUND_GREY,
+                    backgroundColor: '#353535',
                 },
-                headerTintColor: Color.WHITE,
+                headerTintColor: '#F9F9F9',
                 headerLeftContainerStyle: {
                     marginLeft: -3,
                     marginTop: 24,

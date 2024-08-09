@@ -5,11 +5,11 @@ import { Color } from "styles/colors";
 
 type RadioButtonType = {
     containerSize: number;
-    selected: boolean;
-    onChange: () => void;
 };
 
-export const RadioButton: FC<RadioButtonType> = ({ containerSize, selected, onChange }) => {
+export const RadioButton: FC<RadioButtonType> = ({ containerSize }) => {
+    const [selected, setSelected] = useState<boolean>(false);
+
     return (
         <View style={{
             alignItems: 'center',
@@ -17,17 +17,17 @@ export const RadioButton: FC<RadioButtonType> = ({ containerSize, selected, onCh
             width: containerSize,
             height: containerSize,
             borderRadius: containerSize / 2,
-            borderWidth: 2,
+            borderWidth: 1,
             borderStyle: 'solid',
-            borderColor: Color.WHITE,
+            borderColor: Color.GREY,
         }}>
             <TouchableOpacity style={{
-                width: containerSize / 2,
-                height: containerSize / 2,
-                borderRadius: containerSize / 2,
-                backgroundColor: selected ? Color.WHITE : 'transparent',
+                width: containerSize - 8,
+                height: containerSize - 8,
+                borderRadius: (containerSize - 5) / 2,
+                backgroundColor: Color.GREY,
             }}
-                onPress={onChange}
+                onPress={() => setSelected(true)}
             >
             </TouchableOpacity>
         </View>

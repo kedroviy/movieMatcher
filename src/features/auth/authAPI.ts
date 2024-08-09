@@ -22,6 +22,14 @@ const api = create({
     headers: { Accept: 'application/vnd.github.v3+json' },
 });
 
+// const apiGoogleAuth = create({
+//     baseURL: API.BASE_URL,
+// });
+
+// export const setAuthToken = (token: string) => {
+//     apiGoogleAuth.setHeader('Authorization', `Bearer ${token}`);
+// };
+
 export const sendGoogleCodeToServer = async (idToken: string) => {
     try {
         const formData = new URLSearchParams();
