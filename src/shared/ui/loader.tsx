@@ -1,6 +1,5 @@
 import { FC } from "react"
 import { ActivityIndicator, View } from "react-native"
-import { Color } from "styles/colors"
 
 export const Loader: FC = () => {
     return (
@@ -18,9 +17,9 @@ export const Loader: FC = () => {
                 opacity: 0.5,
                 width: '100%',
                 height: '100%',
-                backgroundColor: Color.NEW_BLACK,
+                backgroundColor: '#353535',
             }} />
-            <ActivityIndicator size="large" color={Color.BUTTON_RED} />
+            <ActivityIndicator size="large" color="#B3B3B3" />
         </View>
     )
 }

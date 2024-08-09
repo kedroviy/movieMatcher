@@ -1,109 +1,134 @@
-import React, { FC, useCallback } from "react";
-import {
-    StyleSheet,
-    Text,
-    View,
-    Dimensions,
-    FlatList,
-    ActivityIndicator,
-    RefreshControl,
-} from "react-native";
+import { FC, useRef, useState } from "react";
+import { StyleSheet, Text, View, Dimensions, TouchableOpacity } from "react-native";
+import { useDispatch } from "react-redux";
+import Swiper from "react-native-deck-swiper";
+import { ParamListBase, useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
 import { useTranslation } from "react-i18next";
-import { NavigationProp, ParamListBase, useNavigation } from "@react-navigation/native";
 
-import { useMoviesList } from './hooks';
-import { MyMovieListComponent, withListOrEmptyState } from "./components/sm-hoc-component";
-import { EmptyListComponent } from "./components/sm-empty-list";
+import { logout } from "../../redux/authSlice";
+import { SMSwipeCards } from "./components/sm-swipe-cards";
+import { movieCards, photoCards } from './constants';
+import { SMControlBar } from "./components/sm-control-bar";
 import { Color } from "styles/colors";
-import { SimpleButton } from "shared";
-import { AppRoutes } from "app/constants";
-import { MoviesSavedType } from "features/selection-movies/selection-movies.model";
-import { MovieCard } from "./ui/sm-movie-list-card";
+import { OverlayLabel } from "./ui/overlay-label";
+import { FiltersSvgIcon } from "shared";
 
-const { width } = Dimensions.get('window');
-
-const MyListWithEmptyState = withListOrEmptyState(MyMovieListComponent);
+const { height, width } = Dimensions.get('window')
 
 export const SoloMatchScreen: FC = () => {
-    const navigation: NavigationProp<ParamListBase> = useNavigation();
+    const dispatch = useDispatch();
     const { t } = useTranslation();
-    const { moviesList, isLoading, isRefreshing, setIsRefreshing, fetchMoviesList } = useMoviesList();
+    const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
+    const [allCardsSwiped, setAllCardsSwiped] = useState<boolean>(false);
+    const [currentIndex, setCurrentIndex] = useState<number>(0);
+    const useSwiper = useRef<Swiper<any>>(null);
 
-    const onRefresh = useCallback(() => {
-        setIsRefreshing(true);
-        fetchMoviesList();
-    }, []);
+    const handleLogout = () => {
+        dispatch(logout());
+    };
 
-    const renderItem = ({ item }: { item: MoviesSavedType }) => (
-        <MovieCard
-            key={item.id}
-            id={item.id}
-            movies={item.movies}
-            label={item.label}
-            moviesCount={item.movies.length}
-            onHandlePress={() => navigation.navigate(`${AppRoutes.SELF_SELECT_NAVIGATOR}`, {
-                screen: `${AppRoutes.SM_MOVIE_FULL_LIST}`,
-                params: { headerText: item.label },
-            })}
-        />
-    );
+    const handleOnSwipedLeft = (cardIndex: any) => {
+        console.log(`Свайп влево на карточке с индексом ${cardIndex}`);
+    };
 
-    const onNavigate = () => navigation.navigate(
-        AppRoutes.SELF_SELECT_NAVIGATOR, {
-        screen: AppRoutes.SM_CREATE_MOVIE_LIST_SCREEN,
-    });
+    const handleOnSwipedRight = (cardIndex: any) => {
+        console.log(`Свайп вправо на карточке с индексом ${cardIndex}`);
+    };
+
+    const handleOnSwiped = () => {
+        if (currentIndex === photoCards.length - 1) {
+            setAllCardsSwiped(true);
+        } else {
+            setCurrentIndex(currentIndex + 1);
+        }
+    };
 
     return (
         <View style={styles.container}>
             <View style={{
                 flexDirection: 'row',
                 justifyContent: 'space-between',
-                alignItems: 'flex-start',
+                alignItems: 'center',
                 width: width - 33,
                 height: 48,
                 marginTop: 10,
             }}
             >
-                <Text style={styles.headerText}>{t('selection_movie.my_movie_list')}</Text>
+                <Text style={styles.headerText}>{t('movieSelection')}</Text>
+                <TouchableOpacity
+                    style={{ 
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: 48, 
+                        height: 48 
+                    }}
+                >
+                    <FiltersSvgIcon width={24} height={24} />
+                </TouchableOpacity>
             </View>
+            {allCardsSwiped ? (
+                <Text style={{
+                    fontSize: 22,
+                    color: 'white',
+                }}>Карточки закончились</Text>
+            ) : (
+                <View style={{
+                    width: width,
+                    flex: 0.70,
+                    bottom: 40,
+                }}>
+                    <Swiper
+                        ref={useSwiper}
+                        animateCardOpacity
+                        containerStyle={styles.swiperContainer}
+                        cards={movieCards.docs}
+                        renderCard={card => <SMSwipeCards card={card} />}
+                        cardIndex={0}
+                        backgroundColor={Color.BACKGROUND_GREY}
+                        stackSize={3}
+                        stackSeparation={-25}
+                        showSecondCard
+                        animateOverlayLabelsOpacity
+                        onSwipedLeft={handleOnSwipedLeft}
+                        onSwipedRight={handleOnSwipedRight}
+                        onSwiped={handleOnSwiped}
+                        overlayLabels={{
+                            left: {
+                                title: 'NOPE',
+                                element: <OverlayLabel label="NOPE" color="#E5566D" />,
+                                style: {
+                                    wrapper: styles.overlayWrapper,
+                                },
+                            },
+                            right: {
+                                title: 'LIKE',
+                                element: <OverlayLabel label="LIKE" color="#4CCC93" />,
+                                style: {
+                                    wrapper: {
+                                        ...styles.overlayWrapper,
+                                        alignItems: 'flex-start',
+                                        marginLeft: 30,
+                                    },
+                                },
+                            },
+                        }}
+                    />
+                </View>
+            )}
             <View style={{
-                flex: 1,
-                bottom: 16,
-                justifyContent: 'flex-start',
+                flex: 0.17,
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-evenly',
+                width: width / 2.2,
+                bottom: 20,
             }}>
-                {isLoading ?
-                    <View style={styles.loader}>
-                        <ActivityIndicator size='large' color={Color.BUTTON_RED} />
-                    </View>
-                    :
-                    <FlatList<MoviesSavedType>
-                        data={moviesList}
-                        renderItem={renderItem}
-                        keyExtractor={(item: any) => item.id}
-                        ListEmptyComponent={EmptyListComponent}
-                        contentContainerStyle={styles.contentContainer}
-                        initialNumToRender={4}
-                        getItemLayout={(data, index) => (
-                            { length: 255, offset: 255 * index, index }
-                        )}
-                        refreshControl={
-                            <RefreshControl
-                                refreshing={isRefreshing}
-                                onRefresh={onRefresh}
-                                colors={[Color.BUTTON_RED]}
-                            />
-                        }
-                        showsVerticalScrollIndicator={false}
-                        showsHorizontalScrollIndicator={false}
-                    />}
+                <SMControlBar
+                    onHandleLike={() => useSwiper.current?.swipeRight()}
+                    onHandleDislike={() => useSwiper.current?.swipeLeft()}
+                />
             </View>
-            <SimpleButton
-                color={Color.BUTTON_RED}
-                titleColor={Color.WHITE}
-                buttonWidth={width - 32}
-                title={t('selection_movie.create_list_button')}
-                onHandlePress={onNavigate}
-            />
         </View>
     );
 };
@@ -114,13 +139,6 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'space-between',
-        paddingVertical: 32,
-    },
-    contentContainer: {
-        flexGrow: 0.7,
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: width - 32,
     },
     swiperContainer: {
         flex: 0.8,
@@ -144,11 +162,4 @@ const styles = StyleSheet.create({
         lineHeight: 28.8,
         color: Color.WHITE
     },
-    loader: {
-        position: 'absolute',
-        flex: 1,
-        height: '100%',
-        alignItems: 'center',
-        justifyContent: 'center',
-    }
 });

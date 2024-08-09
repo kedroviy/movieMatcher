@@ -12,8 +12,6 @@ import {
 } from './constants';
 import { TabNavigator } from './TabNavigator';
 import { ProfileNavigator } from './ProfileNavigator';
-import { SelfSelectNavigator } from './SelfSelectNavigator';
-import { MatchNavigator } from './MatchNavigator';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -24,6 +22,7 @@ export const AppNavigation: React.FC<AppNavigatorType> = ({ onboarded }) => {
 
   return (
     <Stack.Navigator screenOptions={defaultScreenOptions}>
+      <Stack.Group>
         {!onboarded ?
           <Stack.Screen
             name={AppRoutes.ONBOARDING_SCREEN}
@@ -40,31 +39,14 @@ export const AppNavigation: React.FC<AppNavigatorType> = ({ onboarded }) => {
               name={AppRoutes.PROFILE_NAVIGATOR}
               component={ProfileNavigator}
               options={{
-                headerShown: false,
-                cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
-                ...animationOptions
-              }}
-            />
-            <Stack.Screen
-              name={AppRoutes.MATCH_NAVIGATOR}
-              component={MatchNavigator}
-              options={{
-                headerShown: false,
-                cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
-                ...animationOptions
-              }}
-            />
-            <Stack.Screen
-              name={AppRoutes.SELF_SELECT_NAVIGATOR}
-              component={SelfSelectNavigator}
-              options={{
-                headerShown: false,
+                headerShown: false, 
                 cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
                 ...animationOptions
               }}
             />
           </>
         }
+      </Stack.Group>
     </Stack.Navigator>
   );
 };

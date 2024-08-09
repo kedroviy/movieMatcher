@@ -1,5 +1,4 @@
 {
   "name": "movieMatcher",
-  "displayName": "movieMatcher",
-  "android": { "permissions": [ "INTERNET" ] }
+  "displayName": "movieMatcher"
 }

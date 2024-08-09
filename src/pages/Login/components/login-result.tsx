@@ -8,6 +8,7 @@ type Props = StackScreenProps<RootStackParamList, 'LoginResult'>;
 export const LoginResult: FC<Props> = ({ route }) => {
     const { icon, resultText, buttonText, buttonColor, onHandlePress } = route.params;
     const windowWidth = Dimensions.get('window').width;
+    const windowHeight = Dimensions.get('window').height;
 
     return (
         <View style={[styles.container, { width: windowWidth }]}>
@@ -53,6 +54,8 @@ export const LoginResult: FC<Props> = ({ route }) => {
                     </Text>
                 </View>
 
+
+
                 <TouchableOpacity
                     style={[styles.button, { backgroundColor: buttonColor, width: windowWidth - 32 }]}
                     testID='myButton'
@@ -61,6 +64,7 @@ export const LoginResult: FC<Props> = ({ route }) => {
                     <Text style={styles.text}>{buttonText}</Text>
                 </TouchableOpacity>
 
+
             </View>
         </View >
     )
@@ -68,6 +72,7 @@ export const LoginResult: FC<Props> = ({ route }) => {
 
 const styles = StyleSheet.create({
     container: {
+        backgroundColor: '#353535',
         flex: 1,
         alignItems: 'center',
         justifyContent: 'space-between',
