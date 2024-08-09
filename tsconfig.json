@@ -10,6 +10,8 @@
         "src/pages/index.ts"
       ],
       "@shared/*": ["src/shared/index.ts"],
-    }
+    },
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
   }
 }
