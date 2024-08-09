@@ -2,6 +2,7 @@ import { FC } from "react"
 import { View, Image, Text, TouchableOpacity, Dimensions, StyleSheet } from "react-native";
 import { OnboardingPagination } from "./onboarding-pagination";
 import { PAGES } from "../constants";
+import { Color } from "styles/colors";
 
 type OnboardingCardType = {
     id: number;
@@ -78,7 +79,7 @@ export const OnboardingCard: FC<OnboardingCardType> = ({ id, imageUrl, header, s
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: '#353535',
+        backgroundColor: Color.BACKGROUND_GREY,
         flex: 1,
         alignItems: 'center',
         justifyContent: 'space-around'
