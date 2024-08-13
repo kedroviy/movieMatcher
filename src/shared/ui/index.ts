@@ -18,9 +18,13 @@ export {
     SettingSvgIcon,
     DeleteSvgIcon,
     WaitingSvgIcon,
+    ErrorSvgIcon,
+    SuccessSvgIcon,
+    WarningSvgIcon,
 } from './icons';
 export { RadioButton } from './radio-button';
 export { SimpleInput } from './text-input';
 export { SimpleButton } from './simple-button';
 export { SimpleNotification } from './simple-notification';
+export { StatusNotification } from './statusNotification';
 // export { MovieLoader } from './movie-loader';

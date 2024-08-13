@@ -171,7 +171,7 @@ export const WaitingSvgIcon: FC = () => (
             <Rect x="117.983" y="417.391" fill="#7F7F7F" width="138.017" height="22.261" />
             <Polygon fill="#7F7F7F" points="256,361.739 256,384 117.983,384 117.983,361.739 181.426,339.478 244.87,361.739 	" />
         </G>
-        <Path fill="#4A75C3" d="M244.87,245.983v82.365l-96.835,11.13l33.391-115.757h41.183C234.852,223.722,244.87,233.739,244.87,245.983z"/>
+        <Path fill="#4A75C3" d="M244.87,245.983v82.365l-96.835,11.13l33.391-115.757h41.183C234.852,223.722,244.87,233.739,244.87,245.983z" />
         <Path fill="#458FDE" d="M181.426,223.722v115.757l-63.443-11.13v-82.365c0-12.243,10.017-22.261,22.261-22.261H181.426z" />
         <Polygon fill="#4F5AA8" points="181.426,328.348 156.556,349.546 181.426,361.739 244.87,361.739 244.87,328.348 " />
         <G>
@@ -192,5 +192,36 @@ export const WaitingSvgIcon: FC = () => (
 	C219.176,55.652,189.217,85.611,189.217,122.435z"/>
         <Polygon fill="#9ACEF3" points="222.609,133.565 267.13,133.565 267.13,77.913 244.87,77.913 244.87,111.304 
 	222.609,111.304 "/>
+    </Svg>
+)
+
+export const ErrorSvgIcon: FC = () => (
+    <Svg fill="#ED0E0E" width="36px" height="36px" viewBox="0 0 36 36" stroke="#ED0E0E">
+
+        <G id="SVGRepo_bgCarrier" stroke-width="0" />
+
+        <G id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
+        <Path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z" />
+
+    </Svg>
+)
+
+export const SuccessSvgIcon: FC = () => (
+    <Svg width="36px" height="36px" viewBox="0 0 36 36" fill="#4AB34C">
+
+        <G id="SVGRepo_bgCarrier" stroke-width="0" />
+
+        <G id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
+        <Path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm-1.207 17.793l-5.5-5.5 1.414-1.414L10.793 14.5l6.5-6.5 1.414 1.414-7.914 7.914z" />
+    </Svg>
+)
+
+export const WarningSvgIcon: FC = () => (
+    <Svg width="64px" height="64px" viewBox="0 0 64 64" fill="none" stroke="#f48c06">
+
+        <G id="SVGRepo_bgCarrier" stroke-width="0" />
+
+        <G id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
+        <Path d="M12 9v2m0 4h.01M21.12 16.88l-7.07-12.73a1.2 1.2 0 0 0-2.07 0l-7.07 12.73a1.2 1.2 0 0 0 1.04 1.84h14.14a1.2 1.2 0 0 0 1.03-1.84z" />
     </Svg>
 )

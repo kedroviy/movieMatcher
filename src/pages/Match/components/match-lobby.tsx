@@ -1,5 +1,6 @@
 import { FC, SetStateAction, useCallback, useEffect, useRef, useState } from "react"
 import {
+    ActivityIndicator,
     Alert,
     Dimensions,
     RefreshControl,
@@ -144,31 +145,36 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
     const handleModalClose = async (filters: any) => {
         console.log('filters: ', filters)
         if (filters) {
-                try {
-                    setFilters(filters);
-                    console.log(filters)
-                    await dispatch(updateRoomFiltersRedux(
-                        {
-                            userId: user.id, roomId: currentUserMatch?.roomId, filters: filters
-                        } as any))
-                        .unwrap()
-                        .then(() => {
-                            socketService.filtersUpdateBroadcast((filtersFromSocket: any) => {
-                                setFilters(filtersFromSocket)
-                            });
-                            Alert.alert("Success", "Filters updated successfully.");
-                        })
-                        .catch(error => {
-                            Alert.alert("Error", typeof error === 'string' ? error : 'Failed to update filters due to an unexpected error');
+            try {
+                setFilters(filters);
+                console.log(filters)
+                await dispatch(updateRoomFiltersRedux(
+                    {
+                        userId: user.id, roomId: currentUserMatch?.roomId, filters: filters
+                    } as any))
+                    .unwrap()
+                    .then(() => {
+                        socketService.filtersUpdateBroadcast((filtersFromSocket: any) => {
+                            setFilters(filtersFromSocket)
                         });
-                } catch (error) {
-                    throw new Error(error as string);
-                }
+                        Alert.alert("Success", "Filters updated successfully.");
+                    })
+                    .catch(error => {
+                        Alert.alert("Error", typeof error === 'string' ? error : 'Failed to update filters due to an unexpected error');
+                    });
+            } catch (error) {
+                throw new Error(error as string);
+            }
         }
     };
 
     return (
         <View style={styles.container}>
+            {loading && (
+                <View style={styles.loaderContainer}>
+                    <ActivityIndicator size="large" color={Color.BUTTON_RED} />
+                </View>
+            )}
             <MatchFilterModal
                 modalVisible={modalVisible}
                 setModalVisible={() => setModalVisible(false)}
@@ -262,5 +268,16 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         lineHeight: 28.8,
         color: Color.WHITE
-    }
+    },
+    loaderContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
 });

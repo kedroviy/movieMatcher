@@ -77,40 +77,38 @@ export const MatchScreen: FC = () => {
                 </Text>
             </View>
             <View style={styles.controlsContainer}>
-                {roomLoading || userLoading ? (
+                {roomLoading || userLoading && !user ? (
                     <ActivityIndicator color={Color.BUTTON_RED} />
                 ) : (
-                    <SimpleButton
-                        title={userLoading
-                            ? t('match_movie.main_match_screen.loading')
-                            : t(currentUserMatch?.roomKey
-                                ? 'match_movie.main_match_screen.reconnect_lobby_btn'
-                                : 'match_movie.main_match_screen.create_lobby_btn'
-                            )}
-                        color={Color.BUTTON_RED}
-                        titleColor={Color.WHITE}
-                        buttonWidth={width - 32}
-                        onHandlePress={() => handleCreateRoom(user.id)}
-                        disabled={userLoading}
-                    />
+                    <>
+                        <SimpleButton
+                            title={userLoading
+                                ? t('match_movie.main_match_screen.loading')
+                                : t(currentUserMatch?.roomKey
+                                    ? 'match_movie.main_match_screen.reconnect_lobby_btn'
+                                    : 'match_movie.main_match_screen.create_lobby_btn'
+                                )}
+                            color={Color.BUTTON_RED}
+                            titleColor={Color.WHITE}
+                            buttonWidth={width - 32}
+                            onHandlePress={() => handleCreateRoom(user.id)}
+                            disabled={userLoading} />
+                        <SimpleButton
+                            title={t('match_movie.main_match_screen.join_lobby_btn')}
+                            color={Color.BACKGROUND_GREY}
+                            titleColor={Color.WHITE}
+                            buttonWidth={width - 32}
+                            onHandlePress={() => (navigation.navigate(AppRoutes.MATCH_NAVIGATOR, {
+                                screen: AppRoutes.MATCH_JOIN_LOBBY,
+                            }))}
+                            buttonStyle={{
+                                borderWidth: 1,
+                                borderStyle: 'solid',
+                                borderColor: Color.WHITE
+                            }} />
+                    </>
                 )}
-                <SimpleButton
-                    title={t('match_movie.main_match_screen.join_lobby_btn')}
-                    color={Color.BACKGROUND_GREY}
-                    titleColor={Color.WHITE}
-                    buttonWidth={width - 32}
-                    onHandlePress={() => (navigation.navigate(AppRoutes.MATCH_NAVIGATOR, {
-                        screen: AppRoutes.MATCH_JOIN_LOBBY,
-                    }))}
-                    buttonStyle={{
-                        borderWidth: 1,
-                        borderStyle: 'solid',
-                        borderColor: Color.WHITE
-                    }}
-                />
             </View>
-            {matchLoading && <ActivityIndicator color={Color.BUTTON_RED} />}
-            {matchError && <Text>Error: {matchError}</Text>}
         </View>
     )
 };
