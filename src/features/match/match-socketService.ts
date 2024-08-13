@@ -36,10 +36,6 @@ class SocketService {
             console.log("Connection timeout", timeout);
             this.notifyConnectionStatus(false);
         });
-
-        this.subscribeToBroadcastMessage((data) => {
-            this.handleNewBroadcastMessage(data);
-        });
     }
 
     // isConnected(): boolean {
@@ -84,21 +80,19 @@ class SocketService {
 
 
     subscribeToMatchUpdates(callback: (data: any) => void) {
-        this.socket?.on('matchUpdated', callback);
+        this.socket?.on('matchUpdated', (data: any) => {
+            callback(data);
+    
+            store.dispatch(addNotification({
+                message: (data as any).message || "New movies",
+                type: 'success',
+                id: Date.now(),
+            }));
+        });
     }
 
     subscribeToJoinNewUser(callback: (data: any) => void) {
         this.socket?.emit('Join new user to match', callback);
-    }
-
-    private handleNewBroadcastMessage(data: any): void {
-        console.log("New broadcast message received:", data);
-
-        store.dispatch(addNotification({
-            message: data.message || "New broadcast message",
-            type: 'success',
-            id: Date.now(),
-        }));
     }
 
     subscribeToBroadcastMessage(callback: (data: any) => void) {
@@ -106,11 +100,27 @@ class SocketService {
     }
 
     subscribeToBroadcastMatchUpdate(callback: (data: any) => void) {
-        this.socket?.emit('broadcastMatchDataUpdated', callback);
+        this.socket?.on('broadcastMatchDataUpdated', (data: any) => {
+            callback(data);
+    
+            store.dispatch(addNotification({
+                message: (data as any).messageForClient,
+                type: 'success',
+                id: Date.now(),
+            }));
+        });
     }
 
     subscribeToBroadcastMovies(callback: <T>(data: T) => void) {
-        this.socket?.on('broadcastMovies', callback);
+        this.socket?.on('broadcastMovies', (data: any) => {
+            callback(data);
+    
+            store.dispatch(addNotification({
+                message: (data as any).messageForClient || "New movies",
+                type: 'success',
+                id: Date.now(),
+            }));
+        });
     }
 
     subscribeToStartMatchResponse(callback: (data: any) => void) {

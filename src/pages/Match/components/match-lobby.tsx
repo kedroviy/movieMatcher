@@ -79,6 +79,10 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
             setFilters(data.filters);
         };
 
+        socketService.subscribeToBroadcastMatchUpdate(async () => {
+            await dispatch(getMatchDataRedux(room[0].roomKey))
+        });
+
         socketService.subscribeToRequestMatchUpdate(async () => {
             if (currentUserMatch?.roomKey) {
                 await dispatch(getMatchDataRedux(currentUserMatch?.roomKey))

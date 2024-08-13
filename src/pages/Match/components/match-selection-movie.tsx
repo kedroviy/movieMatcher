@@ -25,7 +25,7 @@ export const MatchSelectionMovie: FC = () => {
     const { currentUserMatch, movies } = useSelector((state: any) => state.matchSlice);
     const { user } = useSelector((state: any) => state.userSlice);
     const { likeMovie, isProcessing } = useLikeMovieQueue();
-    const { userStatus } = useGetUserStatusByUserId(user?.id);
+    // const { userStatus } = useGetUserStatusByUserId(user?.id);
     const [currentCardIndex, setCurrentCardIndex] = useState<number>(0);
     const [isInitialLoading, setIsInitialLoading] = useState<boolean>(true);
     const [isWaitStatus, setIsWaitStatus] = useState<boolean>(false);
@@ -38,6 +38,7 @@ export const MatchSelectionMovie: FC = () => {
         }
 
         socketService.subscribeToBroadcastMovies((data: any) => {
+            console.log('subscr movies: ', data);
             dispatch(getMoviesRedux(currentUserMatch?.roomKey))
                 .then((action) => {
                     const { payload } = action;
