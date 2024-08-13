@@ -5,7 +5,7 @@ import Swiper from "react-native-deck-swiper";
 import socketService from "features/match/match-socketService";
 import { OverlayLabel } from "pages/Main/ui/overlay-label";
 import { SMControlBar } from "pages/Main/components/sm-control-bar";
-import { Loader, WaitingSvgIcon } from "shared";
+import { Loader, NotificationType, WaitingSvgIcon } from "shared";
 import { Color } from "styles/colors";
 import { SMSwipeCards } from "pages/Main/components/sm-swipe-cards";
 import { AppDispatch } from "redux/configure-store";
@@ -15,6 +15,7 @@ import { MatchStatusCard } from "../ui/match-status-card";
 import { useGetUserStatusByUserId } from "../hooks/useGetUserStatusByUserId";
 import { MatchUserStatusEnum } from "features/match/match.model";
 import { NavigationProp, ParamListBase, useNavigation } from "@react-navigation/native";
+import { addNotification } from "redux/appSlice";
 
 const { width } = Dimensions.get('window');
 
@@ -37,18 +38,28 @@ export const MatchSelectionMovie: FC = () => {
         }
 
         socketService.subscribeToBroadcastMovies((data: any) => {
-            console.log('broadcasting in selection component?: ', data)
             dispatch(getMoviesRedux(currentUserMatch?.roomKey))
                 .then((action) => {
+                    const { payload } = action;
+                    
+                    dispatch(addNotification({
+                        id: new Date().getTime(),
+                        message: data.messageForClient,
+                        type: 'success' as NotificationType,
+                    }));
+
                     if (data.messageForClient === 'Final movie selected') {
                         navigation.navigate('MatchResult');
                     }
                     setCurrentCardIndex(0);
                     setIsWaitStatus(false);
-                    const { payload } = action;
                 })
                 .catch((error) => {
-                    console.error('Ошибка при загрузке фильмов:', error);
+                    dispatch(addNotification({
+                        id: new Date().getTime(),
+                        message: `Error loading movies: ${error.message}`,
+                        type: 'error' as NotificationType,
+                    }));
                 });
         });
 
@@ -62,13 +73,25 @@ export const MatchSelectionMovie: FC = () => {
             setIsWaitStatus(true);
             const checkUserStatus = async () => {
                 try {
-                    console.log('update status')
                     await dispatch(updateUserStatusRedux(
                         { roomKey: currentUserMatch?.roomKey, userId: user.id, userStatus: MatchUserStatusEnum.WAITING }
                     ));
                     await dispatch(checkStatusRedux({ roomKey: currentUserMatch?.roomKey, userId: user.id })).unwrap();
+
+                    dispatch(addNotification({
+                        id: new Date().getTime(),
+                        message: 'User status updated successfully!',
+                        type: 'success' as NotificationType,
+                    }));
+
                 } catch (error) {
-                    throw new Error(error as string);
+                    console.error('Ошибка при обновлении статуса:', error);
+                    
+                    dispatch(addNotification({
+                        id: new Date().getTime(),
+                        message: `Error updating user status: ${error as string}`,
+                        type: 'error' as NotificationType,
+                    }));
                 }
             };
 

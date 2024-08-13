@@ -36,5 +36,6 @@ export enum Color {
   DESCRIPTION_GREY = '#5D5D5D',
   WHITE = '#F9F9F9',
   FADED_WHITE = '#c2c0c0',
-  GREEN = '#4AB34C'
+  GREEN = '#4AB34C',
+  ORANGE = '#f48c06',
 }

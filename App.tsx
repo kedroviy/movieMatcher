@@ -6,7 +6,7 @@ import AppContainer from './src/app';
 import { store } from './src/redux/configure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import socketService from 'features/match/match-socketService';
-import { API } from 'shared';
+import { API, StatusNotification } from 'shared';
 
 function App(): React.JSX.Element {
 
@@ -34,6 +34,7 @@ function App(): React.JSX.Element {
   return (
     <Provider store={store}>
       <AppContainer />
+      <StatusNotification /> 
     </Provider>);
 }
 
