@@ -18,6 +18,7 @@ export const SimpleButton: FC<SimpleButtonType> =
 
         return (
             <TouchableOpacity
+                testID="simple-button"
                 style={[
                     styles.button,
                     {

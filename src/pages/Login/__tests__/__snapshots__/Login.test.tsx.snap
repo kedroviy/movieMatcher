@@ -6,8 +6,9 @@ exports[`LoginScreen Component Testing LoginScreen renders correctly 1`] = `
     [
       {
         "alignItems": "center",
-        "backgroundColor": "#353535",
+        "backgroundColor": "#292929",
         "flex": 1,
+        "width": 718,
       },
       {
         "width": 750,
@@ -21,11 +22,19 @@ exports[`LoginScreen Component Testing LoginScreen renders correctly 1`] = `
         "alignItems": "center",
         "height": 328,
         "marginVertical": 24,
-        "width": 750,
+        "width": "100%",
       }
     }
   >
-    <mocked-file />
+    <Image
+      source="mocked-file"
+      style={
+        {
+          "height": "100%",
+          "width": 718,
+        }
+      }
+    />
   </View>
   <View
     style={
@@ -40,7 +49,7 @@ exports[`LoginScreen Component Testing LoginScreen renders correctly 1`] = `
     <Text
       style={
         {
-          "color": "#FFFFFF",
+          "color": "#F9F9F9",
           "fontSize": 22,
           "fontWeight": "700",
           "lineHeight": 27.5,
@@ -48,12 +57,12 @@ exports[`LoginScreen Component Testing LoginScreen renders correctly 1`] = `
         }
       }
     >
-      Добро пожаловать в MovieMatch
+      auth.welcome
     </Text>
     <Text
       style={
         {
-          "color": "#FFFFFF",
+          "color": "#F9F9F9",
           "fontSize": 16,
           "fontWeight": "400",
           "lineHeight": 21.6,
@@ -61,7 +70,7 @@ exports[`LoginScreen Component Testing LoginScreen renders correctly 1`] = `
         }
       }
     >
-      Сделай подбор фильмов самостоятельно или в компании друзей!
+      auth.sub_welcome
     </Text>
   </View>
   <View
@@ -121,13 +130,13 @@ exports[`LoginScreen Component Testing LoginScreen renders correctly 1`] = `
       <Text
         style={
           {
-            "color": "#FFF",
+            "color": "#F9F9F9",
             "fontSize": 18,
             "fontWeight": "500",
           }
         }
       >
-        Войти
+        auth.login.btn_title
       </Text>
     </View>
     <View
@@ -161,7 +170,7 @@ exports[`LoginScreen Component Testing LoginScreen renders correctly 1`] = `
       style={
         {
           "alignItems": "center",
-          "backgroundColor": "#FFF",
+          "backgroundColor": "#F9F9F9",
           "borderRadius": 5,
           "flexDirection": "row",
           "gap": 10,
@@ -174,10 +183,99 @@ exports[`LoginScreen Component Testing LoginScreen renders correctly 1`] = `
       }
       testID="myButton"
     >
-      <mocked-file
-        height={36}
-        width={36}
-      />
+      <RNSVGSvgView
+        align="xMidYMid"
+        bbHeight="36"
+        bbWidth="36"
+        fill="none"
+        focusable={false}
+        height="36"
+        meetOrSlice={0}
+        minX={0}
+        minY={0}
+        style={
+          [
+            {
+              "backgroundColor": "transparent",
+              "borderWidth": 0,
+            },
+            {
+              "flex": 0,
+              "height": 36,
+              "width": 36,
+            },
+          ]
+        }
+        vbHeight={36}
+        vbWidth={36}
+        width="36"
+      >
+        <RNSVGGroup
+          fill={null}
+          propList={
+            [
+              "fill",
+            ]
+          }
+        >
+          <RNSVGPath
+            d="M18.0002 13.2157C19.4649 13.2157 20.4529 13.8484 21.0162 14.377L23.2176 12.2277C21.8656 10.971 20.1062 10.1997 18.0002 10.1997C14.9496 10.1997 12.3149 11.9504 11.0322 14.4984L13.5542 16.457C14.1869 14.5764 15.9376 13.2157 18.0002 13.2157Z"
+            fill={
+              {
+                "payload": 4293542709,
+                "type": 0,
+              }
+            }
+            propList={
+              [
+                "fill",
+              ]
+            }
+          />
+          <RNSVGPath
+            d="M25.4885 18.1728C25.4885 17.5315 25.4365 17.0635 25.3238 16.5781H18.0005V19.4728H22.2992C22.2125 20.1921 21.7445 21.2755 20.7045 22.0035L23.1658 23.9101C24.6392 22.5495 25.4885 20.5475 25.4885 18.1728Z"
+            fill={
+              {
+                "payload": 4282549748,
+                "type": 0,
+              }
+            }
+            propList={
+              [
+                "fill",
+              ]
+            }
+          />
+          <RNSVGPath
+            d="M13.5629 19.542C13.3982 19.0567 13.3029 18.5367 13.3029 17.9994C13.3029 17.462 13.3982 16.942 13.5542 16.4567L11.0322 14.498C10.5035 15.5554 10.2002 16.7427 10.2002 17.9994C10.2002 19.256 10.5035 20.4434 11.0322 21.5007L13.5629 19.542Z"
+            fill={
+              {
+                "payload": 4294687749,
+                "type": 0,
+              }
+            }
+            propList={
+              [
+                "fill",
+              ]
+            }
+          />
+          <RNSVGPath
+            d="M18.0003 25.7998C20.1063 25.7998 21.8743 25.1065 23.1657 23.9105L20.7043 22.0038C20.0457 22.4631 19.1617 22.7838 18.0003 22.7838C15.9377 22.7838 14.187 21.4231 13.563 19.5425L11.041 21.5011C12.3237 24.0491 14.9497 25.7998 18.0003 25.7998Z"
+            fill={
+              {
+                "payload": 4281641043,
+                "type": 0,
+              }
+            }
+            propList={
+              [
+                "fill",
+              ]
+            }
+          />
+        </RNSVGGroup>
+      </RNSVGSvgView>
       <Text
         style={
           {
@@ -188,7 +286,7 @@ exports[`LoginScreen Component Testing LoginScreen renders correctly 1`] = `
           }
         }
       >
-        Войти с Google
+        auth.login.btn_google
       </Text>
     </View>
     <View
@@ -238,13 +336,13 @@ exports[`LoginScreen Component Testing LoginScreen renders correctly 1`] = `
       <Text
         style={
           {
-            "color": "#FFF",
+            "color": "#F9F9F9",
             "fontSize": 18,
             "fontWeight": "500",
           }
         }
       >
-        Зарегистрироваться
+        auth.registration.btn_title
       </Text>
     </View>
   </View>

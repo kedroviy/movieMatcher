@@ -1,5 +1,5 @@
 import { Alert } from "react-native";
-import { addNotification, setConnectionStatus } from "redux/appSlice";
+import { addNotification } from "redux/appSlice";
 import { store } from "redux/configure-store";
 import io, { Socket } from "socket.io-client";
 
@@ -37,10 +37,6 @@ class SocketService {
             this.notifyConnectionStatus(false);
         });
     }
-
-    // isConnected(): boolean {
-    //     return this.socket?.connected || false;
-    // }
 
     private notifyConnectionStatus(isConnected: boolean): void {
         store.dispatch(addNotification({

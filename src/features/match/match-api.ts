@@ -3,13 +3,16 @@ import * as Keychain from 'react-native-keychain';
 import { API } from 'shared';
 
 export const createApi = async () => {
-    const credentials = await Keychain.getGenericPassword({ service: 'token_guard' });
-    const token = credentials ? credentials.password : null;
+    let token: string | null = null;
+    try {
+        const credentials = await Keychain.getGenericPassword({ service: 'token_guard' });
+        token = credentials ? credentials.password : null;
+    } catch (error) {
+        token = null
+    }
 
     const api = create({
         baseURL: API.BASE_URL,
-        // 'https://movie-match-x5ue.onrender.com',
-        // 'http://192.168.100.71:6001/',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
