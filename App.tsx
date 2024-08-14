@@ -5,8 +5,7 @@ import { Provider } from 'react-redux';
 import AppContainer from './src/app';
 import { store } from './src/redux/configure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import socketService from 'features/match/match-socketService';
-import { API, StatusNotification } from 'shared';
+import { StatusNotification } from 'shared';
 
 function App(): React.JSX.Element {
 
@@ -24,11 +23,6 @@ function App(): React.JSX.Element {
       i18n.changeLanguage(currentLanguage);
     }
     setLocalization();
-    socketService.connect(API.BASE_URL);
-
-    return () => {
-      socketService.disconnect();
-    };
   }, []);
 
   return (

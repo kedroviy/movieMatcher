@@ -34,8 +34,6 @@ export const SMMultiSelectInput: FC<MultiSelectInputProps<FilterOption>> = ({
     );
   };
 
-  // const dropdownZIndex = isOpen ? 1000 : 0;
-
   const handleToggleDropdown = () => setIsOpen(!isOpen);
 
   const handleSelectOption = (option: Option) => {

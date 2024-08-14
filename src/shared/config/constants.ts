@@ -1,5 +1,6 @@
 const API = {
-    BASE_URL: 'https://beneficial-adaptation-prod.up.railway.app',
+    BASE_URL: 'http://192.168.100.71:6001',
+    // 'https://beneficial-adaptation-prod.up.railway.app',
     // 'https://movie-match-x5ue.onrender.com',
     // 'http://192.168.100.71:6001' ,
     // 'beneficial-adaptation-prod.up.railway.app',

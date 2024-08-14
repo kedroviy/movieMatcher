@@ -14,7 +14,7 @@ const useFetchUserProfile = () => {
                 const resultAction = await dispatch(fetchUserProfile());
                 if (fetchUserProfile.fulfilled.match(resultAction)) {
                     dispatch(addNotification({
-                        message: 'Profile updated successfully!',
+                        message: 'Get profile data',
                         type: 'success',
                         id: Date.now(),
                     }));
@@ -28,7 +28,7 @@ const useFetchUserProfile = () => {
             } catch (error) {
                 dispatch(addNotification({
                     message: 'An error occurred.',
-                    type: 'error',
+                    type: 'warning',
                     id: Date.now(),
                 }));
             }

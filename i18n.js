@@ -80,6 +80,15 @@ const resources = {
                 lobby: {
                     lobby_members: 'Lobby members'
                 },
+                filters_settings: {
+                    settings: 'Settings',
+                    leave_room: 'Leave the room and delete',
+                    country: 'Country',
+                    year: 'Year',
+                    genre: 'Genre',
+                    exclude_genre: 'Exclude genre',
+                    other_options: 'Other options',
+                },
                 match_result: 'Result of match'
             },
             general: {
@@ -159,12 +168,21 @@ const resources = {
                     create_lobby_btn: 'Создать новое лобби',
                     reconnect_lobby_btn: 'Переподключиться к лобби',
                     join_lobby_btn: 'Присоединиться к лобби',
-                    main_text: 'Создавайте лобби для совместного выбора фильма к просмотру методом совпадения!',
+                    main_text: 'Создавайте лобби для совместного выбора фильма!',
                     greetings: 'Привет',
                     loading: 'Идёт подключение к серверу, подождите...'
                 },
                 lobby: {
                     lobby_members: 'Участники лобби'
+                },
+                filters_settings: {
+                    settings: 'Настройки',
+                    leave_room: 'Покинуть комнату и удалить',
+                    country: 'Страна',
+                    year: 'Год',
+                    genre: 'Жанр',
+                    exclude_genre: 'Исключить жанр',
+                    other_options: 'Другие опции',
                 },
                 match_result: 'Результат'
             },
