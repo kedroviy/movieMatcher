@@ -1,7 +1,8 @@
+import { Slider } from "@miblanchard/react-native-slider";
 import { FILTERS_DATA } from "pages/Main/constants";
 import { FilterOption, initialState, reducer } from "pages/Main/sm.model";
 import { SMMultiSelectInput } from "pages/Main/ui/sm-multi-select-input";
-import { FC, useReducer } from "react";
+import { FC, useReducer, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Modal, View, StyleSheet, Dimensions, ScrollView, Text, TouchableOpacity } from "react-native";
 import { DeleteSvgIcon, SimpleButton } from "shared";
@@ -18,6 +19,14 @@ const { width, height } = Dimensions.get('window')
 export const MatchFilterModal: FC<MatchFilterModalType> = ({ modalVisible, setModalVisible, onFiltersChange }) => {
     const { t } = useTranslation();
     const [state, SMdispatch] = useReducer(reducer<FilterOption>, initialState);
+    const [range, setRange] = useState<[number, number]>([0, 10]);
+
+    const handleRangeChange = (values: number[]) => {
+        if (values.length === 2) {
+            setRange([values[0], values[1]]);
+            SMdispatch({ type: 'SET_SELECTED_RATING', payload: [values[0], values[1]] });
+        }
+    };
 
     const handleCountrySelectionChange = (selectedCountries: any[]) => {
         SMdispatch({ type: 'SET_SELECTED_COUNTRIES', payload: selectedCountries });
@@ -69,7 +78,7 @@ export const MatchFilterModal: FC<MatchFilterModalType> = ({ modalVisible, setMo
                 }}>
                     <Text style={styles.textStyle}>{t('match_movie.filters_settings.settings')}</Text>
                 </View>
-                <ScrollView style={styles.scrollView}>
+                <ScrollView>
                     <View style={{
                         height: height / 1.3,
                     }}>
@@ -104,6 +113,25 @@ export const MatchFilterModal: FC<MatchFilterModalType> = ({ modalVisible, setMo
                             onSelectionChange={handleExcludeGenreChange}
                             placeholder={FILTERS_DATA.genre.placeholder}
                         />
+                        <View style={styles.sliderContainer}>
+                            <Text style={styles.sliderLabelText}>Rating</Text>
+                            <View style={styles.sliderLabel}>
+                                <Text style={styles.label}>{range[0]}</Text>
+                                <Text style={styles.label}>{range[1]}</Text>
+                            </View>
+                            <Slider
+                                value={range}
+                                onValueChange={handleRangeChange}
+                                minimumValue={0}
+                                maximumValue={10}
+                                step={1}
+                                minimumTrackTintColor={Color.RED}
+                                maximumTrackTintColor={Color.WHITE}
+                                thumbTintColor={Color.BUTTON_RED}
+                                trackStyle={styles.sliderTrack}
+                                thumbStyle={styles.sliderThumb}
+                            />
+                        </View>
 
                         <View style={{
                             width: width - 32,
@@ -196,7 +224,41 @@ const styles = StyleSheet.create({
         marginBottom: 15,
         textAlign: 'center',
     },
-    scrollView: {
+    sliderContainer: {
 
+    },
+    slider: {
+        width: width - 40,
+        // height: 40,
+        // marginVertical: 20,
+    },
+    sliderLabel: {
+        flexDirection: 'row',
+        justifyContent: 'space-between'
+    },
+    sliderLabelText: {
+        fontSize: 14,
+        color: Color.WHITE,
+        marginBottom: 8,
+        fontFamily: 'Roboto',
+        top: 0,
+    },
+    sliderTrack: {
+        height: 2,
+    },
+    sliderThumb: {
+        width: 20,
+        height: 20,
+    },
+    label: {
+        fontSize: 16,
+        // marginVertical: 8,
+        color: Color.WHITE
+    },
+    range: {
+        marginTop: 20,
+    },
+    rangeLabel: {
+        fontSize: 16,
     },
 });

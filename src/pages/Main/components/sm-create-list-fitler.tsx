@@ -1,6 +1,6 @@
 import { FC, useEffect, useReducer, useState } from "react"
 import { NavigationProp, ParamListBase, useNavigation } from "@react-navigation/native";
-import { View, StyleSheet, ScrollView, Dimensions } from "react-native"
+import { View, StyleSheet, ScrollView, Dimensions, Text } from "react-native"
 import { useTranslation } from "react-i18next";
 import { format } from 'date-fns';
 
@@ -13,6 +13,7 @@ import { reducer, FilterOption, initialState, ISMFormData, SelectMovieType, Coun
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "redux/configure-store";
 import { clearError, clearResponse, loadMovies } from "redux/moviesSlice";
+import { Slider } from "@miblanchard/react-native-slider";
 
 const { width, height } = Dimensions.get('window');
 
@@ -23,6 +24,14 @@ export const SMCreateMovieListFilter: FC = () => {
     const { data, loading, error, currentPage } = useSelector((state: any) => state.moviesSlice);
     const navigation = useNavigation<NavigationProp<ParamListBase>>();
     const [isNotificationHide, setIsNotificationHide] = useState<boolean>(true);
+    const [range, setRange] = useState<[number, number]>([0, 10]);
+
+    const handleRangeChange = (values: number[]) => {
+        if (values.length === 2) {
+            setRange([values[0], values[1]]);
+            SMdispatch({ type: 'SET_SELECTED_RATING', payload: [values[0], values[1]] });
+        }
+    };
 
     useEffect(() => {
         if (!loading && data.total > 0) {
@@ -64,6 +73,7 @@ export const SMCreateMovieListFilter: FC = () => {
             selectedCountries: state.selectedCountries as Country[],
             selectedGenres: state.selectedGenres.map(genre => ({ ...genre, type: 'genre' })),
             selectedYears: state.selectedYears as Year[],
+            selectedRating: state.selectedRating,
         };
 
         return transformedState;
@@ -133,6 +143,26 @@ export const SMCreateMovieListFilter: FC = () => {
                         onSelectionChange={handleExcludeGenreChange}
                         placeholder={FILTERS_DATA.genre.placeholder}
                     />
+
+                    <View style={styles.sliderContainer}>
+                        <Text style={styles.sliderLabelText}>Rating</Text>
+                        <View style={styles.sliderLabel}>
+                            <Text style={styles.label}>{range[0]}</Text>
+                            <Text style={styles.label}>{range[1]}</Text>
+                        </View>
+                        <Slider
+                            value={range}
+                            onValueChange={handleRangeChange}
+                            minimumValue={0}
+                            maximumValue={10}
+                            step={1}
+                            minimumTrackTintColor={Color.RED}
+                            maximumTrackTintColor={Color.WHITE}
+                            thumbTintColor={Color.BUTTON_RED}
+                            trackStyle={styles.sliderTrack}
+                            thumbStyle={styles.sliderThumb}
+                        />
+                    </View>
                 </View>
             </ScrollView>
             <SimpleButton
@@ -180,5 +210,40 @@ const styles = StyleSheet.create({
         height: height,
         backgroundColor: Color.BLACK,
         opacity: 0.5
-    }
+    },
+    sliderContainer: {
+
+    },
+    slider: {
+        width: width - 40,
+    },
+    sliderLabel: {
+        flexDirection: 'row',
+        justifyContent: 'space-between'
+    },
+    sliderLabelText: {
+        fontSize: 14,
+        color: Color.WHITE,
+        marginBottom: 8,
+        fontFamily: 'Roboto',
+        top: 0,
+    },
+    sliderTrack: {
+        height: 2,
+    },
+    sliderThumb: {
+        width: 20,
+        height: 20,
+    },
+    label: {
+        fontSize: 16,
+        // marginVertical: 8,
+        color: Color.WHITE
+    },
+    range: {
+        marginTop: 20,
+    },
+    rangeLabel: {
+        fontSize: 16,
+    },
 });
