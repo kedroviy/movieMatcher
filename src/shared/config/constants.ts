@@ -1,8 +1,8 @@
 const API = {
-    BASE_URL: 'https://beneficial-adaptation-prod.up.railway.app',
+    BASE_URL: 'https://movie-match-x5ue.onrender.com',
+    // 'https://beneficial-adaptation-prod.up.railway.app',
     // 'https://movie-match-x5ue.onrender.com',
     // 'http://192.168.100.71:6001' ,
-    // 'beneficial-adaptation-prod.up.railway.app',
     KINOPOISK_URL: 'https://api.kinopoisk.dev/v1.4',
     LOGIN: '/auth/login',
     REGISTRATION: '/auth/register',
