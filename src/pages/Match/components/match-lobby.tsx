@@ -93,7 +93,8 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
 
         socketService.filtersUpdateBroadcast(handleFiltersUpdated);
 
-        socketService.subscribeToBroadcastMovies(async () => {
+        socketService.subscribeToBroadcastMovies(async (data: any) => {
+            console.log('lobby movies broadcasting', data)
             if (currentUserMatch?.roomKey) {
                 await dispatch(getMoviesRedux(currentUserMatch?.roomKey))
             } else if (room[0].roomKey) {

@@ -8,10 +8,8 @@ import {
     defaultOptions,
 } from "./constants";
 import { Color } from "styles/colors";
-import { API, MatchSvgIcon, PlaySvgIcon, ProfileSvgIcon } from "shared";
+import { MatchSvgIcon, PlaySvgIcon, ProfileSvgIcon } from "shared";
 import { useTranslation } from "react-i18next";
-import { useEffect } from "react";
-import socketService from "features/match/match-socketService";
 
 const Tabs = createBottomTabNavigator();
 
@@ -30,14 +28,6 @@ const screenOptions: BottomTabNavigationOptions = {
 
 export const TabNavigator = () => {
     const { t } = useTranslation();
-
-    useEffect(() => {
-        socketService.connect(API.BASE_URL);
-
-        return () => {
-            socketService.disconnect();
-        };
-    }, []);
 
     return (
         <Tabs.Navigator screenOptions={screenOptions}>
