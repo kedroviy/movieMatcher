@@ -51,20 +51,16 @@ export const updateUsername = createAsyncThunk<
     async (args, { rejectWithValue }) => {
         try {
             const response = await putUpdateUsername(args);
-            console.log('Update username response:', response);
 
             if (response.ok) {
-                console.log(response)
                 return response.data as UserModelType;
             } else {
                 return rejectWithValue(response as ApiResponse);
             }
         } catch (error) {
             if (error instanceof Error) {
-                console.error('Error in updateUsername:', error.message);
                 return rejectWithValue({ success: false, message: error.message } as ApiResponse);
             } else {
-                console.error('Unknown error in updateUsername:', error);
                 return rejectWithValue({ success: false, message: 'Unknown error' } as ApiResponse);
             }
         }

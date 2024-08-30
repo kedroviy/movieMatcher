@@ -10,6 +10,7 @@ type AppState = {
     onboarded: boolean;
     isWSConnected: boolean;
     notifications: SnackBarNotification[];
+    isConnected: boolean;
 }
 
 const initialState: AppState = {
@@ -21,6 +22,7 @@ const initialState: AppState = {
     onboarded: false,
     isWSConnected: false,
     notifications: [],
+    isConnected: true,
 };
 
 const appSlice = createSlice({
@@ -41,8 +43,17 @@ const appSlice = createSlice({
                 notification => notification.id !== action.payload
             );
         },
+        setNetworkStatus(state, action: PayloadAction<boolean>) {
+            state.isConnected = action.payload;
+        }
     },
 });
 
-export const { setConnectionStatus, setError, addNotification, removeNotification } = appSlice.actions;
+export const {
+    setConnectionStatus,
+    setError,
+    addNotification,
+    removeNotification,
+    setNetworkStatus,
+} = appSlice.actions;
 export default appSlice.reducer;

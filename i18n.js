@@ -94,7 +94,8 @@ const resources = {
             general: {
                 next_page: 'Next page',
                 enter_in_account: 'Login to account',
-                continue: 'Продолжить',
+                continue: 'Continue',
+                network_problem: 'No internet connection',
             }
         }
     },
@@ -189,7 +190,8 @@ const resources = {
             general: {
                 next_page: 'Следующая страница',
                 enter_in_account: 'Войти в аккаунт',
-                continue: 'Продолжить'
+                continue: 'Продолжить',
+                network_problem: 'Нет подключения к интернету',
             }
         }
     },
