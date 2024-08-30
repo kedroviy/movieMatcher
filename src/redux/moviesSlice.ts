@@ -36,7 +36,6 @@ export const loadMovies = createAsyncThunk
                 dispatch(setCurrentFormData(formData))
                 return movies;
             } catch (error) {
-                console.log(error)
                 return rejectWithValue('Failed to fetch movies');
             }
         }
@@ -50,7 +49,6 @@ export const loadMovieDetails = createAsyncThunk
                 const movieDetails = await fetchMovieDetails(movieId);
                 return movieDetails;
             } catch (error) {
-                console.log(error);
                 return rejectWithValue('Failed to fetch movie details');
             }
         }

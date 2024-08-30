@@ -2,14 +2,17 @@ import i18n from './i18n';
 import { useEffect } from 'react';
 import * as RNLocalize from 'react-native-localize';
 import { Provider } from 'react-redux';
+
 import AppContainer from './src/app';
 import { store } from './src/redux/configure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import socketService from 'features/match/match-socketService';
 import { API, StatusNotification } from 'shared';
+import NetworkStatus from 'shared/ui/network-status';
+import { useTranslation } from 'react-i18next';
 
 function App(): React.JSX.Element {
-
+  const { t } = useTranslation();
   useEffect(() => {
     const setLocalization = async () => {
 
@@ -34,7 +37,8 @@ function App(): React.JSX.Element {
   return (
     <Provider store={store}>
       <AppContainer />
-      <StatusNotification /> 
+      <StatusNotification />
+      <NetworkStatus status={t('general.network_problem')}/>
     </Provider>);
 }
 

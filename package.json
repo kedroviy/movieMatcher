@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@miblanchard/react-native-slider": "^2.6.0",
-    "@react-native-community/netinfo": "^11.3.1",
+    "@react-native-community/netinfo": "^11.3.2",
     "@react-native-google-signin/google-signin": "^11.0.0",
     "@react-navigation/bottom-tabs": "^6.5.11",
     "@react-navigation/native": "^6.1.9",
