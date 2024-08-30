@@ -229,8 +229,6 @@ const styles = StyleSheet.create({
     },
     slider: {
         width: width - 40,
-        // height: 40,
-        // marginVertical: 20,
     },
     sliderLabel: {
         flexDirection: 'row',

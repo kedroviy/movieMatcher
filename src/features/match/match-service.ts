@@ -52,7 +52,6 @@ export const doesUserHaveRoomService = async (userId: number): Promise<Match | n
     try {
         const api = await createApi();
         const response: any = await api.get<ApiResponse<Match>>(`/match/${userId}`);
-        console.log(response);
         if (response.ok) {
             return response.data ?? null;
         } else if (response.status === 404) {
@@ -61,7 +60,6 @@ export const doesUserHaveRoomService = async (userId: number): Promise<Match | n
             throw new Error(`Server Error: ${response.status}`);
         }
     } catch (error) {
-        console.error('Failed to fetch room:', error);
         throw new Error('Failed to fetch room');
     }
 };
@@ -93,7 +91,6 @@ export const getMovieData = async (roomKey: string): Promise<any> => {
 export const postLikeMovie = async (like: MatchLikeFields): Promise<any> => {
     const api = await createApi();
     const response = await api.post<any>(`/match/like`, like);
-    console.log('like response: ', response);
     if (response.status === 201) {
         return response;
     } else {
@@ -123,7 +120,6 @@ export const getUserStatusByUserId = async (roomKey: string, userId: number):
             throw new Error('Failed to get user status');
         }
     } catch (error) {
-        console.error('Error fetching user status:', error);
         throw new Error('Failed to get user status');
     }
 }

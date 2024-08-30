@@ -30,11 +30,9 @@ export const sendEmailForRecoveryAPI = async (email: string) => {
             },
         });
 
-        if (response.ok) {
-            console.log(response);
+        if (response.ok) {;
             return { success: true };
-        } else {
-            console.log(response);
+        } else {;
             return { success: false };
         }
     } catch (error) {
@@ -63,10 +61,8 @@ export const sendRecoveryNewPasswordAPI = async (body: RecoveryPasswordType) => 
         const response = await api.post<Response<{ success: string }>>(API.NEW_PASSWORD, body);
 
         if (response.ok) {
-            console.log(response)
             return { success: true };
         } else {
-            console.log(response)
             return { success: false };
         }
     } catch (error) {
