@@ -10,9 +10,11 @@ import socketService from 'features/match/match-socketService';
 import { API, StatusNotification } from 'shared';
 import NetworkStatus from 'shared/ui/network-status';
 import { useTranslation } from 'react-i18next';
+import useNetworkStatus from 'shared/hooks/useNetworkStatus';
 
 function App(): React.JSX.Element {
   const { t } = useTranslation();
+  
   useEffect(() => {
     const setLocalization = async () => {
 
@@ -38,7 +40,6 @@ function App(): React.JSX.Element {
     <Provider store={store}>
       <AppContainer />
       <StatusNotification />
-      <NetworkStatus status={t('general.network_problem')}/>
     </Provider>);
 }
 

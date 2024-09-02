@@ -7,7 +7,7 @@ type NetworkStatusType = {
     status: string;
 }
 const NetworkStatus: FC<NetworkStatusType> = ({status}) => {
-  const isConnected = useSelector((state: RootState) => state.appSlice);
+    const { isConnected } = useSelector((state: RootState) => state.appSlice);
 
   if (!isConnected) {
     return (
