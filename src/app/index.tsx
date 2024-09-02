@@ -6,19 +6,24 @@ import { SafeAreaView, StatusBar, View, useColorScheme } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 
 import { AppNavigation } from './Navigation';
-import { AppDispatch } from '../redux/configure-store';
+import { AppDispatch, RootState } from '../redux/configure-store';
 import { initializeApp } from '../redux/authSlice';
 import { LoginNavigator } from './LoginNavigator';
 import { StartMessage } from 'shared';
 import { Color } from 'styles/colors';
+import useNetworkStatus from 'shared/hooks/useNetworkStatus';
+import NetworkStatus from 'shared/ui/network-status';
+import { useTranslation } from 'react-i18next';
 
 export default function AppContainer() {
     const dispatch: AppDispatch = useDispatch();
-    const { isAuthenticated, loadingApplication, onboarded } = useSelector((state: any) => state.authSlice);
+    const { t } = useTranslation();
+    const { isAuthenticated, loadingApplication, onboarded } = useSelector((state: RootState) => state.authSlice);
     const isDarkMode = useColorScheme() === 'light';
     const backgroundStyle = {
         backgroundColor: isDarkMode ? Color.BACKGROUND_GREY : Colors.lighter,
     };
+    useNetworkStatus();
 
     useEffect(() => {
         dispatch(initializeApp());
@@ -50,6 +55,8 @@ export default function AppContainer() {
                         <LoginNavigator /> :
                         <AppNavigation onboarded={onboarded} />
                 }
+
+                <NetworkStatus status={t('general.network_problem')} />
             </SafeAreaView>
         </NavigationContainer>
     );
