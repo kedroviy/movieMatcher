@@ -36,7 +36,8 @@
     "react-native-ui-lib": "^7.17.0",
     "react-redux": "^9.1.0",
     "reflect-metadata": "^0.2.2",
-    "socket.io-client": "^4.7.5"
+    "socket.io-client": "^4.7.5",
+    "sp-react-native-in-app-updates": "^1.4.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
