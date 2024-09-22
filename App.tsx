@@ -8,12 +8,12 @@ import { store } from './src/redux/configure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import socketService from 'features/match/match-socketService';
 import { API, StatusNotification } from 'shared';
-import NetworkStatus from 'shared/ui/network-status';
 import { useTranslation } from 'react-i18next';
-import useNetworkStatus from 'shared/hooks/useNetworkStatus';
+import { useInAppUpdate } from 'shared/hooks/useInAppUpdate';
 
 function App(): React.JSX.Element {
   const { t } = useTranslation();
+  useInAppUpdate();
   
   useEffect(() => {
     const setLocalization = async () => {
