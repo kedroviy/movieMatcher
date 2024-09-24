@@ -47,3 +47,14 @@ export const putUpdateUsername = async (args: UpdateUsernameArgs): Promise<ApiRe
 
     return response;
 };
+
+export const deleteUserAccount = async (email: string): Promise<ApiResponse> => {
+    await setAuthToken();
+    const response = await api.delete(`/user/${email}`);
+
+    if (!response.ok || !response.data) {
+        throw new Error(response.problem || 'Unknown API error');
+    }
+
+    return response;
+};

@@ -12,7 +12,7 @@ const inAppUpdates = new SpInAppUpdates(
 
 export const useInAppUpdate = () => {
     useEffect(() => {
-        inAppUpdates.checkNeedsUpdate({ curVersion: '0.0.1' }).then((result: NeedsUpdateResponse) => {
+        inAppUpdates.checkNeedsUpdate({ curVersion: '0.0.2' }).then((result: NeedsUpdateResponse) => {
             if (result.shouldUpdate) {
                 let updateOptions: StartUpdateOptions = {};
                 if (Platform.OS === 'android') {
