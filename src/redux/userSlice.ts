@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { ApiResponse, UpdateUsernameArgs, getUserProfile, putUpdateUsername } from "features";
+import { deleteUserAccount } from "features/user/userAPI";
 import { UserModelType } from "shared";
 
 type UserState = {
@@ -67,6 +68,33 @@ export const updateUsername = createAsyncThunk<
     }
 );
 
+export const deleteUser = createAsyncThunk<
+    ApiResponse,
+    string,
+    {
+        rejectValue: ApiResponse
+    }
+>(
+    'user/deleteUser',
+    async (email, { rejectWithValue }) => {
+        try {
+            const response = await deleteUserAccount(email);
+
+            if (response.ok) {
+                return response; // Успешный ответ
+            } else {
+                return rejectWithValue(response as ApiResponse); // Ошибка при выполнении
+            }
+        } catch (error) {
+            if (error instanceof Error) {
+                return rejectWithValue({ success: false, message: error.message } as ApiResponse);
+            } else {
+                return rejectWithValue({ success: false, message: 'Unknown error' } as ApiResponse);
+            }
+        }
+    }
+);
+
 const userSlice = createSlice({
     name: 'user',
     initialState,
@@ -94,6 +122,18 @@ const userSlice = createSlice({
             .addCase(updateUsername.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload as string;
+            })
+            .addCase(deleteUser.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(deleteUser.fulfilled, (state) => {
+                state.loading = false;
+                state.user = null;
+            })
+            .addCase(deleteUser.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload?.message || 'Failed to delete user';
             });
     },
 });
