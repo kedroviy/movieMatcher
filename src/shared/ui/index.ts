@@ -27,4 +27,4 @@ export { SimpleInput } from './text-input';
 export { SimpleButton } from './simple-button';
 export { SimpleNotification } from './simple-notification';
 export { StatusNotification } from './statusNotification';
-// export { MovieLoader } from './movie-loader';
+export { MovieLoader } from './movie-loader';

@@ -21,6 +21,7 @@
     "@types/socket.io-client": "^3.0.0",
     "apisauce": "^3.0.1",
     "i18next": "^23.10.1",
+    "lottie-react-native": "^7.0.0",
     "react": "18.2.0",
     "react-i18next": "^14.1.0",
     "react-native": "0.73.3",

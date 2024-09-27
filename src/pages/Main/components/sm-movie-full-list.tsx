@@ -8,6 +8,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Movie, MoviesSavedType } from "features/selection-movies/selection-movies.model";
 import { MovieCardItemProps, SMCard } from "../ui/sm-card";
 import { Loader, SimpleButton } from "shared";
+import { MovieLoader } from "shared/ui/movie-loader";
 
 type SMMovieFullListType = {
     route: RouteProp<RootStackParamList, 'SMMovieFullList'>;
@@ -77,7 +78,7 @@ export const SMMovieFullList: FC<SMMovieFullListType> = ({ route }) => {
                         onHandlePress={onHandleDelete} />
                 </>
                 :
-                <Loader />
+                <MovieLoader />
             }
         </View>
     )

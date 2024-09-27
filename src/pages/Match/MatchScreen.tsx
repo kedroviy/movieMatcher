@@ -2,11 +2,11 @@ import { NavigationProp, ParamListBase, useNavigation } from "@react-navigation/
 import { AppRoutes } from "app/constants";
 import { FC, useEffect } from "react"
 import { useTranslation } from "react-i18next";
-import { View, Text, StyleSheet, Image, Dimensions, ActivityIndicator } from "react-native"
+import { View, Text, StyleSheet, Image, Dimensions } from "react-native"
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "redux/configure-store";
 import { createRoom, resetMovies } from "redux/matchSlice";
-import { SimpleButton } from "shared";
+import { MovieLoader, SimpleButton } from "shared";
 import useFetchUserProfile from "shared/hooks/getUserProfile";
 import { Color } from "styles/colors";
 import useUserHasRoom from "./hooks/useUserHasRoom";
@@ -78,7 +78,7 @@ export const MatchScreen: FC = () => {
             </View>
             <View style={styles.controlsContainer}>
                 {roomLoading || userLoading && !user ? (
-                    <ActivityIndicator color={Color.BUTTON_RED} />
+                    <MovieLoader />
                 ) : (
                     <>
                         <SimpleButton

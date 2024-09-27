@@ -13,7 +13,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { NavigationProp, ParamListBase, useNavigation } from "@react-navigation/native";
 
 import { AppDispatch, RootState } from "../../../redux/configure-store";
-import { AppConstants, Loader } from "../../../shared";
+import { AppConstants, MovieLoader } from "../../../shared";
 import { sendRecoveryCodeEffect } from "redux/recoveryPasswordSlice";
 
 const CODE_LENGTH = 4;
@@ -120,7 +120,7 @@ export const LoginAccRecoveryCode: FC = () => {
                     <Text style={styles.secondaryText}>Запросить код</Text>
                 </TouchableOpacity>
             </View>
-            {loading ? <Loader /> : null}
+            {loading ? <MovieLoader /> : null}
         </SafeAreaView>
     )
 };

@@ -16,6 +16,7 @@ import { useGetUserStatusByUserId } from "../hooks/useGetUserStatusByUserId";
 import { MatchUserStatusEnum } from "features/match/match.model";
 import { NavigationProp, ParamListBase, useNavigation } from "@react-navigation/native";
 import { addNotification } from "redux/appSlice";
+import { MovieLoader } from "shared/ui/movie-loader";
 
 const { width } = Dimensions.get('window');
 
@@ -137,7 +138,7 @@ export const MatchSelectionMovie: FC = () => {
     }), []);
 
     if (isInitialLoading) {
-        return <Loader />;
+        return <MovieLoader />;
     }
 
     return (

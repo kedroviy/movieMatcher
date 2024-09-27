@@ -1,8 +1,8 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { View, StyleSheet, Dimensions, Text, ActivityIndicator } from "react-native";
-import { RadioButton } from "shared";
+import { View, StyleSheet, Dimensions, Text } from "react-native";
+import { MovieLoader, RadioButton } from "shared";
 import { Color } from "styles/colors";
 
 
@@ -41,7 +41,7 @@ export const UPLanguage: FC = () => {
                 justifyContent: 'center',
                 backgroundColor: '#353535',
             }}>
-                <ActivityIndicator size="large" color={Color.BUTTON_RED} />
+                <MovieLoader />
             </View>
         );
     }
