@@ -5,7 +5,6 @@ import {
     View,
     Dimensions,
     FlatList,
-    ActivityIndicator,
     RefreshControl,
 } from "react-native";
 import { useTranslation } from "react-i18next";
@@ -15,7 +14,7 @@ import { useMoviesList } from './hooks';
 import { MyMovieListComponent, withListOrEmptyState } from "./components/sm-hoc-component";
 import { EmptyListComponent } from "./components/sm-empty-list";
 import { Color } from "styles/colors";
-import { SimpleButton } from "shared";
+import { MovieLoader, SimpleButton } from "shared";
 import { AppRoutes } from "app/constants";
 import { MoviesSavedType } from "features/selection-movies/selection-movies.model";
 import { MovieCard } from "./ui/sm-movie-list-card";
@@ -73,7 +72,7 @@ export const SoloMatchScreen: FC = () => {
             }}>
                 {isLoading ?
                     <View style={styles.loader}>
-                        <ActivityIndicator size='large' color={Color.BUTTON_RED} />
+                        <MovieLoader />
                     </View>
                     :
                     <FlatList<MoviesSavedType>

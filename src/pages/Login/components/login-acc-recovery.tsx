@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { Input } from "../ui";
 import { AppDispatch, RootState } from "../../../redux/configure-store";
-import { AppConstants, Loader } from "../../../shared";
+import { AppConstants, MovieLoader } from "../../../shared";
 import { sendEmailForRecoveryEffect } from "redux/recoveryPasswordSlice";
 import { NavigationProp, ParamListBase, useNavigation } from "@react-navigation/native";
 
@@ -83,7 +83,7 @@ export const LoginAccRecovery: FC = () => {
                 </TouchableOpacity>
 
             </View>
-            {loading ? <Loader /> : null}
+            {loading ? <MovieLoader /> : null}
         </View >
     )
 };

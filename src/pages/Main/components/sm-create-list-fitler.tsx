@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "redux/configure-store";
 import { clearError, clearResponse, loadMovies } from "redux/moviesSlice";
 import { Slider } from "@miblanchard/react-native-slider";
+import { MovieLoader } from "shared/ui/movie-loader";
 
 const { width, height } = Dimensions.get('window');
 
@@ -174,7 +175,7 @@ export const SMCreateMovieListFilter: FC = () => {
             />
             {loading ? (
                 <View style={styles.loader}>
-                    <Loader />
+                    <MovieLoader />
                 </View>
             ) : null}
             {!isNotificationHide ?

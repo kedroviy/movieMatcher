@@ -1,12 +1,12 @@
 import { useDispatch, useSelector } from "react-redux";
 import { View, StyleSheet, Dimensions, Text, TouchableOpacity, Image } from "react-native";
 import { NavigationProp, ParamListBase, useNavigation } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 
 import { AppDispatch } from "../../redux/configure-store";
 import { authenticateWithGoogle } from "../../redux/authSlice";
-import { GoogleSvgIcon, Loader } from "@shared/index";
+import { GoogleSvgIcon, MovieLoader } from "@shared/index";
 import { Color } from "styles/colors";
-import { useTranslation } from "react-i18next";
 
 const windowWidth = Dimensions.get('window').width;
 
@@ -118,7 +118,7 @@ export const LoginScreen = () => {
                     }}>{t('auth.registration.btn_title')}</Text>
                 </TouchableOpacity>
             </View>
-            {loading ? <Loader /> : null}
+            {loading ? <MovieLoader /> : null}
         </View>
     )
 };

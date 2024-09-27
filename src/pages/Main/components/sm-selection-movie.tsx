@@ -12,6 +12,7 @@ import { AppDispatch } from "redux/configure-store";
 import { loadMovies, setPage } from "redux/moviesSlice";
 import { Loader, SimpleButton } from "shared";
 import { t } from "i18next";
+import { MovieLoader } from "shared/ui/movie-loader";
 
 const { width } = Dimensions.get('window');
 
@@ -151,7 +152,7 @@ export const SMSelectionMovie: FC = () => {
                                 <SMControlBar
                                     onHandleLike={() => useSwiper.current?.swipeRight()}
                                     onHandleDislike={() => useSwiper.current?.swipeLeft()} />
-                            </View></> : <Loader />}
+                            </View></> : <MovieLoader />}
                 </>
             )}
         </View>

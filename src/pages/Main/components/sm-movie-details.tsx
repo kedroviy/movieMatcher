@@ -1,7 +1,7 @@
 import { RouteProp } from "@react-navigation/native";
 import { RootStackParamList } from "app/constants";
 import { FC, useEffect, useState } from "react"
-import { ActivityIndicator, Alert, Dimensions, Image, Linking, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { Alert, Dimensions, Image, Linking, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { ScrollView } from "react-native-gesture-handler";
 import { Color } from "styles/colors";
 import { SMMovieChips } from "../ui/sm-movie-chips";
@@ -11,7 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Actor } from "../sm.model";
 import { loadMovieDetails } from "redux/moviesSlice";
 import { AppDispatch } from "redux/configure-store";
-import { SimpleButton } from "shared";
+import { MovieLoader, SimpleButton } from "shared";
 import { useTranslation } from "react-i18next";
 import { generateKpUrl } from "../sm.utils";
 
@@ -169,7 +169,7 @@ export const SMMovieDetails: FC<SMMovieDetailsType> = ({ route }) => {
                     </TouchableOpacity>
                 </View>
                 <Text style={[styles.text, { fontSize: 20 }]}>Актёры</Text>
-                {loading ? <ActivityIndicator /> :
+                {loading ? <MovieLoader /> :
                     <View style={styles.actorContainer}>
                         <ScrollView
                             horizontal

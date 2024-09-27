@@ -1,6 +1,5 @@
 import { FC, SetStateAction, useCallback, useEffect, useRef, useState } from "react"
 import {
-    ActivityIndicator,
     Alert,
     Dimensions,
     RefreshControl,
@@ -13,7 +12,7 @@ import {
 import { NavigationProp, ParamListBase, RouteProp, useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 
-import { SettingSvgIcon, SimpleButton } from "shared";
+import { MovieLoader, SettingSvgIcon, SimpleButton } from "shared";
 import { Color } from "styles/colors";
 import socketService from "features/match/match-socketService";
 import { RootStackParamList } from "app/constants";
@@ -177,7 +176,7 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
         <View style={styles.container}>
             {loading && (
                 <View style={styles.loaderContainer}>
-                    <ActivityIndicator size="large" color={Color.BUTTON_RED} />
+                    <MovieLoader />
                 </View>
             )}
             <MatchFilterModal

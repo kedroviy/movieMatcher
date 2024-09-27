@@ -20,6 +20,7 @@ import { CheckSvgIcon, Loader } from "../../../shared";
 import { AppRoutes } from "app/constants";
 import { Color } from "styles/colors";
 import { useTranslation } from "react-i18next";
+import { MovieLoader } from "shared/ui/movie-loader";
 
 export const LoginRegistration: FC = () => {
     const windowWidth = Dimensions.get('window').width;
@@ -145,7 +146,7 @@ export const LoginRegistration: FC = () => {
                     }
                 </View>
             </ScrollView>
-            {loading ? <Loader /> : null}
+            {loading ? <MovieLoader /> : null}
         </KeyboardAvoidingView>
     )
 };
