@@ -1,5 +1,5 @@
 const API = {
-    BASE_URL: 'https://movie-match-x5ue.onrender.com',
+    BASE_URL: 'absent-mildrid-kedroviy-651932b4.koyeb.app',
     // 'https://beneficial-adaptation-prod.up.railway.app',
     // 'https://movie-match-x5ue.onrender.com',
     // 'http://192.168.100.71:6001' ,
