@@ -40,6 +40,10 @@ node_modules/
 npm-debug.log
 yarn-error.log
 
+# Play API / release signing (never commit)
+play-store-credentials.json
+google-play-api.json
+
 # fastlane
 #
 # It is recommended to not store the screenshots in the git repo. Instead, use fastlane to re-generate the

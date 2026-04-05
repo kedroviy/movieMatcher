@@ -10,8 +10,8 @@ class SocketService {
     connect(serverUrl: string): void {
         this.socket = io(serverUrl + "/rooms", {
             reconnection: true,
-            transports: ['websocket', 'polling'],
-            rememberUpgrade: true,
+            transports: ['polling', 'websocket'],
+            upgrade: true,
         });
         this.socket.on("connect", () => console.log("Connected to websocket server"));
         this.socket.on("connect_error", (error) => console.log("Connect error", error));

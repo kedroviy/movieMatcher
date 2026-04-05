@@ -1,0 +1,36 @@
+# frozen_string_literal: true
+
+default_platform(:android)
+
+platform :android do
+  desc "Build release AAB (bundleRelease)"
+  lane :build_release do
+    gradle(
+      task: "bundle",
+      build_type: "Release",
+      project_dir: "android"
+    )
+  end
+
+  desc "Upload existing AAB to Play internal track"
+  lane :upload_internal do
+    json_path = ENV.fetch("GOOGLE_PLAY_JSON_KEY_PATH")
+    aab = File.expand_path("../android/app/build/outputs/bundle/release/app-release.aab", __dir__)
+    upload_to_play_store(
+      aab: aab,
+      json_key: json_path,
+      track: "internal",
+      skip_upload_apk: true,
+      skip_upload_metadata: true,
+      skip_upload_changelogs: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+  end
+
+  desc "Build AAB and upload to Play internal track"
+  lane :deploy_internal do
+    build_release
+    upload_internal
+  end
+end

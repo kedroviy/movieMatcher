@@ -14,7 +14,7 @@ const windowWidth = Dimensions.get('window').width;
 export const LoginScreen = () => {
     const dispatch: AppDispatch = useDispatch();
     const { t } = useTranslation();
-    const { loading } = useSelector((state: any) => state.authSlice);
+    const { loading, error } = useSelector((state: any) => state.authSlice);
     const navigation: NavigationProp<ParamListBase> = useNavigation();
 
     const onAuthWithGoogle = async () => {
@@ -119,6 +119,20 @@ export const LoginScreen = () => {
                     }}>{t('auth.registration.btn_title')}</Text>
                 </TouchableOpacity>
             </View>
+            {error ? (
+                <Text
+                    style={{
+                        color: '#ED0E0E',
+                        fontSize: 14,
+                        marginTop: 16,
+                        paddingHorizontal: 16,
+                        textAlign: 'center',
+                    }}
+                    accessibilityRole="alert"
+                >
+                    {error}
+                </Text>
+            ) : null}
             {loading ? <Loader /> : null}
         </View>
     )

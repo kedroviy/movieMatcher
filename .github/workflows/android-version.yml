@@ -1,0 +1,47 @@
+# Поднимает versionName (semver) и versionCode в android/app/build.gradle по первой строке коммита:
+#   [PREFIX ]feat|fix|refactor[!]: описание
+# feat → minor, fix/refactor → patch, feat! / BREAKING CHANGE: → major
+# Коммиты с [skip version] или [skip ci] игнорируются. Пуш версии: chore(android): … [skip version]
+name: Android version bump
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: android-version-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    if: >
+      github.event.head_commit != null &&
+      !contains(github.event.head_commit.message, '[skip version]') &&
+      !contains(github.event.head_commit.message, '[skip ci]')
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Bump version from commit message
+        id: bump
+        env:
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+        run: node scripts/bump-android-version.mjs
+
+      - name: Commit and push
+        if: steps.bump.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add android/app/build.gradle
+          git commit -m "chore(android): bump version to ${{ steps.bump.outputs.version_name }} (${{ steps.bump.outputs.version_code }}) [skip version]"
+          git push

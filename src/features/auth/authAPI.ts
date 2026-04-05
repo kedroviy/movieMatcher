@@ -35,7 +35,14 @@ export const sendGoogleCodeToServer = async (idToken: string) => {
         if (response.ok && response.data) {
             return { success: true, token: response.data.token };
         } else {
-            return { success: false, error: response.problem || 'Ошибка аутентификации' };
+            const data = response.data as { message?: string; error?: string } | undefined;
+            const serverMsg =
+                (typeof data?.message === 'string' && data.message) ||
+                (typeof data?.error === 'string' && data.error);
+            return {
+                success: false,
+                error: serverMsg || response.problem || 'Ошибка аутентификации',
+            };
         }
     } catch (error) {
         return { success: false, error: 'Ошибка сети' };

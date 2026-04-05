@@ -10,6 +10,22 @@ import {
     sendGoogleCodeToServer,
 } from 'features';
 
+function googleSignInErrorMessage(error: unknown): string {
+    if (typeof error === 'string') {
+        return error;
+    }
+    if (error && typeof error === 'object') {
+        const e = error as { code?: string; message?: string };
+        if (e.message) {
+            return e.message;
+        }
+        if (e.code) {
+            return `Google Sign-In (${e.code})`;
+        }
+    }
+    return 'Не удалось войти через Google';
+}
+
 type AuthState = {
     token: string | null;
     isAuthenticated: boolean;
@@ -33,7 +49,7 @@ const initialState: AuthState = {
 };
 
 GoogleSignin.configure({
-    webClientId: '277043180680-ugnrupqacuchkhpklb1qhv8kaueh4eks.apps.googleusercontent.com',
+    webClientId: '277043180680-h1due06rsb1d1q3ke0ivme7sao6pe6ji.apps.googleusercontent.com',
     offlineAccess: true,
     forceCodeForRefreshToken: true,
 });
@@ -58,11 +74,20 @@ export const authenticateWithGoogle = createAsyncThunk(
     'auth/GOOGLE',
     async (_, { rejectWithValue }) => {
         try {
-            await GoogleSignin.hasPlayServices();
+            await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
             const userInfo = await GoogleSignin.signIn();
-            const idToken = userInfo.idToken;
+            let idToken = userInfo.idToken;
+            if (!idToken) {
+                const tokens = await GoogleSignin.getTokens();
+                idToken = tokens.idToken;
+            }
+            if (!idToken) {
+                return rejectWithValue(
+                    'Не получен idToken от Google. Проверьте webClientId и настройки OAuth в Google Cloud.',
+                );
+            }
 
-            const response = await sendGoogleCodeToServer(idToken as string);
+            const response = await sendGoogleCodeToServer(idToken);
 
             if (response.success) {
                 saveToken(response.token as string);
@@ -70,7 +95,7 @@ export const authenticateWithGoogle = createAsyncThunk(
 
             return response;
         } catch (error) {
-            return rejectWithValue(error || 'An error occurred');
+            return rejectWithValue(googleSignInErrorMessage(error));
         }
     });
 
@@ -205,20 +230,24 @@ const authSlice = createSlice({
             })
             .addCase(authenticateWithGoogle.pending, (state) => {
                 state.loading = true;
+                state.error = null;
             })
             .addCase(authenticateWithGoogle.fulfilled, (state, action) => {
                 state.loading = false;
 
                 if (action.payload.success) {
                     state.isAuthenticated = true;
+                    state.error = null;
                 } else {
                     state.isAuthenticated = false;
                     state.token = null;
+                    state.error = action.payload.error ?? 'Не удалось войти через Google';
                 }
             })
             .addCase(authenticateWithGoogle.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.payload as string;
+                state.error =
+                    (action.payload as string) || 'Не удалось войти через Google';
             })
             .addCase(authRegistrationUser.pending, (state) => {
                 state.loading = true;
