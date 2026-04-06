@@ -12,7 +12,7 @@ import {
 import { NavigationProp, ParamListBase, RouteProp, useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 
-import { SettingSvgIcon, SimpleButton } from "shared";
+import { MovieLoader, SettingSvgIcon, SimpleButton } from "shared";
 import { Color } from "styles/colors";
 import socketService from "features/match/match-socketService";
 import { RootStackParamList } from "app/constants";
@@ -78,6 +78,10 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
             setFilters(data.filters);
         };
 
+        socketService.subscribeToBroadcastMatchUpdate(async () => {
+            await dispatch(getMatchDataRedux(room[0].roomKey))
+        });
+
         socketService.subscribeToRequestMatchUpdate(async () => {
             if (currentUserMatch?.roomKey) {
                 await dispatch(getMatchDataRedux(currentUserMatch?.roomKey))
@@ -88,7 +92,8 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
 
         socketService.filtersUpdateBroadcast(handleFiltersUpdated);
 
-        socketService.subscribeToBroadcastMovies(async () => {
+        socketService.subscribeToBroadcastMovies(async (data: any) => {
+            console.log('lobby movies broadcasting', data)
             if (currentUserMatch?.roomKey) {
                 await dispatch(getMoviesRedux(currentUserMatch?.roomKey))
             } else if (room[0].roomKey) {
@@ -144,31 +149,36 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
     const handleModalClose = async (filters: any) => {
         console.log('filters: ', filters)
         if (filters) {
-                try {
-                    setFilters(filters);
-                    console.log(filters)
-                    await dispatch(updateRoomFiltersRedux(
-                        {
-                            userId: user.id, roomId: currentUserMatch?.roomId, filters: filters
-                        } as any))
-                        .unwrap()
-                        .then(() => {
-                            socketService.filtersUpdateBroadcast((filtersFromSocket: any) => {
-                                setFilters(filtersFromSocket)
-                            });
-                            Alert.alert("Success", "Filters updated successfully.");
-                        })
-                        .catch(error => {
-                            Alert.alert("Error", typeof error === 'string' ? error : 'Failed to update filters due to an unexpected error');
+            try {
+                setFilters(filters);
+                console.log(filters)
+                await dispatch(updateRoomFiltersRedux(
+                    {
+                        userId: user.id, roomId: currentUserMatch?.roomId, filters: filters
+                    } as any))
+                    .unwrap()
+                    .then(() => {
+                        socketService.filtersUpdateBroadcast((filtersFromSocket: any) => {
+                            setFilters(filtersFromSocket)
                         });
-                } catch (error) {
-                    throw new Error(error as string);
-                }
+                        Alert.alert("Success", "Filters updated successfully.");
+                    })
+                    .catch(error => {
+                        Alert.alert("Error", typeof error === 'string' ? error : 'Failed to update filters due to an unexpected error');
+                    });
+            } catch (error) {
+                throw new Error(error as string);
+            }
         }
     };
 
     return (
         <View style={styles.container}>
+            {loading && (
+                <View style={styles.loaderContainer}>
+                    <MovieLoader />
+                </View>
+            )}
             <MatchFilterModal
                 modalVisible={modalVisible}
                 setModalVisible={() => setModalVisible(false)}
@@ -262,5 +272,16 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         lineHeight: 28.8,
         color: Color.WHITE
-    }
+    },
+    loaderContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
 });

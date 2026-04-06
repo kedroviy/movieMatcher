@@ -33,14 +33,14 @@ export const OnboardingCard: FC<OnboardingCardType> = ({ id, imageUrl, header, s
             </View>
             <View style={{ width: 328, gap: 12, alignItems: 'center' }}>
                 <Text style={{
-                    color: '#F9F9F9',
+                    color: '#FAFAFA',
                     fontSize: 22,
                     fontWeight: '700',
                     lineHeight: 27.5,
                     textAlign: 'center'
                 }}>{header}</Text>
                 <Text style={{
-                    color: '#F9F9F9',
+                    color: '#FAFAFA',
                     fontSize: 16,
                     fontWeight: '400',
                     lineHeight: 21.6,
@@ -58,7 +58,7 @@ export const OnboardingCard: FC<OnboardingCardType> = ({ id, imageUrl, header, s
                             flexDirection: 'row',
                             width: windowWidth - 32,
                             height: 48,
-                            backgroundColor: '#ED0E0E',
+                            backgroundColor: '#DC2626',
                             alignItems: 'center',
                             justifyContent: 'center',
                         }
@@ -67,7 +67,7 @@ export const OnboardingCard: FC<OnboardingCardType> = ({ id, imageUrl, header, s
                     testID='myButton'
                 >
                     <Text style={{
-                        color: '#F9F9F9',
+                        color: '#FAFAFA',
                         fontSize: 18,
                         fontWeight: '500',
                     }}>{buttonText}</Text>
@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     },
     button: {
         alignItems: 'center',
-        backgroundColor: '#595959',
+        backgroundColor: '#52525B',
         padding: 10,
         width: 328,
         height: 44,

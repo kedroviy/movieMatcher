@@ -1,15 +1,14 @@
 import { Movie } from "features";
 import { FC } from "react"
-import { Dimensions, Image, StyleSheet, Text, View } from "react-native"
+import { Image, StyleSheet, Text, View } from "react-native"
 import { Color } from "styles/colors";
+import { contentWidth, radius } from "styles/theme";
 import { SMMovieChips } from "./sm-movie-chips";
 import { getRatingColor, roundDownToOneTenth } from "../utils";
 
 export interface MovieCardItemProps {
     movie: Movie;
 }
-
-const { width } = Dimensions.get('window');
 
 export const SMCard: FC<MovieCardItemProps> = ({ movie }) => {
 
@@ -24,7 +23,7 @@ export const SMCard: FC<MovieCardItemProps> = ({ movie }) => {
                         width: 99,
                         height: '100%',
                         resizeMode: 'cover',
-                        borderRadius: 10,
+                        borderRadius: radius.sm,
                     }}
                 />
                 <View style={{
@@ -106,13 +105,13 @@ const styles = StyleSheet.create({
     },
     poster: {
         height: '100%',
-        borderRadius: 10
+        borderRadius: radius.sm,
     },
     text: {
         color: Color.WHITE
     },
     movieItem: {
-        width: width - 32,
+        width: contentWidth,
         flexDirection: 'row',
     },
     movieDescription: {

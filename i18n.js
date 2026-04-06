@@ -61,6 +61,7 @@ const resources = {
                     list_name: 'List name',
                 },
                 selection_list_end: 'The films offered have ended. Skip to selected movies or go to next page!',
+                finish_solo_selection: 'Back to home',
                 empty_list: `You haven't selected any movies to watch yet. Start selecting a movie right now!`,
                 movie_details: {
                     watch: 'Watch on Kinopoisk',
@@ -80,12 +81,22 @@ const resources = {
                 lobby: {
                     lobby_members: 'Lobby members'
                 },
+                filters_settings: {
+                    settings: 'Settings',
+                    leave_room: 'Leave the room and delete',
+                    country: 'Country',
+                    year: 'Year',
+                    genre: 'Genre',
+                    exclude_genre: 'Exclude genre',
+                    other_options: 'Other options',
+                },
                 match_result: 'Result of match'
             },
             general: {
                 next_page: 'Next page',
                 enter_in_account: 'Login to account',
-                continue: 'Продолжить',
+                continue: 'Continue',
+                network_problem: 'No internet connection',
             }
         }
     },
@@ -147,6 +158,7 @@ const resources = {
                     list_name: 'Название списка',
                 },
                 selection_list_end: 'Предложенные фильмы закончились. Перейдите к подобранным фильмам или продолжите на следующей странице!',
+                finish_solo_selection: 'На главный экран',
                 empty_list: 'Вы ещё не подбирали ни одного фильма к просмотру. Начните подбор фильма прямо сейчас!',
                 movie_details: {
                     watch: 'Смотреть на Кинопоиске',
@@ -159,19 +171,29 @@ const resources = {
                     create_lobby_btn: 'Создать новое лобби',
                     reconnect_lobby_btn: 'Переподключиться к лобби',
                     join_lobby_btn: 'Присоединиться к лобби',
-                    main_text: 'Создавайте лобби для совместного выбора фильма к просмотру методом совпадения!',
+                    main_text: 'Создавайте лобби для совместного выбора фильма!',
                     greetings: 'Привет',
                     loading: 'Идёт подключение к серверу, подождите...'
                 },
                 lobby: {
                     lobby_members: 'Участники лобби'
                 },
+                filters_settings: {
+                    settings: 'Настройки',
+                    leave_room: 'Покинуть комнату и удалить',
+                    country: 'Страна',
+                    year: 'Год',
+                    genre: 'Жанр',
+                    exclude_genre: 'Исключить жанр',
+                    other_options: 'Другие опции',
+                },
                 match_result: 'Результат'
             },
             general: {
                 next_page: 'Следующая страница',
                 enter_in_account: 'Войти в аккаунт',
-                continue: 'Продолжить'
+                continue: 'Продолжить',
+                network_problem: 'Нет подключения к интернету',
             }
         }
     },

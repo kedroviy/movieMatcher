@@ -26,10 +26,6 @@ export const sendEmailForRecoveryEffect = createAsyncThunk(
         try {
             const response = await sendEmailForRecoveryAPI(email);
 
-            if (response.success) {
-                console.log(response.success);
-            }
-
             return { email, ...response };
         } catch (error) {
             return rejectWithValue(error);
@@ -43,10 +39,6 @@ export const sendRecoveryCodeEffect = createAsyncThunk(
         try {
             const response = await sendRecoveryCodeAPI(recoveryData);
 
-            if (response.success) {
-                console.log(response.success);
-            }
-
             return { recoveryData, ...response };
         } catch (error) {
             return rejectWithValue(error);
@@ -59,10 +51,6 @@ export const sendRecoveryNewPasswordEffect = createAsyncThunk(
     async (recoveryData: { email: string, code: string, password: string }, { rejectWithValue }) => {
         try {
             const response = await sendRecoveryNewPasswordAPI(recoveryData);
-
-            if (response.success) {
-                console.log(response);
-            }
 
             return { recoveryData, ...response };
         } catch (error) {

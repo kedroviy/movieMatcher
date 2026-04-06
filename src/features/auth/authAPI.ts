@@ -56,22 +56,18 @@ export const loginUser = async (body: IUserFields) => {
 }
 
 export const registrationUser = async (body: IUserFields) => {
-
-    const response = await api.post<Response<{ message: string }>>(API.REGISTRATION, body, {
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    });
     try {
+        const response = await api.post<Response<{ message: string }>>(API.REGISTRATION, body, {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
         if (response.ok && response.data) {
-            console.log('api: ', response)
             return { success: true, message: response.data.message };
         } else {
-            console.log('api: ', response)
             return { success: false, error: response.problem || 'Ошибка аутентификации' };
         }
     } catch (error) {
-        console.error(error);
         return { success: false, error: 'Ошибка сети' };
     }
 }

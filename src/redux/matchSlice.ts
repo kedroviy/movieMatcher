@@ -64,7 +64,6 @@ export const createRoom = createAsyncThunk<Room, number, { state: RootState, rej
 
         try {
             const room = await createRoomService(userId);
-            console.log(room);
             return room;
         } catch (error) {
             return rejectWithValue((error as any).message);
@@ -217,7 +216,6 @@ export const getMatchDataRedux = createAsyncThunk(
     async (roomKey: string, { rejectWithValue }) => {
         try {
             const response = await getMatchData(roomKey);
-            console.log('get match data: ', response)
             return response.data;
         } catch (error) {
             return rejectWithValue('Failed to check user status');

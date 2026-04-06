@@ -74,16 +74,16 @@ const styles = StyleSheet.create({
         color: Color.WHITE,
     },
     errorText: {
-        color: '#ED0E0E',
+        color: '#DC2626',
         fontSize: 12,
         marginTop: 4,
     },
     focused: {
         borderWidth: 1,
-        borderColor: '#F9F9F9',
+        borderColor: '#FAFAFA',
     },
     error: {
         borderWidth: 1,
-        borderColor: '#ED0E0E',
+        borderColor: '#DC2626',
     }
 });

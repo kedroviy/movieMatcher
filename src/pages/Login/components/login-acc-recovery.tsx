@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { Input } from "../ui";
 import { AppDispatch, RootState } from "../../../redux/configure-store";
-import { AppConstants, Loader } from "../../../shared";
+import { AppConstants, MovieLoader } from "../../../shared";
 import { sendEmailForRecoveryEffect } from "redux/recoveryPasswordSlice";
 import { NavigationProp, ParamListBase, useNavigation } from "@react-navigation/native";
 
@@ -53,7 +53,7 @@ export const LoginAccRecovery: FC = () => {
                     fontStyle: 'normal',
                     fontWeight: '400',
                     lineHeight: 20.8,
-                    color: '#F9F9F9',
+                    color: '#FAFAFA',
                     marginBottom: 12
                 }}
                 >
@@ -72,7 +72,7 @@ export const LoginAccRecovery: FC = () => {
                 <TouchableOpacity
                     style={[styles.button,
                     (isFormValidEmail) ?
-                        { backgroundColor: '#ED0E0E', width: windowWidth - 32, height: 48 } :
+                        { backgroundColor: '#DC2626', width: windowWidth - 32, height: 48 } :
                         { backgroundColor: '#940C0C', width: windowWidth - 32, height: 48 }
                     ]}
                     disabled={isFormValidEmail ? false : true}
@@ -83,7 +83,7 @@ export const LoginAccRecovery: FC = () => {
                 </TouchableOpacity>
 
             </View>
-            {loading ? <Loader /> : null}
+            {loading ? <MovieLoader /> : null}
         </View >
     )
 };

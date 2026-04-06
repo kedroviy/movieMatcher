@@ -80,7 +80,7 @@ export interface UserRoomResponse {
     key?: string;
 }
 
-export type MatchLikeFields = Pick<Match, 'userId' | 'roomKey' | 'movieId'>;
+export type MatchLikeFields = Pick<Match, 'userId' | 'movieId'> & { roomKey: string };
 
 export interface MatchUserStatus {
     roomKey: string;

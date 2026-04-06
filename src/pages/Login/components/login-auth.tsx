@@ -18,6 +18,7 @@ import { authUser } from "../../../redux/authSlice";
 import { AppConstants, Loader } from "@shared/index";
 import { Input } from "../ui";
 import { STRINGS } from "../constants";
+import { MovieLoader } from "shared/ui/movie-loader";
 
 export const LoginAuth: FC = () => {
     const windowWidth = Dimensions.get('window').width;
@@ -84,7 +85,7 @@ export const LoginAuth: FC = () => {
                     <TouchableOpacity
                         style={[styles.button,
                         (isFormValidPassword && isFormValidEmail) ?
-                            { backgroundColor: '#ED0E0E', width: windowWidth - 32, height: 48 } :
+                            { backgroundColor: '#DC2626', width: windowWidth - 32, height: 48 } :
                             { backgroundColor: '#940C0C', width: windowWidth - 32, height: 48 }
                         ]}
                         disabled={(isFormValidPassword && isFormValidEmail) ? false : true}
@@ -116,7 +117,7 @@ export const LoginAuth: FC = () => {
                     <Text style={styles.text}>{STRINGS.PASSWORD_RECOVERY}</Text>
                 </TouchableOpacity>
             </ScrollView>
-            {loading ? <Loader /> : null}
+            {loading ? <MovieLoader /> : null}
         </KeyboardAvoidingView >
     )
 };

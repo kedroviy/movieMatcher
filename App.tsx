@@ -2,14 +2,19 @@ import i18n from './i18n';
 import { useEffect } from 'react';
 import * as RNLocalize from 'react-native-localize';
 import { Provider } from 'react-redux';
+
 import AppContainer from './src/app';
 import { store } from './src/redux/configure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import socketService from 'features/match/match-socketService';
-import { API } from 'shared';
+import { API, StatusNotification } from 'shared';
+import { useTranslation } from 'react-i18next';
+import { useInAppUpdate } from 'shared/hooks/useInAppUpdate';
 
 function App(): React.JSX.Element {
-
+  const { t } = useTranslation();
+  useInAppUpdate();
+  
   useEffect(() => {
     const setLocalization = async () => {
 
@@ -34,6 +39,7 @@ function App(): React.JSX.Element {
   return (
     <Provider store={store}>
       <AppContainer />
+      {/* <StatusNotification /> */}
     </Provider>);
 }
 
