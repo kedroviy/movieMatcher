@@ -112,7 +112,7 @@ android {
             // CI: ANDROID_KEYSTORE_*. Local: MYAPP_UPLOAD_* in gradle.properties, or debug if neither.
             def useEnvKs = System.getenv("ANDROID_KEYSTORE_PATH") != null && System.getenv("ANDROID_KEYSTORE_PATH").length() > 0
             def useGradleKs = project.hasProperty('MYAPP_UPLOAD_STORE_FILE')
-            signingConfig (useEnvKs || useGradleKs) ? signingConfigs.release : signingConfigs.debug
+            signingConfig ((useEnvKs || useGradleKs) ? signingConfigs.release : signingConfigs.debug)
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
