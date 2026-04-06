@@ -1,4 +1,6 @@
 import { Alert } from "react-native";
+import { addNotification } from "redux/appSlice";
+import { store } from "redux/configure-store";
 import io, { Socket } from "socket.io-client";
 
 class SocketService {
@@ -6,6 +8,7 @@ class SocketService {
         this.socket = null;
     }
     private socket: Socket | null = null;
+    private connectionStatusCallbacks: ((isConnected: boolean) => void)[] = [];
 
     connect(serverUrl: string): void {
         this.socket = io(serverUrl + "/rooms", {
@@ -13,13 +16,38 @@ class SocketService {
             transports: ['polling', 'websocket'],
             upgrade: true,
         });
-        this.socket.on("connect", () => console.log("Connected to websocket server"));
-        this.socket.on("connect_error", (error) => console.log("Connect error", error));
-        this.socket.on("connect_timeout", (timeout) => console.log("Connection timeout", timeout));
+
+        this.socket.on("connect", () => {
+            console.log("Connected to websocket server");
+            this.notifyConnectionStatus(true);
+        });
+
+        this.socket.on("disconnect", () => {
+            console.log("Disconnected from websocket server");
+            this.notifyConnectionStatus(false);
+        });
+
+        this.socket.on("connect_error", (error) => {
+            console.log("Connect error", error);
+            this.notifyConnectionStatus(false);
+        });
+
+        this.socket.on("connect_timeout", (timeout) => {
+            console.log("Connection timeout", timeout);
+            this.notifyConnectionStatus(false);
+        });
     }
 
-    isConnected(): boolean {
-        return this.socket?.connected || false;
+    private notifyConnectionStatus(isConnected: boolean): void {
+        store.dispatch(addNotification({
+            id: Date.now(),
+            message: isConnected ? 'Websocket connected successfully' : 'Error occurred',
+            type: isConnected ? 'success' : 'error'
+        }));
+    }
+
+    subscribeToConnectionStatus(callback: (isConnected: boolean) => void): void {
+        this.connectionStatusCallbacks.push(callback);
     }
 
     joinRoom(roomKey: string, userId: string): void {
@@ -37,7 +65,7 @@ class SocketService {
     vote(roomKey: number, userId: string, movieId: number, vote: boolean) {
         this.socket?.emit('vote', { key: roomKey, userId, movieId, vote });
     }
-    
+
     subscribeToVoteEnded(callback: any) {
         this.socket?.emit('voteEnded', callback);
     }
@@ -46,25 +74,49 @@ class SocketService {
         this.socket?.emit('startBroadcastingMovies', message);
     }
 
-    
+
     subscribeToMatchUpdates(callback: (data: any) => void) {
-        this.socket?.on('matchUpdated', callback);
-    }
+        this.socket?.on('matchUpdated', (data: any) => {
+            callback(data);
     
+            store.dispatch(addNotification({
+                message: (data as any).message || "New movies",
+                type: 'success',
+                id: Date.now(),
+            }));
+        });
+    }
+
     subscribeToJoinNewUser(callback: (data: any) => void) {
         this.socket?.emit('Join new user to match', callback);
     }
-    
+
     subscribeToBroadcastMessage(callback: (data: any) => void) {
         this.socket?.on('broadcastMessage', callback);
     }
 
-    subscribeToBroadcastMatchUpdate(callback: (data: any) => void ) {
-        this.socket?.emit('broadcastMatchDataUpdated', callback);
+    subscribeToBroadcastMatchUpdate(callback: (data: any) => void) {
+        this.socket?.on('broadcastMatchDataUpdated', (data: any) => {
+            callback(data);
+    
+            store.dispatch(addNotification({
+                message: (data as any).messageForClient,
+                type: 'success',
+                id: Date.now(),
+            }));
+        });
     }
 
     subscribeToBroadcastMovies(callback: <T>(data: T) => void) {
-        this.socket?.on('broadcastMovies', callback);
+        this.socket?.on('broadcastMovies', (data: any) => {
+            callback(data);
+    
+            store.dispatch(addNotification({
+                message: (data as any).messageForClient || "New movies",
+                type: 'success',
+                id: Date.now(),
+            }));
+        });
     }
 
     subscribeToStartMatchResponse(callback: (data: any) => void) {
@@ -119,13 +171,19 @@ class SocketService {
         this.socket?.off('startMatchResponse');
     }
 
+    unsubscribeFromConnectionStatus(callback: (isConnected: boolean) => void): void {
+        this.connectionStatusCallbacks = this.connectionStatusCallbacks.filter(cb => cb !== callback);
+    }
+
     disconnect(): void {
         if (this.socket) {
             this.socket.disconnect();
             this.socket = null;
+            this.notifyConnectionStatus(false);
         }
     }
 }
+
 
 const socketService = new SocketService();
 export default socketService;

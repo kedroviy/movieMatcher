@@ -6,7 +6,7 @@ export const StartMessage: FC = () => {
         <>
             <Text>
                 <Text style={{
-                    color: '#ED0E0E',
+                    color: '#DC2626',
                     textAlign: 'center',
                     fontFamily: 'Roboto',
                     fontSize: 32,
@@ -18,7 +18,7 @@ export const StartMessage: FC = () => {
                     M
                 </Text>
                 <Text style={{
-                    color: '#F9F9F9',
+                    color: '#FAFAFA',
                     textAlign: 'center',
                     fontFamily: 'Roboto',
                     fontSize: 32,
@@ -27,7 +27,7 @@ export const StartMessage: FC = () => {
                     letterSpacing: 5,
                 }}>OVIE</Text>
                 <Text style={{
-                    color: '#ED0E0E',
+                    color: '#DC2626',
                     textAlign: 'center',
                     fontFamily: 'Roboto',
                     fontSize: 32,
@@ -36,7 +36,7 @@ export const StartMessage: FC = () => {
                     letterSpacing: 5,
                 }}>M</Text>
                 <Text style={{
-                    color: '#F9F9F9',
+                    color: '#FAFAFA',
                     textAlign: 'center',
                     fontFamily: 'Roboto',
                     fontSize: 32,

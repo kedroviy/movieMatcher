@@ -19,6 +19,10 @@ export const constructUrl = (baseURL: string, formData: ISMFormData, page: numbe
     formData.selectedCountries.forEach(country => {
         params.append('countries.name', country.label);
     });
+    if (formData.selectedRating && formData.selectedRating.length === 2) {
+        const [minRating, maxRating] = formData.selectedRating;
+        params.append('rating.kp', `${minRating}-${maxRating}`);
+    }
 
     return `${baseURL}&${params.toString()}`;
 };

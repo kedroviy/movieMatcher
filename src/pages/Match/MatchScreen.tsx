@@ -2,11 +2,11 @@ import { NavigationProp, ParamListBase, useNavigation } from "@react-navigation/
 import { AppRoutes } from "app/constants";
 import { FC, useEffect } from "react"
 import { useTranslation } from "react-i18next";
-import { View, Text, StyleSheet, Image, Dimensions, ActivityIndicator } from "react-native"
+import { View, Text, StyleSheet, Image, Dimensions } from "react-native"
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "redux/configure-store";
 import { createRoom, resetMovies } from "redux/matchSlice";
-import { SimpleButton } from "shared";
+import { MovieLoader, SimpleButton } from "shared";
 import useFetchUserProfile from "shared/hooks/getUserProfile";
 import { Color } from "styles/colors";
 import useUserHasRoom from "./hooks/useUserHasRoom";
@@ -77,40 +77,38 @@ export const MatchScreen: FC = () => {
                 </Text>
             </View>
             <View style={styles.controlsContainer}>
-                {roomLoading || userLoading ? (
-                    <ActivityIndicator color={Color.BUTTON_RED} />
+                {roomLoading || userLoading && !user ? (
+                    <MovieLoader />
                 ) : (
-                    <SimpleButton
-                        title={userLoading
-                            ? t('match_movie.main_match_screen.loading')
-                            : t(currentUserMatch?.roomKey
-                                ? 'match_movie.main_match_screen.reconnect_lobby_btn'
-                                : 'match_movie.main_match_screen.create_lobby_btn'
-                            )}
-                        color={Color.BUTTON_RED}
-                        titleColor={Color.WHITE}
-                        buttonWidth={width - 32}
-                        onHandlePress={() => handleCreateRoom(user.id)}
-                        disabled={userLoading}
-                    />
+                    <>
+                        <SimpleButton
+                            title={userLoading
+                                ? t('match_movie.main_match_screen.loading')
+                                : t(currentUserMatch?.roomKey
+                                    ? 'match_movie.main_match_screen.reconnect_lobby_btn'
+                                    : 'match_movie.main_match_screen.create_lobby_btn'
+                                )}
+                            color={Color.BUTTON_RED}
+                            titleColor={Color.WHITE}
+                            buttonWidth={width - 32}
+                            onHandlePress={() => handleCreateRoom(user.id)}
+                            disabled={userLoading} />
+                        <SimpleButton
+                            title={t('match_movie.main_match_screen.join_lobby_btn')}
+                            color={Color.BACKGROUND_GREY}
+                            titleColor={Color.WHITE}
+                            buttonWidth={width - 32}
+                            onHandlePress={() => (navigation.navigate(AppRoutes.MATCH_NAVIGATOR, {
+                                screen: AppRoutes.MATCH_JOIN_LOBBY,
+                            }))}
+                            buttonStyle={{
+                                borderWidth: 1,
+                                borderStyle: 'solid',
+                                borderColor: Color.WHITE
+                            }} />
+                    </>
                 )}
-                <SimpleButton
-                    title={t('match_movie.main_match_screen.join_lobby_btn')}
-                    color={Color.BACKGROUND_GREY}
-                    titleColor={Color.WHITE}
-                    buttonWidth={width - 32}
-                    onHandlePress={() => (navigation.navigate(AppRoutes.MATCH_NAVIGATOR, {
-                        screen: AppRoutes.MATCH_JOIN_LOBBY,
-                    }))}
-                    buttonStyle={{
-                        borderWidth: 1,
-                        borderStyle: 'solid',
-                        borderColor: Color.WHITE
-                    }}
-                />
             </View>
-            {matchLoading && <ActivityIndicator color={Color.BUTTON_RED} />}
-            {matchError && <Text>Error: {matchError}</Text>}
         </View>
     )
 };
@@ -135,6 +133,8 @@ const styles = StyleSheet.create({
     },
     controlsContainer: {
         gap: 16,
+        alignSelf: 'stretch',
+        alignItems: 'center',
     },
     text: {
         color: Color.WHITE

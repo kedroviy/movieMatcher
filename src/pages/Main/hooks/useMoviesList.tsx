@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
+import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { MoviesSavedType } from 'features/selection-movies/selection-movies.model';
@@ -15,6 +16,8 @@ export const useMoviesList = (): {
     const [moviesList, setMoviesList] = useState<MovieListType>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+
+    const navigation = useNavigation();
 
     const fetchMoviesList = useCallback(async () => {
         setIsLoading(true);
@@ -42,8 +45,34 @@ export const useMoviesList = (): {
     }, []);
 
     useEffect(() => {
-        fetchMoviesList();
-    }, [fetchMoviesList]);
+        let isFocused = false;
+
+        const runFetch = () => {
+            fetchMoviesList();
+        };
+
+        if (navigation.isFocused()) {
+            runFetch();
+            isFocused = true;
+        }
+
+        const unsubscribeFocus = navigation.addListener('focus', () => {
+            if (isFocused) {
+                return;
+            }
+            runFetch();
+            isFocused = true;
+        });
+
+        const unsubscribeBlur = navigation.addListener('blur', () => {
+            isFocused = false;
+        });
+
+        return () => {
+            unsubscribeFocus();
+            unsubscribeBlur();
+        };
+    }, [navigation, fetchMoviesList]);
 
     return {
         moviesList,

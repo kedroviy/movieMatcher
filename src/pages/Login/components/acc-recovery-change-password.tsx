@@ -2,15 +2,16 @@ import { FC, useReducer } from "react"
 import { Dimensions, Keyboard, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { NavigationProp, ParamListBase, useNavigation } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 
 import { sendRecoveryNewPasswordEffect } from "redux/recoveryPasswordSlice";
 import { RecoveryPasswordActionType, RecoveryPasswordType } from "../login.model";
 import { AppDispatch, RootState } from "../../../redux/configure-store";
-import { CheckSvgIcon, Loader } from "../../../shared";
+import { CheckSvgIcon, MovieLoader } from "../../../shared";
 import { Input } from "../ui";
 import { AppRoutes } from "app/constants";
 import { Color } from "styles/colors";
-import { useTranslation } from "react-i18next";
+
 
 const initialState: RecoveryPasswordType = {
     password: '',
@@ -103,7 +104,7 @@ export const LoginAccRecoveryChangePassword: FC = () => {
                     fontStyle: 'normal',
                     fontWeight: '400',
                     lineHeight: 20.8,
-                    color: '#F9F9F9',
+                    color: '#FAFAFA',
                     marginBottom: 12
                 }}
                 >
@@ -130,7 +131,7 @@ export const LoginAccRecoveryChangePassword: FC = () => {
                     style={[
                         styles.button,
                         (state.isFormValidPassword && state.isFormValidConfirmPassword)
-                            ? { backgroundColor: '#ED0E0E', width: windowWidth - 32, height: 48 }
+                            ? { backgroundColor: '#DC2626', width: windowWidth - 32, height: 48 }
                             : { backgroundColor: '#940C0C', width: windowWidth - 32, height: 48 }
                     ]}
                     disabled={!state.isFormValidPassword || !state.isFormValidConfirmPassword}
@@ -141,7 +142,7 @@ export const LoginAccRecoveryChangePassword: FC = () => {
                 </TouchableOpacity>
 
             </View>
-            {loading ? <Loader /> : null}
+            {loading ? <MovieLoader /> : null}
         </View >
     )
 };

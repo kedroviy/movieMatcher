@@ -17,6 +17,7 @@ export interface ISMFormData {
     selectedCountries: Country[];
     selectedGenres: Genre[];
     selectedYears: Year[];
+    selectedRating: [number, number];
 }
 
 export type Option = {
@@ -31,6 +32,7 @@ export type Action<T> =
     | { type: 'SET_SELECTED_GENRES'; payload: T[] }
     | { type: 'SET_SELECTED_YEARS'; payload: T[] }
     | { type: 'SET_EXCLUDE_GENRE'; payload: T[] }
+    | { type: 'SET_SELECTED_RATING'; payload: [number, number] };
 
 export type SelectMovieType<T> = {
     selectedCountries: T[];
@@ -38,6 +40,7 @@ export type SelectMovieType<T> = {
     selectedYears: T[];
     excludeGenre: T[];
     genres?: T[] | undefined;
+    selectedRating: [number, number];
 };
 
 export const initialState: SelectMovieType<FilterOption> = {
@@ -46,6 +49,7 @@ export const initialState: SelectMovieType<FilterOption> = {
     selectedYears: [],
     excludeGenre: [],
     genres: [],
+    selectedRating: [0, 10],
 };
 
 export interface Actor {
@@ -78,6 +82,8 @@ export function reducer<T>(state: SelectMovieType<T>, action: Action<T>): Select
                 excludeGenre: action.payload,
             };
             break;
+        case 'SET_SELECTED_RATING':
+            return { ...state, selectedRating: action.payload };
         default:
             return state;
     }

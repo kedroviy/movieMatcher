@@ -33,7 +33,7 @@ export const UserProfileResult: FC<Props> = ({ route }) => {
                         alignItems: 'center',
                         width: 100,
                         height: 100,
-                        backgroundColor: '#ED0E0E',
+                        backgroundColor: '#DC2626',
                         borderRadius: 50,
                         marginBottom: 34,
                     }}>
@@ -45,7 +45,7 @@ export const UserProfileResult: FC<Props> = ({ route }) => {
                         fontStyle: 'normal',
                         fontWeight: '400',
                         lineHeight: 20.8,
-                        color: '#F9F9F9',
+                        color: '#FAFAFA',
                         marginBottom: 12
                     }}
                     >

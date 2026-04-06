@@ -82,7 +82,7 @@ export const UPChangeName: FC = () => {
                 <TouchableOpacity
                     style={[styles.button,
                     (isFormValidInput) ?
-                        { backgroundColor: '#ED0E0E', width: windowWidth - 32, height: 48 } :
+                        { backgroundColor: '#DC2626', width: windowWidth - 32, height: 48 } :
                         { backgroundColor: '#940C0C', width: windowWidth - 32, height: 48 }
                     ]}
                     disabled={(isFormValidInput) ? false : true}

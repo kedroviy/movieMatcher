@@ -1,8 +1,10 @@
+import { Slider } from "@miblanchard/react-native-slider";
 import { FILTERS_DATA } from "pages/Main/constants";
 import { FilterOption, initialState, reducer } from "pages/Main/sm.model";
 import { SMMultiSelectInput } from "pages/Main/ui/sm-multi-select-input";
-import { FC, useReducer } from "react";
-import { Modal, View, StyleSheet, Dimensions, ScrollView, Text, Pressable, TouchableOpacity } from "react-native";
+import { FC, useReducer, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Modal, View, StyleSheet, Dimensions, ScrollView, Text, TouchableOpacity } from "react-native";
 import { DeleteSvgIcon, SimpleButton } from "shared";
 import { Color } from "styles/colors";
 
@@ -15,7 +17,16 @@ type MatchFilterModalType = {
 const { width, height } = Dimensions.get('window')
 
 export const MatchFilterModal: FC<MatchFilterModalType> = ({ modalVisible, setModalVisible, onFiltersChange }) => {
+    const { t } = useTranslation();
     const [state, SMdispatch] = useReducer(reducer<FilterOption>, initialState);
+    const [range, setRange] = useState<[number, number]>([0, 10]);
+
+    const handleRangeChange = (values: number[]) => {
+        if (values.length === 2) {
+            setRange([values[0], values[1]]);
+            SMdispatch({ type: 'SET_SELECTED_RATING', payload: [values[0], values[1]] });
+        }
+    };
 
     const handleCountrySelectionChange = (selectedCountries: any[]) => {
         SMdispatch({ type: 'SET_SELECTED_COUNTRIES', payload: selectedCountries });
@@ -65,14 +76,14 @@ export const MatchFilterModal: FC<MatchFilterModalType> = ({ modalVisible, setMo
                     alignItems: 'flex-start',
                     marginBottom: 12,
                 }}>
-                    <Text style={styles.textStyle}>Filters</Text>
+                    <Text style={styles.textStyle}>{t('match_movie.filters_settings.settings')}</Text>
                 </View>
-                <ScrollView style={styles.scrollView}>
+                <ScrollView>
                     <View style={{
                         height: height / 1.3,
                     }}>
                         <SMMultiSelectInput
-                            label='Страна'
+                            label={t('match_movie.filters_settings.country')}
                             options={FILTERS_DATA.country.options}
                             selectedOptions={state.selectedCountries}
                             onSelectionChange={handleCountrySelectionChange}
@@ -80,7 +91,7 @@ export const MatchFilterModal: FC<MatchFilterModalType> = ({ modalVisible, setMo
                         />
 
                         <SMMultiSelectInput
-                            label='Год'
+                            label={t('match_movie.filters_settings.year')}
                             options={FILTERS_DATA.year.options}
                             selectedOptions={state.selectedYears}
                             onSelectionChange={handleYearSelectionChange}
@@ -88,7 +99,7 @@ export const MatchFilterModal: FC<MatchFilterModalType> = ({ modalVisible, setMo
                         />
 
                         <SMMultiSelectInput
-                            label='Жанр'
+                            label={t('match_movie.filters_settings.genre')}
                             options={genreOptionsWithDisabled}
                             selectedOptions={state.selectedGenres}
                             onSelectionChange={handleGenreSelectionChange}
@@ -96,18 +107,38 @@ export const MatchFilterModal: FC<MatchFilterModalType> = ({ modalVisible, setMo
                         />
 
                         <SMMultiSelectInput
-                            label='Исключить жанр'
+                            label={t('match_movie.filters_settings.exclude_genre')}
                             options={excludeGenreOptionsWithDisabled}
                             selectedOptions={state.excludeGenre}
                             onSelectionChange={handleExcludeGenreChange}
                             placeholder={FILTERS_DATA.genre.placeholder}
                         />
+                        <View style={styles.sliderContainer}>
+                            <Text style={styles.sliderLabelText}>Rating</Text>
+                            <View style={styles.sliderLabel}>
+                                <Text style={styles.label}>{range[0]}</Text>
+                                <Text style={styles.label}>{range[1]}</Text>
+                            </View>
+                            <Slider
+                                value={range}
+                                onValueChange={handleRangeChange}
+                                minimumValue={0}
+                                maximumValue={10}
+                                step={1}
+                                minimumTrackTintColor={Color.RED}
+                                maximumTrackTintColor={Color.WHITE}
+                                thumbTintColor={Color.BUTTON_RED}
+                                trackStyle={styles.sliderTrack}
+                                thumbStyle={styles.sliderThumb}
+                            />
+                        </View>
+
                         <View style={{
                             width: width - 32,
                             alignItems: 'flex-start',
                             marginVertical: 12,
                         }}>
-                            <Text style={styles.textStyle}>Other options</Text>
+                            <Text style={styles.textStyle}>{t('match_movie.filters_settings.other_options')}</Text>
                             <View style={{
                                 marginTop: 12,
                                 width: width - 32,
@@ -128,7 +159,7 @@ export const MatchFilterModal: FC<MatchFilterModalType> = ({ modalVisible, setMo
                                     }
                                 ]}
                                 >
-                                    Delete Room
+                                    {t('match_movie.filters_settings.leave_room')}
                                 </Text>
                                 <TouchableOpacity style={{
 
@@ -193,7 +224,39 @@ const styles = StyleSheet.create({
         marginBottom: 15,
         textAlign: 'center',
     },
-    scrollView: {
+    sliderContainer: {
 
+    },
+    slider: {
+        width: width - 40,
+    },
+    sliderLabel: {
+        flexDirection: 'row',
+        justifyContent: 'space-between'
+    },
+    sliderLabelText: {
+        fontSize: 14,
+        color: Color.WHITE,
+        marginBottom: 8,
+        fontFamily: 'Roboto',
+        top: 0,
+    },
+    sliderTrack: {
+        height: 2,
+    },
+    sliderThumb: {
+        width: 20,
+        height: 20,
+    },
+    label: {
+        fontSize: 16,
+        // marginVertical: 8,
+        color: Color.WHITE
+    },
+    range: {
+        marginTop: 20,
+    },
+    rangeLabel: {
+        fontSize: 16,
     },
 });

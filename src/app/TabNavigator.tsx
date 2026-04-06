@@ -8,6 +8,7 @@ import {
     defaultOptions,
 } from "./constants";
 import { Color } from "styles/colors";
+import { borderSubtle } from "styles/theme";
 import { MatchSvgIcon, PlaySvgIcon, ProfileSvgIcon } from "shared";
 import { useTranslation } from "react-i18next";
 
@@ -17,11 +18,13 @@ const screenOptions: BottomTabNavigationOptions = {
     tabBarInactiveTintColor: Color.GREY,
     tabBarActiveTintColor: Color.WHITE,
     tabBarStyle: {
-        borderTopWidth: 0,
+        borderTopWidth: 1,
+        borderTopColor: borderSubtle,
         elevation: 0,
-        backgroundColor: Color.GRAY_BROWN,
-        height: 66,
-        paddingTop: 5,
+        backgroundColor: Color.EXTRA_DARK_GRAY,
+        height: 68,
+        paddingTop: 8,
+        paddingBottom: 10,
     },
     headerShown: false,
 };

@@ -9,6 +9,7 @@ import { joinRoom } from "redux/matchSlice";
 import { AppConstants, Loader, SimpleButton, SimpleInput } from "shared"
 import { Color } from "styles/colors";
 import useFetchUserProfile from "shared/hooks/getUserProfile";
+import { MovieLoader } from "shared/ui/movie-loader";
 
 const { width } = Dimensions.get('window');
 
@@ -72,7 +73,7 @@ export const MatchJoinLobby: FC = () => {
                 buttonWidth={width - 32}
                 onHandlePress={() => onHandleSubmit(user.id)}
             />
-            {loading ? <Loader /> : null}
+            {loading ? <MovieLoader /> : null}
         </View>
     )
 };

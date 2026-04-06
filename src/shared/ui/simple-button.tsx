@@ -1,5 +1,6 @@
 import { FC } from "react";
 import { StyleSheet, Text, TouchableOpacity, ViewStyle } from "react-native"
+import { radius } from "styles/theme";
 
 type WidthType = number | `${number}%` | undefined;
 
@@ -18,6 +19,7 @@ export const SimpleButton: FC<SimpleButtonType> =
 
         return (
             <TouchableOpacity
+                testID="simple-button"
                 style={[
                     styles.button,
                     {
@@ -51,6 +53,6 @@ const styles = StyleSheet.create({
         width: 328,
         height: 44,
         gap: 10,
-        borderRadius: 5,
+        borderRadius: radius.md,
     },
 });

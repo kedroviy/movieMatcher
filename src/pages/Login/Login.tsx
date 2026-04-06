@@ -1,13 +1,12 @@
 import { useDispatch, useSelector } from "react-redux";
 import { View, StyleSheet, Dimensions, Text, TouchableOpacity, Image } from "react-native";
 import { NavigationProp, ParamListBase, useNavigation } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 
 import { AppDispatch } from "../../redux/configure-store";
 import { authenticateWithGoogle } from "../../redux/authSlice";
-import { GoogleSvgIcon, Loader } from "@shared/index";
-import { STRINGS } from "./constants";
+import { GoogleSvgIcon, MovieLoader } from "@shared/index";
 import { Color } from "styles/colors";
-import { useTranslation } from "react-i18next";
 
 const windowWidth = Dimensions.get('window').width;
 
@@ -38,14 +37,14 @@ export const LoginScreen = () => {
             </View>
             <View style={{ width: 328, gap: 12, alignItems: 'center', marginTop: 32 }}>
                 <Text style={{
-                    color: '#FFFFFF',
+                    color: Color.WHITE,
                     fontSize: 22,
                     fontWeight: '700',
                     lineHeight: 27.5,
                     textAlign: 'center'
                 }}>{t('auth.welcome')}</Text>
                 <Text style={{
-                    color: '#FFFFFF',
+                    color: Color.WHITE,
                     fontSize: 16,
                     fontWeight: '400',
                     lineHeight: 21.6,
@@ -60,7 +59,7 @@ export const LoginScreen = () => {
                             flexDirection: 'row',
                             width: windowWidth - 32,
                             height: 48,
-                            backgroundColor: '#ED0E0E',
+                            backgroundColor: Color.BUTTON_RED,
                             alignItems: 'center',
                             justifyContent: 'center',
                         }
@@ -69,7 +68,7 @@ export const LoginScreen = () => {
                     testID='myButton'
                 >
                     <Text style={{
-                        color: '#FFF',
+                        color: Color.WHITE,
                         fontSize: 18,
                         fontWeight: '500',
                     }}>{t('auth.login.btn_title')}</Text>
@@ -81,7 +80,7 @@ export const LoginScreen = () => {
                             flexDirection: 'row',
                             width: windowWidth - 32,
                             height: 48,
-                            backgroundColor: '#FFF',
+                            backgroundColor: Color.WHITE,
                             alignItems: 'center',
                             justifyContent: 'flex-start',
                         }
@@ -91,7 +90,7 @@ export const LoginScreen = () => {
                 >
                     <GoogleSvgIcon />
                     <Text style={{
-                        color: '#1D1D1D',
+                        color: Color.NEW_BLACK,
                         fontSize: 18,
                         fontWeight: '500',
                         left: (windowWidth / 6),
@@ -104,7 +103,7 @@ export const LoginScreen = () => {
                             flexDirection: 'row',
                             width: windowWidth - 32,
                             height: 48,
-                            backgroundColor: '#4AB34C',
+                            backgroundColor: Color.GREEN,
                             alignItems: 'center',
                             justifyContent: 'center',
                         }
@@ -113,7 +112,7 @@ export const LoginScreen = () => {
                     testID='myButton'
                 >
                     <Text style={{
-                        color: '#FFF',
+                        color: Color.WHITE,
                         fontSize: 18,
                         fontWeight: '500',
                     }}>{t('auth.registration.btn_title')}</Text>
@@ -133,7 +132,7 @@ export const LoginScreen = () => {
                     {error}
                 </Text>
             ) : null}
-            {loading ? <Loader /> : null}
+            {loading ? <MovieLoader /> : null}
         </View>
     )
 };
@@ -147,7 +146,7 @@ const styles = StyleSheet.create({
     },
     button: {
         alignItems: 'center',
-        backgroundColor: '#595959',
+        backgroundColor: Color.INPUT_GREY,
         padding: 10,
         width: 328,
         height: 44,

@@ -20,6 +20,7 @@ import { CheckSvgIcon, Loader } from "../../../shared";
 import { AppRoutes } from "app/constants";
 import { Color } from "styles/colors";
 import { useTranslation } from "react-i18next";
+import { MovieLoader } from "shared/ui/movie-loader";
 
 export const LoginRegistration: FC = () => {
     const windowWidth = Dimensions.get('window').width;
@@ -145,7 +146,7 @@ export const LoginRegistration: FC = () => {
                     }
                 </View>
             </ScrollView>
-            {loading ? <Loader /> : null}
+            {loading ? <MovieLoader /> : null}
         </KeyboardAvoidingView>
     )
 };
@@ -176,15 +177,15 @@ const styles = StyleSheet.create({
     },
     error: {
         borderWidth: 1,
-        borderColor: '#ED0E0E',
+        borderColor: '#DC2626',
     },
     errorText: {
-        color: '#ED0E0E',
+        color: '#DC2626',
         fontSize: 14,
         lineHeight: 16.8
     },
     focused: {
         borderWidth: 1,
-        borderColor: '#F9F9F9'
+        borderColor: '#FAFAFA'
     }
 });
