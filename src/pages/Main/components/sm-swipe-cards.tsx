@@ -29,23 +29,9 @@ export const SMSwipeCards: FC<SMSwipeCardType> = ({ card }) => {
         descriptionHeight.value = isExpanded ? 80 : 200;
     };
 
-    if (!card) {
+    if (!card || typeof card !== 'object') {
         return null;
     }
-
-    const {
-        poster,
-        rating,
-        name,
-        year,
-        ageRating,
-        movieLength,
-        countries,
-        genres,
-        description
-    } = card;
-
-    console.log(card);
 
     return (
         <View style={styles.card}>
@@ -62,7 +48,7 @@ export const SMSwipeCards: FC<SMSwipeCardType> = ({ card }) => {
                         paddingHorizontal: 4,
                         justifyContent: 'center',
                         alignItems: 'center',
-                        backgroundColor: getRatingColor(card.rating.kp),
+                        backgroundColor: getRatingColor(card.rating?.kp),
                         borderRadius: 5,
                         right: 12,
                         top: 16,
@@ -72,7 +58,7 @@ export const SMSwipeCards: FC<SMSwipeCardType> = ({ card }) => {
                                 fontSize: 14,
                             }
                         ]}>
-                            {roundDownToOneTenth(card.rating.kp)}
+                            {roundDownToOneTenth(card.rating?.kp)}
                         </Text>
                     </View></>
             ) : (
@@ -96,14 +82,14 @@ export const SMSwipeCards: FC<SMSwipeCardType> = ({ card }) => {
                         labelColor={Color.WHITE}
                         type="time"
                     />
-                    {card?.countries[0] && (
+                    {card?.countries?.[0] && (
                         <SMMovieChips
                             label={card.countries[0].name}
                             color={Color.LIGHT_RED}
                             labelColor={Color.WHITE}
                         />
                     )}
-                    {card?.genres[0] && (
+                    {card?.genres?.[0] && (
                         <SMMovieChips
                             label={card.genres[0].name}
                             color={Color.LIGHT_RED}
