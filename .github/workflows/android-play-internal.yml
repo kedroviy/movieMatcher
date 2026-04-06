@@ -55,10 +55,9 @@ jobs:
             build-tools;34.0.0
             ndk;25.1.8937393
 
+      # v4+ не поддерживает build-root-directory; Fastlane вызывает Gradle с project_dir: android.
       - name: Gradle cache
         uses: gradle/actions/setup-gradle@v4
-        with:
-          build-root-directory: android
 
       - name: Install npm dependencies
         run: npm ci
