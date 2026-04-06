@@ -138,7 +138,11 @@ export const MatchSelectionMovie: FC = () => {
     }), []);
 
     if (isInitialLoading) {
-        return <MovieLoader />;
+        return (
+            <View style={styles.loaderScreen}>
+                <MovieLoader />
+            </View>
+        );
     }
 
     return (
@@ -193,6 +197,11 @@ export const MatchSelectionMovie: FC = () => {
 };
 
 const styles = StyleSheet.create({
+    loaderScreen: {
+        flex: 1,
+        alignSelf: 'stretch',
+        backgroundColor: Color.BACKGROUND_GREY,
+    },
     container: {
         backgroundColor: Color.BACKGROUND_GREY,
         flex: 1,

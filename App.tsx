@@ -39,7 +39,7 @@ function App(): React.JSX.Element {
   return (
     <Provider store={store}>
       <AppContainer />
-      <StatusNotification />
+      {/* <StatusNotification /> */}
     </Provider>);
 }
 

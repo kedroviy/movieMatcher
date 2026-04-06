@@ -83,10 +83,10 @@ describe('SimpleInput', () => {
 
         // Проверка фокусировки
         fireEvent(input, 'focus');
-        expect(input.props.style).toContainEqual(expect.objectContaining({ borderColor: '#F9F9F9' }));
+        expect(input.props.style).toContainEqual(expect.objectContaining({ borderColor: '#FAFAFA' }));
 
         // Проверка снятия фокуса
         fireEvent(input, 'blur');
-        expect(input.props.style).not.toContainEqual(expect.objectContaining({ borderColor: '#F9F9F9' }));
+        expect(input.props.style).not.toContainEqual(expect.objectContaining({ borderColor: '#FAFAFA' }));
     });
 });

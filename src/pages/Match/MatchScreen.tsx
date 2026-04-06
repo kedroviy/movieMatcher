@@ -133,6 +133,8 @@ const styles = StyleSheet.create({
     },
     controlsContainer: {
         gap: 16,
+        alignSelf: 'stretch',
+        alignItems: 'center',
     },
     text: {
         color: Color.WHITE

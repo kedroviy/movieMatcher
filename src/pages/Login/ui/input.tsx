@@ -73,7 +73,7 @@ export const Input: FC<InputType> = ({
         }}>
             <Text style={{
                 fontSize: 14,
-                color: '#F9F9F9',
+                color: '#FAFAFA',
                 gap: 16,
                 lineHeight: 16.8,
                 fontWeight: '400',
@@ -84,7 +84,7 @@ export const Input: FC<InputType> = ({
             <TextInput
                 style={{
                     ...(isFocused && styles.focused),
-                    backgroundColor: '#595959',
+                    backgroundColor: '#52525B',
                     borderRadius: 5,
                     width: windowWidth - 32,
                     height: 48,
@@ -111,7 +111,7 @@ export const Input: FC<InputType> = ({
                         top: 40,
                         height: 32,
                         width: 32,
-                        backgroundColor: '#595959',
+                        backgroundColor: '#52525B',
                         borderBottomRightRadius: 5,
                         borderTopRightRadius: 5,
                     }}
@@ -130,7 +130,7 @@ export const Input: FC<InputType> = ({
                         top: 40,
                         height: 32,
                         width: 32,
-                        backgroundColor: '#595959',
+                        backgroundColor: '#52525B',
                         borderBottomRightRadius: 5,
                         borderTopRightRadius: 5,
                     }}
@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
     },
     error: {
         borderWidth: 1,
-        borderColor: '#ED0E0E',
+        borderColor: '#DC2626',
     },
     errorText: {
         color: Color.WHITE,
@@ -172,6 +172,6 @@ const styles = StyleSheet.create({
     },
     focused: {
         borderWidth: 1,
-        borderColor: '#F9F9F9'
+        borderColor: '#FAFAFA'
     }
 });

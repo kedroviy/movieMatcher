@@ -1,35 +1,35 @@
 import React from "react";
 import LottieView from "lottie-react-native";
-import { View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Color } from "styles/colors";
 
 export function MovieLoader() {
   return (
-    <View style={{
-      alignItems: 'center',
-      justifyContent: 'center',
-      position: 'absolute',
-      width: '100%',
-      height: '100%',
-    }}>
-      <View style={{
-        alignItems: 'center',
-        justifyContent: 'center',
-        position: 'absolute',
-        opacity: 0.5,
-        width: '100%',
-        height: '100%',
-        backgroundColor: Color.NEW_BLACK,
-      }} />
+    <View style={styles.root}>
+      <View style={styles.dim} />
       <LottieView
         autoPlay
         loop
         source={require('../../../assets/animo-2.json')}
-        style={{
-          width: 50,
-          height: 50,
-        }}
+        style={styles.lottie}
       />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  root: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  dim: {
+    ...StyleSheet.absoluteFillObject,
+    opacity: 0.5,
+    backgroundColor: Color.NEW_BLACK,
+  },
+  lottie: {
+    width: 50,
+    height: 50,
+  },
+});

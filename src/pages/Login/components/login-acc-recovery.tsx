@@ -53,7 +53,7 @@ export const LoginAccRecovery: FC = () => {
                     fontStyle: 'normal',
                     fontWeight: '400',
                     lineHeight: 20.8,
-                    color: '#F9F9F9',
+                    color: '#FAFAFA',
                     marginBottom: 12
                 }}
                 >
@@ -72,7 +72,7 @@ export const LoginAccRecovery: FC = () => {
                 <TouchableOpacity
                     style={[styles.button,
                     (isFormValidEmail) ?
-                        { backgroundColor: '#ED0E0E', width: windowWidth - 32, height: 48 } :
+                        { backgroundColor: '#DC2626', width: windowWidth - 32, height: 48 } :
                         { backgroundColor: '#940C0C', width: windowWidth - 32, height: 48 }
                     ]}
                     disabled={isFormValidEmail ? false : true}

@@ -85,7 +85,7 @@ export const LoginAuth: FC = () => {
                     <TouchableOpacity
                         style={[styles.button,
                         (isFormValidPassword && isFormValidEmail) ?
-                            { backgroundColor: '#ED0E0E', width: windowWidth - 32, height: 48 } :
+                            { backgroundColor: '#DC2626', width: windowWidth - 32, height: 48 } :
                             { backgroundColor: '#940C0C', width: windowWidth - 32, height: 48 }
                         ]}
                         disabled={(isFormValidPassword && isFormValidEmail) ? false : true}

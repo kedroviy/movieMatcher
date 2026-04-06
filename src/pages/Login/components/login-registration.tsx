@@ -177,15 +177,15 @@ const styles = StyleSheet.create({
     },
     error: {
         borderWidth: 1,
-        borderColor: '#ED0E0E',
+        borderColor: '#DC2626',
     },
     errorText: {
-        color: '#ED0E0E',
+        color: '#DC2626',
         fontSize: 14,
         lineHeight: 16.8
     },
     focused: {
         borderWidth: 1,
-        borderColor: '#F9F9F9'
+        borderColor: '#FAFAFA'
     }
 });

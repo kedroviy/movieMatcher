@@ -61,6 +61,7 @@ const resources = {
                     list_name: 'List name',
                 },
                 selection_list_end: 'The films offered have ended. Skip to selected movies or go to next page!',
+                finish_solo_selection: 'Back to home',
                 empty_list: `You haven't selected any movies to watch yet. Start selecting a movie right now!`,
                 movie_details: {
                     watch: 'Watch on Kinopoisk',
@@ -157,6 +158,7 @@ const resources = {
                     list_name: 'Название списка',
                 },
                 selection_list_end: 'Предложенные фильмы закончились. Перейдите к подобранным фильмам или продолжите на следующей странице!',
+                finish_solo_selection: 'На главный экран',
                 empty_list: 'Вы ещё не подбирали ни одного фильма к просмотру. Начните подбор фильма прямо сейчас!',
                 movie_details: {
                     watch: 'Смотреть на Кинопоиске',

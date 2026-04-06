@@ -144,13 +144,13 @@ const styles = StyleSheet.create({
         height: 70,
         padding: 10,
         borderRadius: 5,
-        backgroundColor: '#595959',
+        backgroundColor: '#52525B',
     },
     inputContainerFocused: {
         borderColor: '#0f5181',
     },
     inputText: {
-        color: '#F9F9F9',
+        color: '#FAFAFA',
         fontFamily: 'Roboto',
         fontSize: 18,
     },
@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
         opacity: 0,
     },
     text: {
-        color: '#F9F9F9',
+        color: '#FAFAFA',
         fontSize: 18,
         fontWeight: '500',
         lineHeight: 21.6,
@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
         fontStyle: 'normal',
         fontWeight: '400',
         lineHeight: 20.8,
-        color: '#F9F9F9',
+        color: '#FAFAFA',
     },
     headerText: {
         fontSize: 24,

@@ -3,6 +3,7 @@ import { Dimensions, Image, StyleSheet, Text, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import Swiper from "react-native-deck-swiper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { NavigationProp, ParamListBase, useNavigation } from "@react-navigation/native";
 
 import { SMControlBar } from "./sm-control-bar";
 import { SMSwipeCards } from "./sm-swipe-cards";
@@ -10,18 +11,20 @@ import { OverlayLabel } from "../ui/overlay-label";
 import { Color } from "styles/colors";
 import { AppDispatch } from "redux/configure-store";
 import { loadMovies, setPage } from "redux/moviesSlice";
-import { Loader, SimpleButton } from "shared";
+import { SimpleButton } from "shared";
 import { t } from "i18next";
 import { MovieLoader } from "shared/ui/movie-loader";
+import { AppRoutes } from "app/constants";
 
 const { width } = Dimensions.get('window');
 
 export const SMSelectionMovie: FC = () => {
+    const navigation = useNavigation<NavigationProp<ParamListBase>>();
     const { loading, data, currentSessionLabel, currentPage, currentFormData } = useSelector((state: any) =>
         state.moviesSlice);
     const dispatch: AppDispatch = useDispatch();
-    const [allCardsSwiped, setAllCardsSwiped] = useState<boolean>(false);
-    const [currentIndex, setCurrentIndex] = useState<number>(0);
+    const [allCardsSwiped, setAllCardsSwiped] = useState(false);
+    const [currentIndex, setCurrentIndex] = useState(0);
     const useSwiper = useRef<Swiper<any>>(null);
 
     useEffect(() => { }, [loading, data]);
@@ -75,6 +78,10 @@ export const SMSelectionMovie: FC = () => {
         setCurrentIndex(0);
     }, [currentPage, currentFormData, currentSessionLabel, dispatch, setAllCardsSwiped, setCurrentIndex]);
 
+    const handleFinishSolo = useCallback(() => {
+        navigation.navigate(AppRoutes.TAB_NAVIGATOR);
+    }, [navigation]);
+
     return (
         <View style={styles.container}>
             {allCardsSwiped ? (
@@ -86,14 +93,27 @@ export const SMSelectionMovie: FC = () => {
                         marginTop: 20,
                         textAlign: 'center',
                     }}>{t('selection_movie.selection_list_end')}</Text>
-                    <SimpleButton
-                        title={t('general.next_page')}
-                        color={Color.BUTTON_RED}
-                        titleColor={Color.WHITE}
-                        buttonWidth={width - 32}
-                        buttonStyle={{ bottom: 40 }}
-                        onHandlePress={handleLoadMore}
-                    />
+                    <View style={styles.endActions}>
+                        <SimpleButton
+                            title={t('general.next_page')}
+                            color={Color.BUTTON_RED}
+                            titleColor={Color.WHITE}
+                            buttonWidth={width - 32}
+                            onHandlePress={handleLoadMore}
+                        />
+                        <SimpleButton
+                            title={t('selection_movie.finish_solo_selection')}
+                            color={Color.BACKGROUND_GREY}
+                            titleColor={Color.WHITE}
+                            buttonWidth={width - 32}
+                            onHandlePress={handleFinishSolo}
+                            buttonStyle={{
+                                borderWidth: 1,
+                                borderStyle: 'solid',
+                                borderColor: Color.WHITE,
+                            }}
+                        />
+                    </View>
                 </>
             ) : (
                 <>
@@ -187,6 +207,13 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         lineHeight: 28.8,
         color: Color.WHITE
+    },
+    endActions: {
+        gap: 16,
+        width: '100%',
+        alignItems: 'center',
+        paddingBottom: 40,
+        marginTop: 24,
     },
     loader: {
         position: 'absolute',
