@@ -40,7 +40,7 @@ workflows:
       # Settings → Environment variables (поле Group при добавлении переменной).
       # Если группа уже называется иначе (например google_play) — поменяй только эту строку.
       groups:
-        - movie_matcher_secrets
+        - movie_matcher_secret
       vars:
         PACKAGE_NAME: "com.moviematcher"
       node: 20.11.1
