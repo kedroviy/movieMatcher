@@ -1,2 +1,2 @@
 # Movie match application
-android application
+react native android application
