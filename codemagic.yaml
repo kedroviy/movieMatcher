@@ -52,13 +52,29 @@ workflows:
         script: |
           cd "$CM_BUILD_DIR"
           npm ci
-      - name: Восстановить keystore из CM_KEYSTORE (base64)
+     - name: Восстановить keystore из CM_KEYSTORE (base64)
         script: |
           if [ -z "$CM_KEYSTORE" ] || [ -z "$CM_KEYSTORE_PATH" ]; then
             echo "Задай CM_KEYSTORE и CM_KEYSTORE_PATH в Environment variables приложения."
             exit 1
           fi
-          printf '%s' "$CM_KEYSTORE" | base64 --decode > "$CM_KEYSTORE_PATH"
+          # Убираем пробелы/переносы из base64 (частая причина padding error при вставке в UI)
+          CLEAN_B64=$(printf '%s' "$CM_KEYSTORE" | tr -d ' \n\r\t')
+          printf '%s' "$CLEAN_B64" | base64 --decode > "$CM_KEYSTORE_PATH"
+          SZ=$(wc -c < "$CM_KEYSTORE_PATH" | tr -d ' ')
+          echo "Keystore после decode: $SZ байт"
+          if [ "$SZ" -lt 200 ]; then
+            echo "Файл слишком маленький — base64 в CM_KEYSTORE обрезан или неверен."
+            exit 1
+          fi
+          # Проверка: пароль хранилища и целостность файла после base64
+          if ! keytool -list -keystore "$CM_KEYSTORE_PATH" -storetype PKCS12 \
+              -storepass "$CM_KEYSTORE_PASSWORD" >/dev/null 2>&1; then
+            echo "keytool не открыл keystore. Чаще всего: неверный CM_KEYSTORE_PASSWORD или обрезан/битый base64 в CM_KEYSTORE."
+            keytool -list -keystore "$CM_KEYSTORE_PATH" -storetype PKCS12 \
+              -storepass "$CM_KEYSTORE_PASSWORD" 2>&1 | head -15 || true
+            exit 1
+          fi
       - name: Сборка AAB (release)
         script: |
           export ANDROID_KEYSTORE_PATH="$CM_KEYSTORE_PATH"
