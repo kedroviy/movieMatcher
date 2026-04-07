@@ -33,7 +33,7 @@
 
 workflows:
   android-release:
-    name: Android → Google Play
+    name: "Android release (Google Play)"
     max_build_duration: 120
     instance_type: mac_mini_m2
     environment:
@@ -44,16 +44,16 @@ workflows:
         - movie_matcher_secret
       vars:
         PACKAGE_NAME: "com.moviematcher"
-      node: 20.11.1
+      node: "20.11.1"
     scripts:
-      - name: SDK path для Gradle
+      - name: "Android local.properties"
         script: |
           echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/android/local.properties"
-      - name: Зависимости npm
+      - name: "npm ci"
         script: |
           cd "$CM_BUILD_DIR"
           npm ci
-      - name: Восстановить keystore из CM_KEYSTORE (base64)
+      - name: "Decode keystore from CM_KEYSTORE"
         script: |
           if [ -z "$CM_KEYSTORE" ] || [ -z "$CM_KEYSTORE_PATH" ]; then
             echo "Задай CM_KEYSTORE и CM_KEYSTORE_PATH в Environment variables приложения."
@@ -76,7 +76,7 @@ workflows:
               -storepass "$CM_KEYSTORE_PASSWORD" 2>&1 | head -15 || true
             exit 1
           fi
-      - name: Сборка AAB (release)
+      - name: "Gradle bundleRelease"
         script: |
           export ANDROID_KEYSTORE_PATH="$CM_KEYSTORE_PATH"
           export ANDROID_KEYSTORE_PASSWORD="$CM_KEYSTORE_PASSWORD"
