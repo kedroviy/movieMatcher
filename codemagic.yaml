@@ -1,0 +1,73 @@
+# =============================================================================
+# Личный аккаунт Codemagic (без платной Team)
+# =============================================================================
+# Team нужна только для совместной работы и отдельного биллинга. Приложение,
+# репозиторий и переменные окружения настраиваются у КОНКРЕТНОГО приложения:
+# Codemagic → твоё приложение → Settings → Environment variables.
+#
+# Подпись Android БЕЗ «Code signing identities» в Team: keystore хранится как
+# base64 в секрете (официальный вариант):
+# https://docs.codemagic.io/yaml-code-signing/alternative-code-signing-methods/
+#
+# В GIT не класть keystore, пароли и JSON ключей.
+#
+# --- Группа переменных (в UI при добавлении первой переменной задаёшь имя группы)
+#     Имя группы должно совпадать с environment.groups ниже: movie_matcher_secrets
+#
+#   CM_KEYSTORE  (Secret)
+#     Значение: base64 от твоего upload-keystore.p12
+#     Windows PowerShell:
+#       [Convert]::ToBase64String([IO.File]::ReadAllBytes("путь\upload-keystore.p12")) | Set-Clipboard
+#
+#   CM_KEYSTORE_PASSWORD  (Secret)  — пароль хранилища .p12
+#   CM_KEY_PASSWORD       (Secret)  — обычно тот же, что и у ключа
+#   CM_KEY_ALIAS          — upload  (как у тебя в keytool -list)
+#
+#   CM_KEYSTORE_PATH  (не секрет; значение буквально такая строка:)
+#     $CM_BUILD_DIR/upload-keystore.p12
+#
+#   GOOGLE_PLAY_SERVICE_ACCOUNT_CREDENTIALS  (Secret)
+#     Весь JSON сервисного аккаунта Google Play (см. доку Codemagic / Play Console)
+# =============================================================================
+
+workflows:
+  android-release:
+    name: Android → Google Play
+    max_build_duration: 120
+    instance_type: mac_mini_m2
+    environment:
+      groups:
+        - movie_matcher_secrets
+      vars:
+        PACKAGE_NAME: "com.moviematcher"
+      node: 20.11.1
+    scripts:
+      - name: SDK path для Gradle
+        script: |
+          echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/android/local.properties"
+      - name: Зависимости npm
+        script: |
+          cd "$CM_BUILD_DIR"
+          npm ci
+      - name: Восстановить keystore из CM_KEYSTORE (base64)
+        script: |
+          if [ -z "$CM_KEYSTORE" ] || [ -z "$CM_KEYSTORE_PATH" ]; then
+            echo "Задай CM_KEYSTORE и CM_KEYSTORE_PATH в Environment variables приложения."
+            exit 1
+          fi
+          printf '%s' "$CM_KEYSTORE" | base64 --decode > "$CM_KEYSTORE_PATH"
+      - name: Сборка AAB (release)
+        script: |
+          export ANDROID_KEYSTORE_PATH="$CM_KEYSTORE_PATH"
+          export ANDROID_KEYSTORE_PASSWORD="$CM_KEYSTORE_PASSWORD"
+          export ANDROID_KEY_ALIAS="$CM_KEY_ALIAS"
+          export ANDROID_KEY_PASSWORD="$CM_KEY_PASSWORD"
+          cd "$CM_BUILD_DIR/android"
+          ./gradlew bundleRelease
+    artifacts:
+      - android/app/build/outputs/**/*.aab
+    publishing:
+      google_play:
+        credentials: $GOOGLE_PLAY_SERVICE_ACCOUNT_CREDENTIALS
+        track: internal
+        submit_as_draft: true
