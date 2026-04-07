@@ -36,6 +36,9 @@ workflows:
     max_build_duration: 120
     instance_type: mac_mini_m2
     environment:
+      # Имя должно ТОЧНО совпадать с группой в Codemagic → это приложение →
+      # Settings → Environment variables (поле Group при добавлении переменной).
+      # Если группа уже называется иначе (например google_play) — поменяй только эту строку.
       groups:
         - movie_matcher_secrets
       vars:
