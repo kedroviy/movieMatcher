@@ -125,6 +125,8 @@ android {
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
+    // enableEdgeToEdge() in MainActivity (AndroidX Activity 1.8+)
+    implementation("androidx.activity:activity-ktx:1.9.3")
 
     if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")
