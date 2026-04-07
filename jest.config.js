@@ -1,7 +1,7 @@
 module.exports = {
   preset: 'react-native',
   transformIgnorePatterns: [
-    "node_modules/(?!(@react-native-google-signin|react-native-keychain|react-native|@react-native|react-redux|react-native-reanimated)/)"
+    "node_modules/(?!(@react-native-google-signin|react-native-keychain|react-native|@react-native|react-redux|react-native-reanimated|@reduxjs/toolkit|immer)/)"
   ],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   transform: {

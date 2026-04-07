@@ -12,6 +12,10 @@ const inAppUpdates = new SpInAppUpdates(
 
 export const useInAppUpdate = () => {
     useEffect(() => {
+        // Play In-App Updates need a Play-signed build; dev / most emulators will error or behave oddly.
+        if (__DEV__) {
+            return;
+        }
         inAppUpdates.checkNeedsUpdate({ curVersion: '0.0.3' }).then((result: NeedsUpdateResponse) => {
             if (result.shouldUpdate) {
                 let updateOptions: StartUpdateOptions = {};
@@ -24,5 +28,5 @@ export const useInAppUpdate = () => {
                 inAppUpdates.startUpdate(updateOptions);
             }
         }).catch(error => console.log(error));
-    })
+    }, []);
 };

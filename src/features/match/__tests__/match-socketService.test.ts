@@ -36,8 +36,8 @@ describe('SocketService', () => {
 
         expect(io).toHaveBeenCalledWith("http://localhost/rooms", {
             reconnection: true,
-            transports: ['websocket', 'polling'],
-            rememberUpgrade: true,
+            transports: ['polling', 'websocket'],
+            upgrade: true,
         });
 
         expect(mockSocket.on).toHaveBeenCalledWith("connect", expect.any(Function));

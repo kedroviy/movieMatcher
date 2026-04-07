@@ -3,7 +3,7 @@ import React from 'react';
 import { LoginScreen } from '../Login';
 import { useDispatch, useSelector } from 'react-redux';
 import { it } from '@jest/globals';
-import renderer from 'react-test-renderer';
+import renderer, { act } from 'react-test-renderer';
 import { TypedUseSelectorHook } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
@@ -48,7 +48,10 @@ beforeEach(() => {
 
 describe('LoginScreen Component Testing', () => {
     it('LoginScreen renders correctly', () => {
-        const tree = renderer.create(<LoginScreen />).toJSON();
+        let tree: renderer.ReactTestRendererJSON | renderer.ReactTestRendererJSON[] | null;
+        act(() => {
+            tree = renderer.create(<LoginScreen />).toJSON();
+        });
         expect(tree).toMatchSnapshot();
     });
 });
