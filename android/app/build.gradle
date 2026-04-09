@@ -120,6 +120,12 @@ android {
             signingConfig signingConfigs.debug
         }
     }
+    // Uncompressed JNI + AGP 8.5.1+ → 16 KB zip alignment in AAB/APK (avoid legacy compressed libs path).
+    packaging {
+        jniLibs {
+            useLegacyPackaging false
+        }
+    }
 }
 
 dependencies {
