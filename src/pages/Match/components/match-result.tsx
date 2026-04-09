@@ -1,51 +1,29 @@
-import { FC, Key, useEffect, useState } from "react"
-import {
-    ActivityIndicator,
-    Alert,
-    Dimensions,
-    Image,
-    Linking,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
-} from "react-native"
-import { NavigationProp, ParamListBase, RouteProp, useNavigation } from "@react-navigation/native";
-import { useDispatch, useSelector } from "react-redux";
+import { FC, Key, useEffect, useState } from 'react';
+import { Alert, Dimensions, Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { Color } from "styles/colors";
+import { Color } from 'styles/colors';
 
-import { useTranslation } from "react-i18next";
-import { AppDispatch } from "redux/configure-store";
-import { SMCard } from "pages/Main/ui/sm-card";
-import { Movie } from "features";
-import { RootStackParamList } from "app/constants";
-import { SMMovieDetails } from "pages/Main";
-import { Actor } from "pages/Main/sm.model";
-import { generateKpUrl } from "pages/Main/sm.utils";
-import { SMMovieChips } from "pages/Main/ui/sm-movie-chips";
-import { getRatingColor, roundDownToOneTenth } from "pages/Main/utils";
-import { loadMovieDetails } from "redux/moviesSlice";
-import { SimpleButton } from "shared";
+import { useTranslation } from 'react-i18next';
+import { AppDispatch } from 'redux/configure-store';
+import { generateKpUrl } from 'pages/Main/sm.utils';
+import { SMMovieChips } from 'pages/Main/ui/sm-movie-chips';
+import { getRatingColor, roundDownToOneTenth } from 'pages/Main/utils';
+import { loadMovieDetails } from 'redux/moviesSlice';
+import { SimpleButton } from 'shared';
 
-type MatchResultProps = {};
+const { width } = Dimensions.get('window');
 
-const { width } = Dimensions.get('window')
-
-export const MatchResult: FC<MatchResultProps> = () => {
+export const MatchResult: FC = () => {
     const dispatch: AppDispatch = useDispatch();
-    const navigation = useNavigation<NavigationProp<ParamListBase>>();
-    const { currentUserMatch, movies, loading } = useSelector((state: any) => state.matchSlice);
+    const { movies } = useSelector((state: any) => state.matchSlice);
     const { t } = useTranslation();
     const [isExpanded, setIsExpanded] = useState<boolean>(false);
-
 
     console.log('movies: ', movies.data.docs[0]);
     console.log(movies.data.docs[0].rating.kp);
     useEffect(() => {
         dispatch(loadMovieDetails(movies.data.docs[0].id));
-
     }, [dispatch, movies.data.docs[0].id]);
 
     const toggleExpanded = () => {
@@ -91,7 +69,9 @@ export const MatchResult: FC<MatchResultProps> = () => {
                 <View>
                     <Image
                         source={
-                            movies.data.docs[0].poster ? { uri: movies.data.docs[0].poster.previewUrl } : require('../../../../assets/defaultpicture.png')
+                            movies.data.docs[0].poster
+                                ? { uri: movies.data.docs[0].poster.previewUrl }
+                                : require('../../../../assets/defaultpicture.png')
                         }
                         style={{
                             width: width - 32,
@@ -100,42 +80,49 @@ export const MatchResult: FC<MatchResultProps> = () => {
                             borderRadius: 10,
                         }}
                     />
-                    <View style={{
-                        position: 'absolute',
-                        width: 41,
-                        height: 30,
-                        paddingVertical: 2,
-                        paddingHorizontal: 4,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        backgroundColor: getRatingColor(movies.data.docs[0].rating.kp),
-                        borderRadius: 5,
-                        right: 12,
-                        top: 16,
-                    }}>
-                        <Text style={[
-                            styles.text, {
-                                fontSize: 14,
-                            }]}>
+                    <View
+                        style={{
+                            position: 'absolute',
+                            width: 41,
+                            height: 30,
+                            paddingVertical: 2,
+                            paddingHorizontal: 4,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            backgroundColor: getRatingColor(movies.data.docs[0].rating.kp),
+                            borderRadius: 5,
+                            right: 12,
+                            top: 16,
+                        }}
+                    >
+                        <Text
+                            style={[
+                                styles.text,
+                                {
+                                    fontSize: 14,
+                                },
+                            ]}
+                        >
                             {roundDownToOneTenth(movies.data.docs[0].rating.kp)}
                         </Text>
                     </View>
                 </View>
-                <Text style={[
-                    styles.text, {
-                        fontFamily: 'Roboto',
-                        fontSize: 24,
-                        fontWeight: '700',
-                        lineHeight: 28.8,
-                        paddingVertical: 24,
-                    }]}>
+                <Text
+                    style={[
+                        styles.text,
+                        {
+                            fontFamily: 'Roboto',
+                            fontSize: 24,
+                            fontWeight: '700',
+                            lineHeight: 28.8,
+                            paddingVertical: 24,
+                        },
+                    ]}
+                >
                     {movies.data.docs[0].name}
                 </Text>
                 <View style={{ width: width - 32 }}>
-                    <ScrollView
-                        horizontal
-                        showsHorizontalScrollIndicator={false}
-                    >
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                         <SMMovieChips
                             label={movies.data.docs[0].ageRating}
                             color={Color.LIGHT_RED}
@@ -154,7 +141,6 @@ export const MatchResult: FC<MatchResultProps> = () => {
                                 label={genre.name}
                                 color={Color.LIGHT_RED}
                                 labelColor={Color.WHITE}
-
                             />
                         ))}
                         {movies.data.docs[0].countries.map((countrie: any, index: Key | null | undefined) => (
@@ -163,7 +149,6 @@ export const MatchResult: FC<MatchResultProps> = () => {
                                 label={countrie.name}
                                 color={Color.LIGHT_RED}
                                 labelColor={Color.WHITE}
-
                             />
                         ))}
                     </ScrollView>
@@ -172,7 +157,7 @@ export const MatchResult: FC<MatchResultProps> = () => {
                     <Text
                         style={[styles.text, { fontSize: 16, marginBottom: 5 }]}
                         numberOfLines={isExpanded ? undefined : 4}
-                        ellipsizeMode='tail'
+                        ellipsizeMode="tail"
                     >
                         {movies.data.docs[0].description}
                     </Text>

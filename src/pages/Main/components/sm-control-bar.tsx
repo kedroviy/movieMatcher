@@ -1,12 +1,12 @@
-import { FC } from "react";
-import { TouchableOpacity } from "react-native";
-import { CloseSvgIcon, LikeSvgIcon } from "shared";
-import { Color } from "styles/colors";
+import { FC } from 'react';
+import { TouchableOpacity } from 'react-native';
+import { CloseSvgIcon, LikeSvgIcon } from 'shared';
+import { Color } from 'styles/colors';
 
 type SMControlBarType = {
-    onHandleLike: () => void,
-    onHandleDislike: () => void,
-}
+    onHandleLike: () => void;
+    onHandleDislike: () => void;
+};
 
 export const SMControlBar: FC<SMControlBarType> = ({ onHandleLike, onHandleDislike }) => {
     return (
@@ -19,7 +19,7 @@ export const SMControlBar: FC<SMControlBarType> = ({ onHandleLike, onHandleDisli
                     alignItems: 'center',
                     justifyContent: 'center',
                     borderRadius: 35,
-                    marginVertical: 8
+                    marginVertical: 8,
                 }}
                 onPress={onHandleDislike}
             >
@@ -33,12 +33,12 @@ export const SMControlBar: FC<SMControlBarType> = ({ onHandleLike, onHandleDisli
                     alignItems: 'center',
                     justifyContent: 'center',
                     borderRadius: 35,
-                    marginVertical: 8
+                    marginVertical: 8,
                 }}
                 onPress={onHandleLike}
             >
                 <LikeSvgIcon stroke={Color.WHITE} fill={Color.WHITE} width={32} height={32} />
             </TouchableOpacity>
         </>
-    )
+    );
 };

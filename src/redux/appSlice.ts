@@ -1,5 +1,5 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { NotificationType, SnackBarNotification } from "shared";
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { SnackBarNotification } from 'shared';
 
 type AppState = {
     appVersion: string;
@@ -11,7 +11,7 @@ type AppState = {
     isWSConnected: boolean;
     notifications: SnackBarNotification[];
     isConnected: boolean;
-}
+};
 
 const initialState: AppState = {
     appVersion: '1.0',
@@ -39,21 +39,14 @@ const appSlice = createSlice({
             state.notifications.push(action.payload);
         },
         removeNotification(state, action: PayloadAction<number>) {
-            state.notifications = state.notifications.filter(
-                notification => notification.id !== action.payload
-            );
+            state.notifications = state.notifications.filter((notification) => notification.id !== action.payload);
         },
         setNetworkStatus(state, action: PayloadAction<boolean>) {
             state.isConnected = action.payload;
-        }
+        },
     },
 });
 
-export const {
-    setConnectionStatus,
-    setError,
-    addNotification,
-    removeNotification,
-    setNetworkStatus,
-} = appSlice.actions;
+export const { setConnectionStatus, setError, addNotification, removeNotification, setNetworkStatus } =
+    appSlice.actions;
 export default appSlice.reducer;

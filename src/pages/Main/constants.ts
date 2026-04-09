@@ -1,4 +1,4 @@
-import { yearOptions } from "./sm.utils";
+import { yearOptions } from './sm.utils';
 
 export const FILTERS_DATA = {
     country: {

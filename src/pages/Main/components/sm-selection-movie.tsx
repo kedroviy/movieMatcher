@@ -1,33 +1,34 @@
-import { FC, useCallback, useEffect, useRef, useState } from "react"
-import { Dimensions, Image, StyleSheet, Text, View } from "react-native";
-import { useDispatch, useSelector } from "react-redux";
-import Swiper from "react-native-deck-swiper";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { NavigationProp, ParamListBase, useNavigation } from "@react-navigation/native";
+import { FC, useCallback, useEffect, useRef, useState } from 'react';
+import { Dimensions, Image, StyleSheet, Text, View } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import Swiper from 'react-native-deck-swiper';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { NavigationProp, ParamListBase, useNavigation } from '@react-navigation/native';
 
-import { SMControlBar } from "./sm-control-bar";
-import { SMSwipeCards } from "./sm-swipe-cards";
-import { OverlayLabel } from "../ui/overlay-label";
-import { Color } from "styles/colors";
-import { AppDispatch } from "redux/configure-store";
-import { loadMovies, setPage } from "redux/moviesSlice";
-import { SimpleButton } from "shared";
-import { t } from "i18next";
-import { MovieLoader } from "shared/ui/movie-loader";
-import { AppRoutes } from "app/constants";
+import { SMControlBar } from './sm-control-bar';
+import { SMSwipeCards } from './sm-swipe-cards';
+import { OverlayLabel } from '../ui/overlay-label';
+import { Color } from 'styles/colors';
+import { AppDispatch } from 'redux/configure-store';
+import { loadMovies, setPage } from 'redux/moviesSlice';
+import { SimpleButton } from 'shared';
+import { t } from 'i18next';
+import { MovieLoader } from 'shared/ui/movie-loader';
+import { AppRoutes } from 'app/constants';
 
 const { width } = Dimensions.get('window');
 
 export const SMSelectionMovie: FC = () => {
     const navigation = useNavigation<NavigationProp<ParamListBase>>();
-    const { loading, data, currentSessionLabel, currentPage, currentFormData } = useSelector((state: any) =>
-        state.moviesSlice);
+    const { loading, data, currentSessionLabel, currentPage, currentFormData } = useSelector(
+        (state: any) => state.moviesSlice,
+    );
     const dispatch: AppDispatch = useDispatch();
     const [allCardsSwiped, setAllCardsSwiped] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(0);
     const useSwiper = useRef<Swiper<any>>(null);
 
-    useEffect(() => { }, [loading, data]);
+    useEffect(() => {}, [loading, data]);
 
     const handleOnSwipedLeft = (cardIndex: any) => {
         console.log(`Свайп влево на карточке с индексом ${cardIndex}`);
@@ -36,14 +37,14 @@ export const SMSelectionMovie: FC = () => {
     const handleOnSwipedRight = async (cardIndex: any) => {
         const likedMovie = data.docs[cardIndex];
         const storageDataJSON = await AsyncStorage.getItem('@mymovies');
-        let storageData = storageDataJSON ? JSON.parse(storageDataJSON) : {};
+        const storageData = storageDataJSON ? JSON.parse(storageDataJSON) : {};
 
         if (!storageData[currentSessionLabel]) {
             storageData[currentSessionLabel] = {
                 id: currentSessionLabel,
                 label: currentSessionLabel,
                 link: 'https://api.kinopoisk.dev/v1.4/movie',
-                movies: []
+                movies: [],
             };
         }
 
@@ -65,11 +66,13 @@ export const SMSelectionMovie: FC = () => {
         dispatch(setPage(nextPage));
 
         try {
-            await dispatch(loadMovies({
-                formData: currentFormData,
-                sessionLabel: currentSessionLabel,
-                page: nextPage
-            }));
+            await dispatch(
+                loadMovies({
+                    formData: currentFormData,
+                    sessionLabel: currentSessionLabel,
+                    page: nextPage,
+                }),
+            );
         } catch (error) {
             console.error('Error loading more movies:', error);
         }
@@ -87,12 +90,16 @@ export const SMSelectionMovie: FC = () => {
             {allCardsSwiped ? (
                 <>
                     <Image source={require('../../../../assets/image53.png')} />
-                    <Text style={{
-                        fontSize: 22,
-                        color: 'white',
-                        marginTop: 20,
-                        textAlign: 'center',
-                    }}>{t('selection_movie.selection_list_end')}</Text>
+                    <Text
+                        style={{
+                            fontSize: 22,
+                            color: 'white',
+                            marginTop: 20,
+                            textAlign: 'center',
+                        }}
+                    >
+                        {t('selection_movie.selection_list_end')}
+                    </Text>
                     <View style={styles.endActions}>
                         <SimpleButton
                             title={t('general.next_page')}
@@ -117,18 +124,20 @@ export const SMSelectionMovie: FC = () => {
                 </>
             ) : (
                 <>
-                    {!loading ?
+                    {!loading ? (
                         <>
-                            <View style={{
-                                width: width,
-                                flex: 1,
-                            }}>
+                            <View
+                                style={{
+                                    width: width,
+                                    flex: 1,
+                                }}
+                            >
                                 <Swiper
                                     ref={useSwiper}
                                     animateCardOpacity
                                     containerStyle={styles.swiperContainer}
                                     cards={data.docs}
-                                    renderCard={card => <SMSwipeCards card={card} />}
+                                    renderCard={(card) => <SMSwipeCards card={card} />}
                                     cardIndex={0}
                                     backgroundColor={Color.BACKGROUND_GREY}
                                     stackSize={2}
@@ -159,20 +168,28 @@ export const SMSelectionMovie: FC = () => {
                                                 },
                                             },
                                         },
-                                    }} />
+                                    }}
+                                />
                             </View>
-                            <View style={{
-                                flex: 0.17,
-                                flexDirection: 'row',
-                                alignItems: 'center',
-                                justifyContent: 'space-evenly',
-                                width: width / 2.2,
-                                bottom: 5,
-                            }}>
+                            <View
+                                style={{
+                                    flex: 0.17,
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-evenly',
+                                    width: width / 2.2,
+                                    bottom: 5,
+                                }}
+                            >
                                 <SMControlBar
                                     onHandleLike={() => useSwiper.current?.swipeRight()}
-                                    onHandleDislike={() => useSwiper.current?.swipeLeft()} />
-                            </View></> : <MovieLoader />}
+                                    onHandleDislike={() => useSwiper.current?.swipeLeft()}
+                                />
+                            </View>
+                        </>
+                    ) : (
+                        <MovieLoader />
+                    )}
                 </>
             )}
         </View>
@@ -206,7 +223,7 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: '700',
         lineHeight: 28.8,
-        color: Color.WHITE
+        color: Color.WHITE,
     },
     endActions: {
         gap: 16,
@@ -222,6 +239,6 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
         backgroundColor: Color.BLACK,
-        opacity: 0.5
-    }
+        opacity: 0.5,
+    },
 });

@@ -1,8 +1,8 @@
-import { FC } from "react"
-import { View, Image, Text, TouchableOpacity, Dimensions, StyleSheet } from "react-native";
-import { OnboardingPagination } from "./onboarding-pagination";
-import { PAGES } from "../constants";
-import { Color } from "styles/colors";
+import { FC } from 'react';
+import { View, Image, Text, TouchableOpacity, Dimensions, StyleSheet } from 'react-native';
+import { OnboardingPagination } from './onboarding-pagination';
+import { PAGES } from '../constants';
+import { Color } from 'styles/colors';
 
 type OnboardingCardType = {
     id: number;
@@ -11,41 +11,52 @@ type OnboardingCardType = {
     subHeader: string;
     buttonText: string;
     onHandlePress: () => void;
-}
+};
 
-export const OnboardingCard: FC<OnboardingCardType> = ({ id, imageUrl, header, subHeader, buttonText, onHandlePress }) => {
+export const OnboardingCard: FC<OnboardingCardType> = ({
+    id,
+    imageUrl,
+    header,
+    subHeader,
+    buttonText,
+    onHandlePress,
+}) => {
     const windowWidth = Dimensions.get('window').width;
 
     return (
-        <View
-            style={[styles.container, { width: windowWidth }]}
-        >
+        <View style={[styles.container, { width: windowWidth }]}>
             <View style={{ width: windowWidth - 12, height: 328, top: 40 }}>
                 <Image
                     style={{
                         width: '100%',
                         height: '100%',
-
                     }}
                     source={{ uri: imageUrl }}
-
                 />
             </View>
             <View style={{ width: 328, gap: 12, alignItems: 'center' }}>
-                <Text style={{
-                    color: '#FAFAFA',
-                    fontSize: 22,
-                    fontWeight: '700',
-                    lineHeight: 27.5,
-                    textAlign: 'center'
-                }}>{header}</Text>
-                <Text style={{
-                    color: '#FAFAFA',
-                    fontSize: 16,
-                    fontWeight: '400',
-                    lineHeight: 21.6,
-                    textAlign: 'center'
-                }}>{subHeader}</Text>
+                <Text
+                    style={{
+                        color: '#FAFAFA',
+                        fontSize: 22,
+                        fontWeight: '700',
+                        lineHeight: 27.5,
+                        textAlign: 'center',
+                    }}
+                >
+                    {header}
+                </Text>
+                <Text
+                    style={{
+                        color: '#FAFAFA',
+                        fontSize: 16,
+                        fontWeight: '400',
+                        lineHeight: 21.6,
+                        textAlign: 'center',
+                    }}
+                >
+                    {subHeader}
+                </Text>
             </View>
             <View style={{ bottom: 30 }}>
                 <OnboardingPagination totalPages={PAGES.length} currentPage={id} />
@@ -61,20 +72,24 @@ export const OnboardingCard: FC<OnboardingCardType> = ({ id, imageUrl, header, s
                             backgroundColor: '#DC2626',
                             alignItems: 'center',
                             justifyContent: 'center',
-                        }
+                        },
                     ]}
                     onPress={onHandlePress}
-                    testID='myButton'
+                    testID="myButton"
                 >
-                    <Text style={{
-                        color: '#FAFAFA',
-                        fontSize: 18,
-                        fontWeight: '500',
-                    }}>{buttonText}</Text>
+                    <Text
+                        style={{
+                            color: '#FAFAFA',
+                            fontSize: 18,
+                            fontWeight: '500',
+                        }}
+                    >
+                        {buttonText}
+                    </Text>
                 </TouchableOpacity>
             </View>
         </View>
-    )
+    );
 };
 
 const styles = StyleSheet.create({
@@ -82,7 +97,7 @@ const styles = StyleSheet.create({
         backgroundColor: Color.BACKGROUND_GREY,
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'space-around'
+        justifyContent: 'space-around',
     },
     button: {
         alignItems: 'center',

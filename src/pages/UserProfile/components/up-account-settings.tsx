@@ -1,15 +1,15 @@
-import { FC, useState } from "react"
-import { View, StyleSheet, Dimensions, Text, Modal, Pressable } from "react-native"
-import { useTranslation } from "react-i18next";
+import { FC, useState } from 'react';
+import { View, StyleSheet, Dimensions, Text, Modal } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
-import { useLocalizedMenuItems } from "../hooks";
-import { SimpleButton } from "shared";
-import { UPMenuItems } from "../ui";
-import { Color } from "styles/colors";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "redux/configure-store";
-import { logout } from "redux/authSlice";
-import { UPDAModal } from "../ui/up-da-modal";
+import { useLocalizedMenuItems } from '../hooks';
+import { SimpleButton } from 'shared';
+import { UPMenuItems } from '../ui';
+import { Color } from 'styles/colors';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from 'redux/configure-store';
+import { logout } from 'redux/authSlice';
+import { UPDAModal } from '../ui/up-da-modal';
 
 export const UPAccountSettings: FC = () => {
     const windowWidth = Dimensions.get('window').width;
@@ -24,44 +24,51 @@ export const UPAccountSettings: FC = () => {
 
     return (
         <View style={[styles.container, { width: windowWidth }]}>
-            <View style={{
-                flex: 0.4,
-                alignItems: 'stretch',
-                width: windowWidth,
-                top: 24,
-
-            }}>
+            <View
+                style={{
+                    flex: 0.4,
+                    alignItems: 'stretch',
+                    width: windowWidth,
+                    top: 24,
+                }}
+            >
                 {accountSettingsItems.map((item) => {
-                    return <UPMenuItems key={item.id} {...item} />
+                    return <UPMenuItems key={item.id} {...item} />;
                 })}
             </View>
-            <View style={{
-                flex: 0.3,
-                alignItems: 'stretch',
-                width: windowWidth - 32,
-                gap: 8,
-            }}>
+            <View
+                style={{
+                    flex: 0.3,
+                    alignItems: 'stretch',
+                    width: windowWidth - 32,
+                    gap: 8,
+                }}
+            >
                 <Text style={styles.text}>Danger Zone</Text>
-                <View style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    borderColor: Color.BUTTON_RED,
-                    borderWidth: 1,
-                    borderRadius: 5,
-                    padding: 12,
-                }}>
-                    <Text style={{
-                        color: Color.WHITE,
-                        fontSize: 14,
-                    }}>
+                <View
+                    style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        borderColor: Color.BUTTON_RED,
+                        borderWidth: 1,
+                        borderRadius: 5,
+                        padding: 12,
+                    }}
+                >
+                    <Text
+                        style={{
+                            color: Color.WHITE,
+                            fontSize: 14,
+                        }}
+                    >
                         Delete your account
                     </Text>
                     <SimpleButton
-                        title='Delete'
+                        title="Delete"
                         color={Color.SYSTEM_GREY}
                         titleColor={Color.WHITE}
-                        onHandlePress={() => setIsModalVisible(prevState => !prevState)}
+                        onHandlePress={() => setIsModalVisible((prevState) => !prevState)}
                         buttonWidth={100}
                     />
                 </View>
@@ -80,11 +87,12 @@ export const UPAccountSettings: FC = () => {
                 visible={isModalVisible}
                 onRequestClose={() => {
                     setIsModalVisible(!isModalVisible);
-                }}>
-                <UPDAModal onHandlePress={() => setIsModalVisible(prevState => !prevState)} />
+                }}
+            >
+                <UPDAModal onHandlePress={() => setIsModalVisible((prevState) => !prevState)} />
             </Modal>
         </View>
-    )
+    );
 };
 
 const styles = StyleSheet.create({

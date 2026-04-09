@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
-import socketService from "features/match/match-socketService";
+import { useEffect, useState } from 'react';
+import socketService from 'features/match/match-socketService';
 
 export function useWebSocket() {
     const [data, setData] = useState<any>(null);
-    
+
     useEffect(() => {
         socketService.subscribeToMatchUpdates((dataFromSocket: any) => {
             console.log(dataFromSocket);

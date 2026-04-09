@@ -1,9 +1,6 @@
-export type ClientType = 'GOOGLE' | 'NONE'
+export type ClientType = 'GOOGLE' | 'NONE';
 
-export type RoomStatus
-    = 'WAITING'
-    | 'ACTIVE'
-    | 'CLOSED';
+export type RoomStatus = 'WAITING' | 'ACTIVE' | 'CLOSED';
 
 export type MatchUserRole = 'admin' | 'participant';
 
@@ -15,7 +12,7 @@ export enum MatchUserStatusEnum {
 
 export enum Role {
     ADMIN = 'admin',
-    PARTICIPANT = 'participant'
+    PARTICIPANT = 'participant',
 }
 
 export interface ApiResponse<T> {

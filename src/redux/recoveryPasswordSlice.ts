@@ -1,8 +1,6 @@
 import { createAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-import {
-    sendEmailForRecoveryAPI, sendRecoveryCodeAPI, sendRecoveryNewPasswordAPI,
-} from 'features';
+import { sendEmailForRecoveryAPI, sendRecoveryCodeAPI, sendRecoveryNewPasswordAPI } from 'features';
 
 type RecoveryPasswordState = {
     email: string | null;
@@ -10,7 +8,7 @@ type RecoveryPasswordState = {
     error: null | string;
     loading: boolean;
     success: boolean;
-}
+};
 
 const initialState: RecoveryPasswordState = {
     email: null,
@@ -30,12 +28,12 @@ export const sendEmailForRecoveryEffect = createAsyncThunk(
         } catch (error) {
             return rejectWithValue(error);
         }
-    }
+    },
 );
 
 export const sendRecoveryCodeEffect = createAsyncThunk(
     'recovery-password/SEND_RECOVERY_CODE',
-    async (recoveryData: { email: string, code: string }, { rejectWithValue }) => {
+    async (recoveryData: { email: string; code: string }, { rejectWithValue }) => {
         try {
             const response = await sendRecoveryCodeAPI(recoveryData);
 
@@ -43,12 +41,12 @@ export const sendRecoveryCodeEffect = createAsyncThunk(
         } catch (error) {
             return rejectWithValue(error);
         }
-    }
+    },
 );
 
 export const sendRecoveryNewPasswordEffect = createAsyncThunk(
     'recovery-password/SEND_RECOVERY_NEW_PASSWORD',
-    async (recoveryData: { email: string, code: string, password: string }, { rejectWithValue }) => {
+    async (recoveryData: { email: string; code: string; password: string }, { rejectWithValue }) => {
         try {
             const response = await sendRecoveryNewPasswordAPI(recoveryData);
 
@@ -56,7 +54,7 @@ export const sendRecoveryNewPasswordEffect = createAsyncThunk(
         } catch (error) {
             return rejectWithValue(error);
         }
-    }
+    },
 );
 
 export const revertAll = createAction('REVERT_ALL');
@@ -108,7 +106,7 @@ const recoveryPasswordSlice = createSlice({
                 state.loading = false;
                 state.success = false;
                 state.error = action.payload as string;
-            })
+            });
     },
 });
 

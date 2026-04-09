@@ -7,11 +7,11 @@ import { MoviesSavedType } from 'features/selection-movies/selection-movies.mode
 type MovieListType = MoviesSavedType[];
 
 export const useMoviesList = (): {
-    moviesList: MovieListType,
-    isLoading: boolean,
-    isRefreshing: boolean,
-    fetchMoviesList: () => Promise<void>,
-    setIsRefreshing: (isRefreshing: boolean) => void
+    moviesList: MovieListType;
+    isLoading: boolean;
+    isRefreshing: boolean;
+    fetchMoviesList: () => Promise<void>;
+    setIsRefreshing: (isRefreshing: boolean) => void;
 } => {
     const [moviesList, setMoviesList] = useState<MovieListType>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -25,14 +25,17 @@ export const useMoviesList = (): {
         if (listString) {
             const listObj: Record<string, MoviesSavedType> = JSON.parse(listString);
             let isModified = false;
-            const updatedListObj = Object.entries(listObj).reduce<Record<string, MoviesSavedType>>((acc, [key, session]) => {
-                if (session.movies.length > 0) {
-                    acc[key] = session;
-                } else {
-                    isModified = true;
-                }
-                return acc;
-            }, {});
+            const updatedListObj = Object.entries(listObj).reduce<Record<string, MoviesSavedType>>(
+                (acc, [key, session]) => {
+                    if (session.movies.length > 0) {
+                        acc[key] = session;
+                    } else {
+                        isModified = true;
+                    }
+                    return acc;
+                },
+                {},
+            );
 
             if (isModified) {
                 await AsyncStorage.setItem('@mymovies', JSON.stringify(updatedListObj));

@@ -1,20 +1,20 @@
-import { Slider } from "@miblanchard/react-native-slider";
-import { FILTERS_DATA } from "pages/Main/constants";
-import { FilterOption, initialState, reducer } from "pages/Main/sm.model";
-import { SMMultiSelectInput } from "pages/Main/ui/sm-multi-select-input";
-import { FC, useReducer, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { Modal, View, StyleSheet, Dimensions, ScrollView, Text, TouchableOpacity } from "react-native";
-import { DeleteSvgIcon, SimpleButton } from "shared";
-import { Color } from "styles/colors";
+import { Slider } from '@miblanchard/react-native-slider';
+import { FILTERS_DATA } from 'pages/Main/constants';
+import { FilterOption, initialState, reducer } from 'pages/Main/sm.model';
+import { SMMultiSelectInput } from 'pages/Main/ui/sm-multi-select-input';
+import { FC, useReducer, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Modal, View, StyleSheet, Dimensions, ScrollView, Text, TouchableOpacity } from 'react-native';
+import { DeleteSvgIcon, SimpleButton } from 'shared';
+import { Color } from 'styles/colors';
 
 type MatchFilterModalType = {
     modalVisible: boolean;
     setModalVisible: (visible: boolean) => void;
     onFiltersChange: (filters: any) => void;
-}
+};
 
-const { width, height } = Dimensions.get('window')
+const { width, height } = Dimensions.get('window');
 
 export const MatchFilterModal: FC<MatchFilterModalType> = ({ modalVisible, setModalVisible, onFiltersChange }) => {
     const { t } = useTranslation();
@@ -49,7 +49,6 @@ export const MatchFilterModal: FC<MatchFilterModalType> = ({ modalVisible, setMo
         disabled: state.excludeGenre.some((excludedGenre) => excludedGenre.id === genre.id),
     }));
 
-
     const excludeGenreOptionsWithDisabled = FILTERS_DATA.genre.options.map((genre) => ({
         ...genre,
         disabled: state.selectedGenres.some((selectedGenre) => selectedGenre.id === genre.id),
@@ -69,19 +68,22 @@ export const MatchFilterModal: FC<MatchFilterModalType> = ({ modalVisible, setMo
                 setModalVisible(!modalVisible);
             }}
         >
-
             <View style={styles.container}>
-                <View style={{
-                    width: width - 32,
-                    alignItems: 'flex-start',
-                    marginBottom: 12,
-                }}>
+                <View
+                    style={{
+                        width: width - 32,
+                        alignItems: 'flex-start',
+                        marginBottom: 12,
+                    }}
+                >
                     <Text style={styles.textStyle}>{t('match_movie.filters_settings.settings')}</Text>
                 </View>
                 <ScrollView>
-                    <View style={{
-                        height: height / 1.3,
-                    }}>
+                    <View
+                        style={{
+                            height: height / 1.3,
+                        }}
+                    >
                         <SMMultiSelectInput
                             label={t('match_movie.filters_settings.country')}
                             options={FILTERS_DATA.country.options}
@@ -133,38 +135,39 @@ export const MatchFilterModal: FC<MatchFilterModalType> = ({ modalVisible, setMo
                             />
                         </View>
 
-                        <View style={{
-                            width: width - 32,
-                            alignItems: 'flex-start',
-                            marginVertical: 12,
-                        }}>
-                            <Text style={styles.textStyle}>{t('match_movie.filters_settings.other_options')}</Text>
-                            <View style={{
-                                marginTop: 12,
+                        <View
+                            style={{
                                 width: width - 32,
-                                flexDirection: 'row',
-                                alignItems: 'center',
-                                justifyContent: 'space-between',
-                                borderColor: Color.EXTRA_LIGHT_GRAY,
-                                borderWidth: 0.3,
-                                borderRadius: 5,
-                                paddingHorizontal: 8,
+                                alignItems: 'flex-start',
+                                marginVertical: 12,
                             }}
+                        >
+                            <Text style={styles.textStyle}>{t('match_movie.filters_settings.other_options')}</Text>
+                            <View
+                                style={{
+                                    marginTop: 12,
+                                    width: width - 32,
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                    borderColor: Color.EXTRA_LIGHT_GRAY,
+                                    borderWidth: 0.3,
+                                    borderRadius: 5,
+                                    paddingHorizontal: 8,
+                                }}
                             >
-                                <Text style={[
-                                    styles.textStyle,
-                                    {
-                                        fontSize: 14,
-                                        fontWeight: '400'
-                                    }
-                                ]}
+                                <Text
+                                    style={[
+                                        styles.textStyle,
+                                        {
+                                            fontSize: 14,
+                                            fontWeight: '400',
+                                        },
+                                    ]}
                                 >
                                     {t('match_movie.filters_settings.leave_room')}
                                 </Text>
-                                <TouchableOpacity style={{
-
-                                }}
-                                >
+                                <TouchableOpacity style={{}}>
                                     <DeleteSvgIcon />
                                 </TouchableOpacity>
                             </View>
@@ -172,15 +175,16 @@ export const MatchFilterModal: FC<MatchFilterModalType> = ({ modalVisible, setMo
                     </View>
                 </ScrollView>
                 <SimpleButton
-                    title={"Apply and close"}
+                    title={'Apply and close'}
                     color={Color.BUTTON_RED}
                     titleColor={Color.WHITE}
                     buttonWidth={width - 32}
-                    onHandlePress={() => applyFilters()} />
+                    onHandlePress={() => applyFilters()}
+                />
             </View>
         </Modal>
-    )
-}
+    );
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -224,15 +228,13 @@ const styles = StyleSheet.create({
         marginBottom: 15,
         textAlign: 'center',
     },
-    sliderContainer: {
-
-    },
+    sliderContainer: {},
     slider: {
         width: width - 40,
     },
     sliderLabel: {
         flexDirection: 'row',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
     },
     sliderLabelText: {
         fontSize: 14,
@@ -251,7 +253,7 @@ const styles = StyleSheet.create({
     label: {
         fontSize: 16,
         // marginVertical: 8,
-        color: Color.WHITE
+        color: Color.WHITE,
     },
     range: {
         marginTop: 20,

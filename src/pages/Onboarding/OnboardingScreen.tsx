@@ -1,13 +1,13 @@
-import { FC, useState } from "react"
+import { FC, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { NavigationProp, ParamListBase, useNavigation } from "@react-navigation/native";
+import { NavigationProp, ParamListBase, useNavigation } from '@react-navigation/native';
 
 import { PAGES } from './constants';
-import { OnboardingCard } from "./ui";
-import { AppRoutes } from "app/constants";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "redux/configure-store";
-import { setOnboardedStatus } from "redux/authSlice";
+import { OnboardingCard } from './ui';
+import { AppRoutes } from 'app/constants';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from 'redux/configure-store';
+import { setOnboardedStatus } from 'redux/authSlice';
 
 export const OnboardingScreen: FC = () => {
     const [currentPageIndex, setCurrentPageIndex] = useState(0);
@@ -24,10 +24,5 @@ export const OnboardingScreen: FC = () => {
         }
     };
 
-    return (
-        <OnboardingCard
-            {...PAGES[currentPageIndex]}
-            onHandlePress={handleNextPage}
-        />
-    )
-}
+    return <OnboardingCard {...PAGES[currentPageIndex]} onHandlePress={handleNextPage} />;
+};

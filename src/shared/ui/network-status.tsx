@@ -5,19 +5,19 @@ import { RootState } from 'redux/configure-store';
 
 type NetworkStatusType = {
     status: string;
-}
-const NetworkStatus: FC<NetworkStatusType> = ({status}) => {
+};
+const NetworkStatus: FC<NetworkStatusType> = ({ status }) => {
     const { isConnected } = useSelector((state: RootState) => state.appSlice);
 
-  if (!isConnected) {
-    return (
-      <View style={{ padding: 10, backgroundColor: 'red' }}>
-        <Text style={{ color: 'white' }}>{status}</Text>
-      </View>
-    );
-  }
+    if (!isConnected) {
+        return (
+            <View style={{ padding: 10, backgroundColor: 'red' }}>
+                <Text style={{ color: 'white' }}>{status}</Text>
+            </View>
+        );
+    }
 
-  return null;
+    return null;
 };
 
 export default NetworkStatus;

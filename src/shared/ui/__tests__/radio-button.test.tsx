@@ -5,9 +5,7 @@ import { RadioButton } from '../radio-button';
 
 describe('RadioButton', () => {
     it('should render correctly with default props', () => {
-        const { getByTestId } = render(
-            <RadioButton containerSize={20} selected={false} onChange={jest.fn()} />
-        );
+        const { getByTestId } = render(<RadioButton containerSize={20} selected={false} onChange={jest.fn()} />);
 
         const container = getByTestId('radio-container');
         const button = getByTestId('radio-button');
@@ -29,9 +27,7 @@ describe('RadioButton', () => {
     });
 
     it('should render as selected when selected is true', () => {
-        const { getByTestId } = render(
-            <RadioButton containerSize={20} selected={true} onChange={jest.fn()} />
-        );
+        const { getByTestId } = render(<RadioButton containerSize={20} selected={true} onChange={jest.fn()} />);
 
         const button = getByTestId('radio-button');
 
@@ -42,9 +38,7 @@ describe('RadioButton', () => {
 
     it('should call onChange when pressed', () => {
         const onChangeMock = jest.fn();
-        const { getByTestId } = render(
-            <RadioButton containerSize={20} selected={false} onChange={onChangeMock} />
-        );
+        const { getByTestId } = render(<RadioButton containerSize={20} selected={false} onChange={onChangeMock} />);
 
         const button = getByTestId('radio-button');
         fireEvent.press(button);

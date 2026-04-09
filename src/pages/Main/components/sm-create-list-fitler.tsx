@@ -1,20 +1,20 @@
-import { FC, useEffect, useReducer, useState } from "react"
-import { NavigationProp, ParamListBase, useNavigation } from "@react-navigation/native";
-import { View, StyleSheet, ScrollView, Dimensions, Text } from "react-native"
-import { useTranslation } from "react-i18next";
+import { FC, useEffect, useReducer, useState } from 'react';
+import { NavigationProp, ParamListBase, useNavigation } from '@react-navigation/native';
+import { View, StyleSheet, ScrollView, Dimensions, Text } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 
-import { AppRoutes } from "app/constants";
-import { AlertCircleSvgIcon, Loader, SimpleButton, SimpleNotification } from "shared";
-import { Color } from "styles/colors";
-import { SMMultiSelectInput } from "../ui/sm-multi-select-input";
-import { FILTERS_DATA } from "../constants";
-import { reducer, FilterOption, initialState, ISMFormData, SelectMovieType, Country, Year } from "../sm.model";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch } from "redux/configure-store";
-import { clearError, clearResponse, loadMovies } from "redux/moviesSlice";
-import { Slider } from "@miblanchard/react-native-slider";
-import { MovieLoader } from "shared/ui/movie-loader";
+import { AppRoutes } from 'app/constants';
+import { AlertCircleSvgIcon, SimpleButton, SimpleNotification } from 'shared';
+import { Color } from 'styles/colors';
+import { SMMultiSelectInput } from '../ui/sm-multi-select-input';
+import { FILTERS_DATA } from '../constants';
+import { reducer, FilterOption, initialState, ISMFormData, SelectMovieType, Country, Year } from '../sm.model';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch } from 'redux/configure-store';
+import { clearError, clearResponse, loadMovies } from 'redux/moviesSlice';
+import { Slider } from '@miblanchard/react-native-slider';
+import { MovieLoader } from 'shared/ui/movie-loader';
 
 const { width, height } = Dimensions.get('window');
 
@@ -22,7 +22,7 @@ export const SMCreateMovieListFilter: FC = () => {
     const [state, SMdispatch] = useReducer(reducer<FilterOption>, initialState);
     const dispatch: AppDispatch = useDispatch();
     const { t } = useTranslation();
-    const { data, loading, error, currentPage } = useSelector((state: any) => state.moviesSlice);
+    const { data, loading, error } = useSelector((state: any) => state.moviesSlice);
     const navigation = useNavigation<NavigationProp<ParamListBase>>();
     const [isNotificationHide, setIsNotificationHide] = useState<boolean>(true);
     const [range, setRange] = useState<[number, number]>([0, 10]);
@@ -42,13 +42,12 @@ export const SMCreateMovieListFilter: FC = () => {
         }
 
         if (error) {
-            setIsNotificationHide(false)
+            setIsNotificationHide(false);
         }
 
         navigation.setOptions({
             headerShown: isNotificationHide,
         });
-
     }, [loading, data, error, navigation, isNotificationHide]);
 
     const handleSubmit = async () => {
@@ -69,10 +68,10 @@ export const SMCreateMovieListFilter: FC = () => {
 
     function transformToISMFormData(state: SelectMovieType<FilterOption>): ISMFormData {
         const transformedState: ISMFormData = {
-            excludeGenre: state.excludeGenre.map(genre => ({ ...genre, type: 'genre' })),
-            genres: state.genres?.map(genre => ({ ...genre, type: 'genre' })),
+            excludeGenre: state.excludeGenre.map((genre) => ({ ...genre, type: 'genre' })),
+            genres: state.genres?.map((genre) => ({ ...genre, type: 'genre' })),
             selectedCountries: state.selectedCountries as Country[],
-            selectedGenres: state.selectedGenres.map(genre => ({ ...genre, type: 'genre' })),
+            selectedGenres: state.selectedGenres.map((genre) => ({ ...genre, type: 'genre' })),
             selectedYears: state.selectedYears as Year[],
             selectedRating: state.selectedRating,
         };
@@ -101,7 +100,6 @@ export const SMCreateMovieListFilter: FC = () => {
         disabled: state.excludeGenre.some((excludedGenre) => excludedGenre.id === genre.id),
     }));
 
-
     const excludeGenreOptionsWithDisabled = FILTERS_DATA.genre.options.map((genre) => ({
         ...genre,
         disabled: state.selectedGenres.some((selectedGenre) => selectedGenre.id === genre.id),
@@ -110,11 +108,13 @@ export const SMCreateMovieListFilter: FC = () => {
     return (
         <View style={styles.container}>
             <ScrollView style={styles.scrollView}>
-                <View style={{
-                    height: height / 1.3,
-                }}>
+                <View
+                    style={{
+                        height: height / 1.3,
+                    }}
+                >
                     <SMMultiSelectInput
-                        label='Страна'
+                        label="Страна"
                         options={FILTERS_DATA.country.options}
                         selectedOptions={state.selectedCountries}
                         onSelectionChange={handleCountrySelectionChange}
@@ -122,7 +122,7 @@ export const SMCreateMovieListFilter: FC = () => {
                     />
 
                     <SMMultiSelectInput
-                        label='Год'
+                        label="Год"
                         options={FILTERS_DATA.year.options}
                         selectedOptions={state.selectedYears}
                         onSelectionChange={handleYearSelectionChange}
@@ -130,7 +130,7 @@ export const SMCreateMovieListFilter: FC = () => {
                     />
 
                     <SMMultiSelectInput
-                        label='Жанр'
+                        label="Жанр"
                         options={genreOptionsWithDisabled}
                         selectedOptions={state.selectedGenres}
                         onSelectionChange={handleGenreSelectionChange}
@@ -138,7 +138,7 @@ export const SMCreateMovieListFilter: FC = () => {
                     />
 
                     <SMMultiSelectInput
-                        label='Исключить жанр'
+                        label="Исключить жанр"
                         options={excludeGenreOptionsWithDisabled}
                         selectedOptions={state.excludeGenre}
                         onSelectionChange={handleExcludeGenreChange}
@@ -178,18 +178,18 @@ export const SMCreateMovieListFilter: FC = () => {
                     <MovieLoader />
                 </View>
             ) : null}
-            {!isNotificationHide ?
+            {!isNotificationHide ? (
                 <SimpleNotification
                     icon={<AlertCircleSvgIcon />}
-                    label='Упс, что-то пошло не так'
-                    description='По вашему запросу ничего не найдено'
-                    buttonText='Назад'
+                    label="Упс, что-то пошло не так"
+                    description="По вашему запросу ничего не найдено"
+                    buttonText="Назад"
                     buttonColor={Color.BUTTON_RED}
                     onHandlePress={handleClearError}
                 />
-                : null}
+            ) : null}
         </View>
-    )
+    );
 };
 
 const styles = StyleSheet.create({
@@ -200,9 +200,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         paddingVertical: 32,
     },
-    scrollView: {
-
-    },
+    scrollView: {},
     loader: {
         position: 'absolute',
         alignItems: 'center',
@@ -210,17 +208,15 @@ const styles = StyleSheet.create({
         width: '100%',
         height: height,
         backgroundColor: Color.BLACK,
-        opacity: 0.5
+        opacity: 0.5,
     },
-    sliderContainer: {
-
-    },
+    sliderContainer: {},
     slider: {
         width: width - 40,
     },
     sliderLabel: {
         flexDirection: 'row',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
     },
     sliderLabelText: {
         fontSize: 14,
@@ -239,7 +235,7 @@ const styles = StyleSheet.create({
     label: {
         fontSize: 16,
         // marginVertical: 8,
-        color: Color.WHITE
+        color: Color.WHITE,
     },
     range: {
         marginTop: 20,

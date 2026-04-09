@@ -1,8 +1,7 @@
-import { useTranslation } from "react-i18next";
-import { View, Image, Text, StyleSheet } from "react-native";
-import { Color } from "styles/colors";
-import { contentWidth, spacing } from "styles/theme";
-
+import { useTranslation } from 'react-i18next';
+import { View, Image, Text, StyleSheet } from 'react-native';
+import { Color } from 'styles/colors';
+import { contentWidth, spacing } from 'styles/theme';
 
 export const EmptyListComponent = () => {
     const { t } = useTranslation();

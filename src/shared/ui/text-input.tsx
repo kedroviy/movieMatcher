@@ -1,7 +1,7 @@
-import { FC, useEffect, useState } from "react"
-import { Dimensions, StyleSheet, Text, TextInput, View } from "react-native"
+import { FC, useEffect, useState } from 'react';
+import { Dimensions, StyleSheet, Text, TextInput, View } from 'react-native';
 
-import { Color } from "styles/colors";
+import { Color } from 'styles/colors';
 
 type InputType = {
     label?: string;
@@ -10,7 +10,7 @@ type InputType = {
     placeholder?: string;
     textError?: string | null;
     onValidationChange?: (isValid: boolean) => void;
-}
+};
 
 export const SimpleInput: FC<InputType> = ({
     label,
@@ -20,7 +20,6 @@ export const SimpleInput: FC<InputType> = ({
     textError,
     onValidationChange,
 }) => {
-    const windowWidth = Dimensions.get('window').width;
     const [isInputValid, setIsInputValid] = useState<boolean>(true);
     const [isFocused, setIsFocused] = useState<boolean>(false);
 
@@ -45,11 +44,7 @@ export const SimpleInput: FC<InputType> = ({
                 placeholder={placeholder}
                 placeholderTextColor={'#AAAAAA'}
             />
-            {!isInputValid && textError && (
-                <Text style={styles.errorText}>
-                    {textError}
-                </Text>
-            )}
+            {!isInputValid && textError && <Text style={styles.errorText}>{textError}</Text>}
         </View>
     );
 };
@@ -85,5 +80,5 @@ const styles = StyleSheet.create({
     error: {
         borderWidth: 1,
         borderColor: '#DC2626',
-    }
+    },
 });

@@ -14,7 +14,6 @@ import {
 } from '../match-service';
 import { MatchUserStatusEnum } from '../match.model';
 
-
 jest.mock('../match-api', () => ({
     createApi: jest.fn(),
 }));
@@ -105,13 +104,16 @@ describe('Match Service', () => {
         const mockResponse = { status: 200, data: {} };
         mockApi.patch.mockResolvedValueOnce(mockResponse);
 
-        const result = await updateUserStatus(
-            { userId: 1, roomKey: 'roomKey', userStatus: MatchUserStatusEnum.ACTIVE }
-        );
-        expect(mockApi.patch).toHaveBeenCalledWith(
-            '/match/user-status',
-            { userId: 1, roomKey: 'roomKey', userStatus: MatchUserStatusEnum.ACTIVE }
-        );
+        const result = await updateUserStatus({
+            userId: 1,
+            roomKey: 'roomKey',
+            userStatus: MatchUserStatusEnum.ACTIVE,
+        });
+        expect(mockApi.patch).toHaveBeenCalledWith('/match/user-status', {
+            userId: 1,
+            roomKey: 'roomKey',
+            userStatus: MatchUserStatusEnum.ACTIVE,
+        });
         expect(result).toEqual(mockResponse);
     });
 

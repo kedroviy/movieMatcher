@@ -2,13 +2,13 @@ import React, { FC, useState } from 'react';
 import { Text, StyleSheet, View, Image, Dimensions, TouchableOpacity } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 
-import { Color } from "../../../styles/colors";
+import { Color } from '../../../styles/colors';
 import { SMMovieChips } from 'pages/Main/ui/sm-movie-chips';
 import { getRatingColor, roundDownToOneTenth } from 'pages/Main/utils';
 
 type SMSwipeCardType = {
-    card: any,
-}
+    card: any;
+};
 
 const { width } = Dimensions.get('window');
 
@@ -31,44 +31,48 @@ export const MatchSwipeCards: FC<SMSwipeCardType> = ({ card }) => {
         descriptionHeight.value = isExpanded ? 80 : 200;
     };
 
-
     return (
         <View style={styles.card}>
             {card?.poster ? (
-                <><Image
-                    style={styles.image}
-                    source={{ uri: card?.poster?.previewUrl ?? './defaultpicture.png' }}
-                    resizeMode="cover" />
-                    <View style={{
-                        position: 'absolute',
-                        width: 41,
-                        height: 30,
-                        paddingVertical: 2,
-                        paddingHorizontal: 4,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        backgroundColor: getRatingColor(card.rating.kp),
-                        borderRadius: 5,
-                        right: 12,
-                        top: 16,
-                    }}>
-                        <Text style={[
-                            styles.text, {
-                                fontSize: 14,
-                            }
-                        ]}>
+                <>
+                    <Image
+                        style={styles.image}
+                        source={{ uri: card?.poster?.previewUrl ?? './defaultpicture.png' }}
+                        resizeMode="cover"
+                    />
+                    <View
+                        style={{
+                            position: 'absolute',
+                            width: 41,
+                            height: 30,
+                            paddingVertical: 2,
+                            paddingHorizontal: 4,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            backgroundColor: getRatingColor(card.rating.kp),
+                            borderRadius: 5,
+                            right: 12,
+                            top: 16,
+                        }}
+                    >
+                        <Text
+                            style={[
+                                styles.text,
+                                {
+                                    fontSize: 14,
+                                },
+                            ]}
+                        >
                             {roundDownToOneTenth(card.rating.kp)}
                         </Text>
-                    </View></>
+                    </View>
+                </>
             ) : (
                 <View style={styles.placeholder} />
             )}
             <View style={styles.movieDescriptionContainer}>
-                <Text style={styles.headerText}>
-                    {`${card?.name}  (${card?.year})`}
-                </Text>
-                <View style={{ flexDirection: 'row', width: width - 32, marginVertical: 12, }}>
-
+                <Text style={styles.headerText}>{`${card?.name}  (${card?.year})`}</Text>
+                <View style={{ flexDirection: 'row', width: width - 32, marginVertical: 12 }}>
                     <SMMovieChips
                         label={card?.ageRating ?? 'unknown'}
                         color={Color.LIGHT_RED}
@@ -82,18 +86,10 @@ export const MatchSwipeCards: FC<SMSwipeCardType> = ({ card }) => {
                         type="time"
                     />
                     {card?.countries && (
-                        <SMMovieChips
-                            label={card.countries[0].name}
-                            color={Color.LIGHT_RED}
-                            labelColor={Color.WHITE}
-                        />
+                        <SMMovieChips label={card.countries[0].name} color={Color.LIGHT_RED} labelColor={Color.WHITE} />
                     )}
                     {card?.genres && (
-                        <SMMovieChips
-                            label={card.genres[0].name}
-                            color={Color.LIGHT_RED}
-                            labelColor={Color.WHITE}
-                        />
+                        <SMMovieChips label={card.genres[0].name} color={Color.LIGHT_RED} labelColor={Color.WHITE} />
                     )}
                     {card?.releaseYears && (
                         <SMMovieChips
@@ -102,23 +98,18 @@ export const MatchSwipeCards: FC<SMSwipeCardType> = ({ card }) => {
                             labelColor={Color.WHITE}
                         />
                     )}
-
                 </View>
                 <Animated.View style={animatedStyle}>
                     <Text
-                        style={[
-                            styles.text, { fontSize: 16, }
-                        ]}
+                        style={[styles.text, { fontSize: 16 }]}
                         numberOfLines={isExpanded ? undefined : 4}
-                        ellipsizeMode='tail'
+                        ellipsizeMode="tail"
                     >
                         {card?.description}
                     </Text>
                 </Animated.View>
                 <TouchableOpacity onPress={toggleExpanded}>
-                    <Text style={{ color: Color.GREY, fontSize: 16 }}>
-                        {isExpanded ? 'Свернуть' : 'Развернуть'}
-                    </Text>
+                    <Text style={{ color: Color.GREY, fontSize: 16 }}>{isExpanded ? 'Свернуть' : 'Развернуть'}</Text>
                 </TouchableOpacity>
             </View>
         </View>
@@ -145,7 +136,7 @@ const styles = StyleSheet.create({
         borderTopRightRadius: 10,
         flex: 1,
         width: '100%',
-        backgroundColor: Color.NEW_BLACK
+        backgroundColor: Color.NEW_BLACK,
     },
     movieDescriptionContainer: {
         gap: 8,
@@ -166,6 +157,5 @@ const styles = StyleSheet.create({
         textAlign: 'left',
         color: Color.WHITE,
         fontFamily: 'Roboto',
-
     },
 });

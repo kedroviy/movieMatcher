@@ -1,56 +1,40 @@
-import { FC, SetStateAction, useCallback, useEffect, useRef, useState } from "react"
-import {
-    Alert,
-    Dimensions,
-    RefreshControl,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
-} from "react-native"
-import { NavigationProp, ParamListBase, RouteProp, useNavigation } from "@react-navigation/native";
-import { useDispatch, useSelector } from "react-redux";
+import { FC, useCallback, useEffect, useState } from 'react';
+import { Alert, Dimensions, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { NavigationProp, ParamListBase, RouteProp, useNavigation } from '@react-navigation/native';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { MovieLoader, SettingSvgIcon, SimpleButton } from "shared";
-import { Color } from "styles/colors";
-import socketService from "features/match/match-socketService";
-import { RootStackParamList } from "app/constants";
-import { MatchUserCard } from "./match-user-card";
-import { useTranslation } from "react-i18next";
-import { AppDispatch } from "redux/configure-store";
-import { MatchFilterModal } from "../ui";
+import { MovieLoader, SettingSvgIcon, SimpleButton } from 'shared';
+import { Color } from 'styles/colors';
+import socketService from 'features/match/match-socketService';
+import { RootStackParamList } from 'app/constants';
+import { MatchUserCard } from './match-user-card';
+import { useTranslation } from 'react-i18next';
+import { AppDispatch } from 'redux/configure-store';
+import { MatchFilterModal } from '../ui';
 import {
     getMatchDataRedux,
     getMoviesRedux,
     startMatchRedux,
     updateRoomFiltersRedux,
     updateRoomUsers,
-} from "redux/matchSlice";
-import { useWebSocket } from "../hooks";
-import useUserHasRoom from "../hooks/useUserHasRoom";
-import { Role } from "features/match/match.model";
+} from 'redux/matchSlice';
+import { useWebSocket } from '../hooks';
+import { Role } from 'features/match/match.model';
 
 type MatchLobbyProps = {
     route: RouteProp<RootStackParamList, 'MatchLobby'>;
 };
 
-const { width } = Dimensions.get('window')
+const { width } = Dimensions.get('window');
 
 export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
     const { lobbyName } = route.params;
     const navigation = useNavigation<NavigationProp<ParamListBase>>();
     const dispatch: AppDispatch = useDispatch();
     const { t } = useTranslation();
-    const {
-        loading,
-        room,
-        role,
-        currentUserMatch,
-        currentMovie,
-        movies,
-        matchStatus,
-    } = useSelector((state: any) => state.matchSlice);
+    const { loading, room, role, currentUserMatch, currentMovie, movies, matchStatus } = useSelector(
+        (state: any) => state.matchSlice,
+    );
     const { user } = useSelector((state: any) => state.userSlice);
     const [refreshing, setRefreshing] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
@@ -68,8 +52,8 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
 
     useEffect(() => {
         if (currentUserMatch?.roomKey) {
-            dispatch(getMatchDataRedux(currentUserMatch?.roomKey))
-            dispatch(getMoviesRedux(currentUserMatch?.roomKey))
+            dispatch(getMatchDataRedux(currentUserMatch?.roomKey));
+            dispatch(getMoviesRedux(currentUserMatch?.roomKey));
         }
     }, []);
 
@@ -79,25 +63,25 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
         };
 
         socketService.subscribeToBroadcastMatchUpdate(async () => {
-            await dispatch(getMatchDataRedux(room[0].roomKey))
+            await dispatch(getMatchDataRedux(room[0].roomKey));
         });
 
         socketService.subscribeToRequestMatchUpdate(async () => {
             if (currentUserMatch?.roomKey) {
-                await dispatch(getMatchDataRedux(currentUserMatch?.roomKey))
+                await dispatch(getMatchDataRedux(currentUserMatch?.roomKey));
             } else if (room[0].roomKey) {
-                await dispatch(getMatchDataRedux(room[0].roomKey))
+                await dispatch(getMatchDataRedux(room[0].roomKey));
             }
         });
 
         socketService.filtersUpdateBroadcast(handleFiltersUpdated);
 
         socketService.subscribeToBroadcastMovies(async (data: any) => {
-            console.log('lobby movies broadcasting', data)
+            console.log('lobby movies broadcasting', data);
             if (currentUserMatch?.roomKey) {
-                await dispatch(getMoviesRedux(currentUserMatch?.roomKey))
+                await dispatch(getMoviesRedux(currentUserMatch?.roomKey));
             } else if (room[0].roomKey) {
-                await dispatch(getMoviesRedux(room[0].roomKey))
+                await dispatch(getMoviesRedux(room[0].roomKey));
             }
         });
 
@@ -133,10 +117,6 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
         matchStatus,
     ]);
 
-    const handleFiltersChange = (newFilters: SetStateAction<{}>) => {
-        setFilters(newFilters);
-    };
-
     const handleOnSubmit = async () => {
         const actionResult = await dispatch(startMatchRedux(room[0].roomKey));
         if (startMatchRedux.fulfilled.match(actionResult)) {
@@ -147,24 +127,30 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
     };
 
     const handleModalClose = async (filters: any) => {
-        console.log('filters: ', filters)
+        console.log('filters: ', filters);
         if (filters) {
             try {
                 setFilters(filters);
-                console.log(filters)
-                await dispatch(updateRoomFiltersRedux(
-                    {
-                        userId: user.id, roomId: currentUserMatch?.roomId, filters: filters
-                    } as any))
+                console.log(filters);
+                await dispatch(
+                    updateRoomFiltersRedux({
+                        userId: user.id,
+                        roomId: currentUserMatch?.roomId,
+                        filters: filters,
+                    } as any),
+                )
                     .unwrap()
                     .then(() => {
                         socketService.filtersUpdateBroadcast((filtersFromSocket: any) => {
-                            setFilters(filtersFromSocket)
+                            setFilters(filtersFromSocket);
                         });
-                        Alert.alert("Success", "Filters updated successfully.");
+                        Alert.alert('Success', 'Filters updated successfully.');
                     })
-                    .catch(error => {
-                        Alert.alert("Error", typeof error === 'string' ? error : 'Failed to update filters due to an unexpected error');
+                    .catch((error) => {
+                        Alert.alert(
+                            'Error',
+                            typeof error === 'string' ? error : 'Failed to update filters due to an unexpected error',
+                        );
                     });
             } catch (error) {
                 throw new Error(error as string);
@@ -186,63 +172,65 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
             />
             <View style={styles.mainContainer}>
                 <View style={styles.headerContainer}>
-                    <Text style={{
-                        color: Color.WHITE,
-                        fontSize: 16,
-                        fontWeight: '700',
-                        lineHeight: 19.2,
-                    }}>
+                    <Text
+                        style={{
+                            color: Color.WHITE,
+                            fontSize: 16,
+                            fontWeight: '700',
+                            lineHeight: 19.2,
+                        }}
+                    >
                         {t('match_movie.lobby.lobby_members')}
                     </Text>
-                    {Boolean(role) &&
+                    {Boolean(role) && (
                         <TouchableOpacity
                             style={{
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 width: 48,
-                                height: 48
+                                height: 48,
                             }}
                             onPress={() => setModalVisible(true)}
                         >
                             <SettingSvgIcon />
-                        </TouchableOpacity>}
+                        </TouchableOpacity>
+                    )}
                 </View>
-                <ScrollView
-                    refreshControl={
-                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-                    }
-                >
-                    {Array.isArray(room) && room?.map((user: any) => (
-                        <MatchUserCard
-                            key={user.userId}
-                            id={user.userId}
-                            username={user.userName}
-                            role={user.role}
-                        />
-                    ))}
+                <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
+                    {Array.isArray(room) &&
+                        room?.map((user: any) => (
+                            <MatchUserCard
+                                key={user.userId}
+                                id={user.userId}
+                                username={user.userName}
+                                role={user.role}
+                            />
+                        ))}
                 </ScrollView>
             </View>
-            {movies.data?.docs ?
+            {movies.data?.docs ? (
                 <SimpleButton
-                    title='Continue Match'
+                    title="Continue Match"
                     color={Color.BUTTON_RED}
                     titleColor={Color.WHITE}
                     buttonWidth={width - 32}
                     onHandlePress={() => navigation.navigate('MatchSelectionMovie', { movie: currentMovie })}
                     disabled={loading}
-                /> :
-                role === Role.ADMIN &&
-                <SimpleButton
-                    title='Start Match'
-                    color={Color.BUTTON_RED}
-                    titleColor={Color.WHITE}
-                    buttonWidth={width - 32}
-                    onHandlePress={handleOnSubmit}
-                    disabled={loading}
                 />
-            }
-        </View >
-    )
+            ) : (
+                role === Role.ADMIN && (
+                    <SimpleButton
+                        title="Start Match"
+                        color={Color.BUTTON_RED}
+                        titleColor={Color.WHITE}
+                        buttonWidth={width - 32}
+                        onHandlePress={handleOnSubmit}
+                        disabled={loading}
+                    />
+                )
+            )}
+        </View>
+    );
 };
 
 const styles = StyleSheet.create({
@@ -271,7 +259,7 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: '700',
         lineHeight: 28.8,
-        color: Color.WHITE
+        color: Color.WHITE,
     },
     loaderContainer: {
         flex: 1,

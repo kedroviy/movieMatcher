@@ -1,19 +1,19 @@
-import { RouteProp } from "@react-navigation/native";
-import { RootStackParamList } from "app/constants";
-import { FC, useEffect, useState } from "react"
-import { Alert, Dimensions, Image, Linking, StyleSheet, Text, TouchableOpacity, View } from "react-native"
-import { ScrollView } from "react-native-gesture-handler";
-import { Color } from "styles/colors";
-import { SMMovieChips } from "../ui/sm-movie-chips";
-import { getRatingColor, roundDownToOneTenth } from "../utils";
-import { useDispatch, useSelector } from "react-redux";
+import { RouteProp } from '@react-navigation/native';
+import { RootStackParamList } from 'app/constants';
+import { FC, useEffect, useState } from 'react';
+import { Alert, Dimensions, Image, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
+import { Color } from 'styles/colors';
+import { SMMovieChips } from '../ui/sm-movie-chips';
+import { getRatingColor, roundDownToOneTenth } from '../utils';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { Actor } from "../sm.model";
-import { loadMovieDetails } from "redux/moviesSlice";
-import { AppDispatch } from "redux/configure-store";
-import { MovieLoader, SimpleButton } from "shared";
-import { useTranslation } from "react-i18next";
-import { generateKpUrl } from "../sm.utils";
+import { Actor } from '../sm.model';
+import { loadMovieDetails } from 'redux/moviesSlice';
+import { AppDispatch } from 'redux/configure-store';
+import { MovieLoader, SimpleButton } from 'shared';
+import { useTranslation } from 'react-i18next';
+import { generateKpUrl } from '../sm.utils';
 
 type SMMovieDetailsType = {
     route: RouteProp<RootStackParamList, 'SMMovieDetails'>;
@@ -29,9 +29,7 @@ export const SMMovieDetails: FC<SMMovieDetailsType> = ({ route }) => {
     const [isExpanded, setIsExpanded] = useState<boolean>(false);
 
     useEffect(() => {
-
         dispatch(loadMovieDetails(movie.id));
-
     }, [dispatch, movie.id]);
 
     const toggleExpanded = () => {
@@ -49,22 +47,22 @@ export const SMMovieDetails: FC<SMMovieDetailsType> = ({ route }) => {
 
     const renderActorsInColumns = () => {
         const columns = [];
-        const actors = movieDetails.persons.filter((person: Actor) => person.profession === "актеры");
+        const actors = movieDetails.persons.filter((person: Actor) => person.profession === 'актеры');
 
         for (let i = 0; i < actors.length; i += 3) {
             const columnActors = actors.slice(i, i + 3);
             columns.push(
                 <View key={`column-${i}`} style={styles.actorColumn}>
-                    {columnActors.map((actor: Actor, index: number) => (
+                    {columnActors.map((actor: Actor) => (
                         <View key={`actor-${actor.id}`} style={styles.actorItem}>
                             <Image source={{ uri: actor.photo }} style={styles.actorPhoto} />
-                            <View style={{ paddingLeft: 10, }}>
+                            <View style={{ paddingLeft: 10 }}>
                                 <Text style={styles.actorName}>{actor.name}</Text>
                                 <Text style={styles.actorRole}>{actor.description}</Text>
                             </View>
                         </View>
                     ))}
-                </View>
+                </View>,
             );
         }
 
@@ -77,7 +75,9 @@ export const SMMovieDetails: FC<SMMovieDetailsType> = ({ route }) => {
                 <View>
                     <Image
                         source={
-                            movie.poster ? { uri: movie.poster.previewUrl } : require('../../../../assets/defaultpicture.png')
+                            movie.poster
+                                ? { uri: movie.poster.previewUrl }
+                                : require('../../../../assets/defaultpicture.png')
                         }
                         style={{
                             width: width - 32,
@@ -86,42 +86,49 @@ export const SMMovieDetails: FC<SMMovieDetailsType> = ({ route }) => {
                             borderRadius: 10,
                         }}
                     />
-                    <View style={{
-                        position: 'absolute',
-                        width: 41,
-                        height: 30,
-                        paddingVertical: 2,
-                        paddingHorizontal: 4,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        backgroundColor: getRatingColor(movie.rating.kp),
-                        borderRadius: 5,
-                        right: 12,
-                        top: 16,
-                    }}>
-                        <Text style={[
-                            styles.text, {
-                                fontSize: 14,
-                            }]}>
+                    <View
+                        style={{
+                            position: 'absolute',
+                            width: 41,
+                            height: 30,
+                            paddingVertical: 2,
+                            paddingHorizontal: 4,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            backgroundColor: getRatingColor(movie.rating.kp),
+                            borderRadius: 5,
+                            right: 12,
+                            top: 16,
+                        }}
+                    >
+                        <Text
+                            style={[
+                                styles.text,
+                                {
+                                    fontSize: 14,
+                                },
+                            ]}
+                        >
                             {roundDownToOneTenth(movie.rating.kp)}
                         </Text>
                     </View>
                 </View>
-                <Text style={[
-                    styles.text, {
-                        fontFamily: 'Roboto',
-                        fontSize: 24,
-                        fontWeight: '700',
-                        lineHeight: 28.8,
-                        paddingVertical: 24,
-                    }]}>
+                <Text
+                    style={[
+                        styles.text,
+                        {
+                            fontFamily: 'Roboto',
+                            fontSize: 24,
+                            fontWeight: '700',
+                            lineHeight: 28.8,
+                            paddingVertical: 24,
+                        },
+                    ]}
+                >
                     {movie.name}
                 </Text>
                 <View style={{ width: width - 32 }}>
-                    <ScrollView
-                        horizontal
-                        showsHorizontalScrollIndicator={false}
-                    >
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                         <SMMovieChips
                             label={movie.ageRating}
                             color={Color.LIGHT_RED}
@@ -140,7 +147,6 @@ export const SMMovieDetails: FC<SMMovieDetailsType> = ({ route }) => {
                                 label={genre.name}
                                 color={Color.LIGHT_RED}
                                 labelColor={Color.WHITE}
-
                             />
                         ))}
                         {movie.countries.map((countrie: any, index) => (
@@ -149,7 +155,6 @@ export const SMMovieDetails: FC<SMMovieDetailsType> = ({ route }) => {
                                 label={countrie.name}
                                 color={Color.LIGHT_RED}
                                 labelColor={Color.WHITE}
-
                             />
                         ))}
                     </ScrollView>
@@ -158,7 +163,7 @@ export const SMMovieDetails: FC<SMMovieDetailsType> = ({ route }) => {
                     <Text
                         style={[styles.text, { fontSize: 16, marginBottom: 5 }]}
                         numberOfLines={isExpanded ? undefined : 4}
-                        ellipsizeMode='tail'
+                        ellipsizeMode="tail"
                     >
                         {movie.description}
                     </Text>
@@ -169,16 +174,15 @@ export const SMMovieDetails: FC<SMMovieDetailsType> = ({ route }) => {
                     </TouchableOpacity>
                 </View>
                 <Text style={[styles.text, { fontSize: 20 }]}>Актёры</Text>
-                {loading ? <MovieLoader /> :
+                {loading ? (
+                    <MovieLoader />
+                ) : (
                     <View style={styles.actorContainer}>
-                        <ScrollView
-                            horizontal
-                            showsHorizontalScrollIndicator={false}
-                        >
+                        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                             {renderActorsInColumns()}
                         </ScrollView>
                     </View>
-                }
+                )}
             </ScrollView>
             <View>
                 <SimpleButton

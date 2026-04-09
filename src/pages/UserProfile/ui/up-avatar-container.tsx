@@ -1,23 +1,24 @@
-import { FC } from "react"
-import { Image, Text, TouchableOpacity, View } from "react-native"
-import { PencilSvgIcon } from "shared"
-import { Color } from "styles/colors"
+import { FC } from 'react';
+import { Image, Text, TouchableOpacity, View } from 'react-native';
+import { PencilSvgIcon } from 'shared';
+import { Color } from 'styles/colors';
 
 type UPAvatarContainerType = {
-    imageUrl: string,
-    name: string,
-    subName: string,
-}
+    imageUrl: string;
+    name: string;
+    subName: string;
+};
 export const UPAvatarContainer: FC<UPAvatarContainerType> = ({ imageUrl, name, subName }) => {
     return (
-        <View style={{
-            width: 90,
-            height: 90,
-            backgroundColor: Color.BLACK,
-            borderRadius: 60,
-            alignItems: 'center',
-            justifyContent: 'space-between',
-        }}
+        <View
+            style={{
+                width: 90,
+                height: 90,
+                backgroundColor: Color.BLACK,
+                borderRadius: 60,
+                alignItems: 'center',
+                justifyContent: 'space-between',
+            }}
         >
             <View
                 style={{
@@ -35,7 +36,7 @@ export const UPAvatarContainer: FC<UPAvatarContainerType> = ({ imageUrl, name, s
                         height: '120%',
                     }}
                     source={{ uri: imageUrl }}
-                    resizeMode='contain'
+                    resizeMode="contain"
                 />
             </View>
             <TouchableOpacity
@@ -55,16 +56,17 @@ export const UPAvatarContainer: FC<UPAvatarContainerType> = ({ imageUrl, name, s
                 <PencilSvgIcon />
             </TouchableOpacity>
             <View style={{ gap: 8, marginTop: 16, alignItems: 'center' }}>
-                <Text style={{
-                    color: Color.WHITE,
-                    fontSize: 16,
-                    lineHeight: 20.8,
-                }}
+                <Text
+                    style={{
+                        color: Color.WHITE,
+                        fontSize: 16,
+                        lineHeight: 20.8,
+                    }}
                 >
                     {name ?? 'User'}
                 </Text>
-                <Text style={{ color: Color.WHITE, }}>id {subName ?? '0000'}</Text>
+                <Text style={{ color: Color.WHITE }}>id {subName ?? '0000'}</Text>
             </View>
         </View>
-    )
-}
+    );
+};

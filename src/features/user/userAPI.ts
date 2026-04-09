@@ -1,4 +1,4 @@
-import { create } from 'apisauce'
+import { create } from 'apisauce';
 import * as Keychain from 'react-native-keychain';
 
 import { API, UserModelType } from '../../shared';
@@ -6,14 +6,14 @@ import { API, UserModelType } from '../../shared';
 export type UpdateUsernameArgs = {
     userId: number;
     newUsername: string;
-}
+};
 
 export type ApiResponse<T = unknown> = {
     ok?: boolean;
     success?: boolean;
     data?: T;
     message?: string;
-}
+};
 
 const api = create({
     baseURL: API.BASE_URL,

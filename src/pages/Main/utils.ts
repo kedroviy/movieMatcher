@@ -1,7 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Color } from 'styles/colors';
 
-
 const getCurrentLanguage = async () => {
     const language = await AsyncStorage.getItem('currentLanguage');
     return language || 'en';
@@ -15,10 +14,12 @@ const matchesLanguage = (name: string, isCyrillic: boolean) => {
 
 const getMatchingName = (names: any[], currentLanguage: string) => {
     const isCyrillic = currentLanguage === 'ru';
-    const exactMatch = names.find((name: { language: string; }) => name.language?.toLowerCase() === currentLanguage);
+    const exactMatch = names.find((name: { language: string }) => name.language?.toLowerCase() === currentLanguage);
     if (exactMatch) return exactMatch.name;
 
-    const suitableName = names.find((name: { language: any; name: any; }) => !name.language && matchesLanguage(name.name, isCyrillic));
+    const suitableName = names.find(
+        (name: { language: any; name: any }) => !name.language && matchesLanguage(name.name, isCyrillic),
+    );
     if (suitableName) return suitableName.name;
 
     return names[0]?.name || '';

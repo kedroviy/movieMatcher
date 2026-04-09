@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { it } from '@jest/globals';
 import renderer, { act } from 'react-test-renderer';
 import { TypedUseSelectorHook } from 'react-redux';
-import { useTranslation } from 'react-i18next';
 
 type MockDispatchFn = typeof useDispatch & jest.Mock;
 type MockSelectorFn<TState = unknown> = TypedUseSelectorHook<TState> & jest.Mock;
@@ -45,10 +44,9 @@ beforeEach(() => {
     (mockSelector as jest.Mock).mockReturnValue(jest.fn());
 });
 
-
 describe('LoginScreen Component Testing', () => {
     it('LoginScreen renders correctly', () => {
-        let tree: renderer.ReactTestRendererJSON | renderer.ReactTestRendererJSON[] | null;
+        let tree: renderer.ReactTestRendererJSON | renderer.ReactTestRendererJSON[] | null = null;
         act(() => {
             tree = renderer.create(<LoginScreen />).toJSON();
         });

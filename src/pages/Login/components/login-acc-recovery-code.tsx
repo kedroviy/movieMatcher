@@ -1,20 +1,11 @@
-import { FC, useRef, useState } from "react"
-import {
-    Dimensions,
-    Pressable,
-    SafeAreaView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
-} from "react-native";
-import { useDispatch, useSelector } from "react-redux";
-import { NavigationProp, ParamListBase, useNavigation } from "@react-navigation/native";
+import { FC, useRef, useState } from 'react';
+import { Dimensions, Pressable, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import { NavigationProp, ParamListBase, useNavigation } from '@react-navigation/native';
 
-import { AppDispatch, RootState } from "../../../redux/configure-store";
-import { AppConstants, MovieLoader } from "../../../shared";
-import { sendRecoveryCodeEffect } from "redux/recoveryPasswordSlice";
+import { AppDispatch, RootState } from '../../../redux/configure-store';
+import { AppConstants, MovieLoader } from '../../../shared';
+import { sendRecoveryCodeEffect } from 'redux/recoveryPasswordSlice';
 
 const CODE_LENGTH = 4;
 
@@ -25,7 +16,7 @@ export const LoginAccRecoveryCode: FC = () => {
     const { loading, email } = useSelector((state: RootState) => state.recoveryPasswordSlice);
     const [code, setCode] = useState<string>(AppConstants.EMPTY_VALUE);
     const [containerIsFocused, setContainerIsFocused] = useState(false);
-    const [isNotAllowRequest, setIsNotAllowRequest] = useState<boolean>(false);
+    const [isNotAllowRequest] = useState<boolean>(false);
 
     const codeDigitsArray = Array.from({ length: CODE_LENGTH }, (_, idx) => idx);
 
@@ -47,7 +38,7 @@ export const LoginAccRecoveryCode: FC = () => {
                 console.log('Failed to send email');
             }
         } catch (error) {
-            console.log(error)
+            console.log(error);
         }
     };
 
@@ -58,7 +49,7 @@ export const LoginAccRecoveryCode: FC = () => {
         }
     };
 
-    const partialEmail = email?.replace(/(\w{1})[\w.-]+@([\w.]+\w)/, "$1***@$2");
+    const partialEmail = email?.replace(/(\w{1})[\w.-]+@([\w.]+\w)/, '$1***@$2');
 
     const toDigitInput = (_value: number, idx: number) => {
         const emptyInputChar = ' ';
@@ -84,17 +75,19 @@ export const LoginAccRecoveryCode: FC = () => {
 
     return (
         <SafeAreaView style={[styles.container, { width: windowWidth }]}>
-            <View style={{
-                alignItems: 'flex-start',
-                width: windowWidth,
-                paddingHorizontal: 16,
-                gap: 16,
-                top: 32,
-            }}>
+            <View
+                style={{
+                    alignItems: 'flex-start',
+                    width: windowWidth,
+                    paddingHorizontal: 16,
+                    gap: 16,
+                    top: 32,
+                }}
+            >
                 <Text style={[styles.text, styles.headerText, { marginBottom: 12 }]}>Письмо отправлено</Text>
                 <Text style={[styles.secondaryText]}>
-                    На адрес {partialEmail} направлен код восстановления пароля, введите его, пожалуйста.
-                    Возможно, письмо с кодом попало в спам.
+                    На адрес {partialEmail} направлен код восстановления пароля, введите его, пожалуйста. Возможно,
+                    письмо с кодом попало в спам.
                 </Text>
                 <View style={{ width: windowWidth, top: 24 }}>
                     <Pressable style={styles.inputsContainer} onPress={handleOnPress}>
@@ -112,17 +105,13 @@ export const LoginAccRecoveryCode: FC = () => {
                         style={styles.hiddenCodeInput}
                     />
                 </View>
-                <TouchableOpacity
-                    style={{ width: '100%', alignItems: 'center', top: 48, }}
-                    disabled={isNotAllowRequest}
-
-                >
+                <TouchableOpacity style={{ width: '100%', alignItems: 'center', top: 48 }} disabled={isNotAllowRequest}>
                     <Text style={styles.secondaryText}>Запросить код</Text>
                 </TouchableOpacity>
             </View>
             {loading ? <MovieLoader /> : null}
         </SafeAreaView>
-    )
+    );
 };
 
 const styles = StyleSheet.create({

@@ -1,9 +1,9 @@
-import { FC, useEffect, useState } from "react"
-import { Dimensions, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
+import { FC, useEffect, useState } from 'react';
+import { Dimensions, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import VisibilityEye from '../../../../assets/visibility.svg';
 import NotVisibilityEye from '../../../../assets/visibility-no.svg';
-import { Color } from "styles/colors";
+import { Color } from 'styles/colors';
 
 type InputType = {
     label?: string;
@@ -14,7 +14,7 @@ type InputType = {
     type?: 'password' | 'email' | 'confirm';
     onValidationChange?: (isValid: boolean) => void;
     isConfirm?: boolean;
-}
+};
 
 export const Input: FC<InputType> = ({
     label,
@@ -24,11 +24,11 @@ export const Input: FC<InputType> = ({
     textError,
     type,
     onValidationChange,
-    isConfirm
+    isConfirm,
 }) => {
     const windowWidth = Dimensions.get('window').width;
     const [inputErrors, setInputErrors] = useState({});
-    const [isInputValid, setIsInputValid] = useState<boolean>(false);
+    const [, setIsInputValid] = useState<boolean>(false);
     const [hidePass, setHidePass] = useState<boolean>(true);
     const [isFocused, setIsFocused] = useState<boolean>(false);
 
@@ -67,18 +67,22 @@ export const Input: FC<InputType> = ({
     };
 
     return (
-        <View style={{
-            gap: 16,
-            marginBottom: 5,
-        }}>
-            <Text style={{
-                fontSize: 14,
-                color: '#FAFAFA',
+        <View
+            style={{
                 gap: 16,
-                lineHeight: 16.8,
-                fontWeight: '400',
-                fontFamily: 'Roboto'
-            }}>
+                marginBottom: 5,
+            }}
+        >
+            <Text
+                style={{
+                    fontSize: 14,
+                    color: '#FAFAFA',
+                    gap: 16,
+                    lineHeight: 16.8,
+                    fontWeight: '400',
+                    fontFamily: 'Roboto',
+                }}
+            >
                 {label}
             </Text>
             <TextInput
@@ -139,17 +143,17 @@ export const Input: FC<InputType> = ({
                     {hidePass ? <VisibilityEye /> : <NotVisibilityEye />}
                 </TouchableOpacity>
             )}
-            {
-                value.length > 1 && Object.values(inputErrors).map((error, index) => (
+            {value.length > 1 &&
+                Object.values(inputErrors).map((error, index) => (
                     <Text key={index} style={styles.errorText}>
                         {error as string}
                     </Text>
-                ))
-            }
-            {(type === 'confirm' && !isConfirm && value.length) ?
+                ))}
+            {type === 'confirm' && !isConfirm && value.length ? (
                 <Text key={textError} style={styles.errorText}>
                     {textError as string}
-                </Text> : null}
+                </Text>
+            ) : null}
         </View>
     );
 };
@@ -168,10 +172,10 @@ const styles = StyleSheet.create({
     errorText: {
         color: Color.WHITE,
         fontSize: 14,
-        lineHeight: 16.8
+        lineHeight: 16.8,
     },
     focused: {
         borderWidth: 1,
-        borderColor: '#FAFAFA'
-    }
+        borderColor: '#FAFAFA',
+    },
 });

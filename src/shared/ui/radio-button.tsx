@@ -1,7 +1,7 @@
-import { FC } from "react";
-import { View } from "react-native"
-import { TouchableOpacity } from "react-native-gesture-handler";
-import { Color } from "styles/colors";
+import { FC } from 'react';
+import { View } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { Color } from 'styles/colors';
 
 type RadioButtonType = {
     containerSize: number;
@@ -22,7 +22,8 @@ export const RadioButton: FC<RadioButtonType> = ({ containerSize, selected, onCh
                 borderWidth: 2,
                 borderStyle: 'solid',
                 borderColor: Color.WHITE,
-            }}>
+            }}
+        >
             <TouchableOpacity
                 testID="radio-button"
                 style={{
@@ -32,8 +33,7 @@ export const RadioButton: FC<RadioButtonType> = ({ containerSize, selected, onCh
                     backgroundColor: selected ? Color.WHITE : 'transparent',
                 }}
                 onPress={onChange}
-            >
-            </TouchableOpacity>
+            ></TouchableOpacity>
         </View>
-    )
-}
+    );
+};

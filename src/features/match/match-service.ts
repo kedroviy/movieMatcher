@@ -1,7 +1,7 @@
-import { FilterOption } from "pages/Main/sm.model";
-import { createApi } from "./match-api";
-import { ApiResponse, Match, MatchLikeFields, MatchUserStatus, MatchUserStatusEnum, Room, UserRoomResponse } from "./match.model";
-import { handleApiResponse } from "./match.utils";
+import { FilterOption } from 'pages/Main/sm.model';
+import { createApi } from './match-api';
+import { ApiResponse, Match, MatchLikeFields, MatchUserStatus, MatchUserStatusEnum, Room } from './match.model';
+import { handleApiResponse } from './match.utils';
 
 export const createRoomService = async (userId: number): Promise<any> => {
     try {
@@ -46,7 +46,7 @@ export const updateRoomFilters = async (roomId: string, filters: FilterOption): 
     } else {
         throw new Error('Failed to update filters');
     }
-}
+};
 
 export const doesUserHaveRoomService = async (userId: number): Promise<Match | null> => {
     try {
@@ -69,24 +69,24 @@ export const startMatchService = async (key: string): Promise<any> => {
         const api = await createApi();
         const response = await api.post<ApiResponse<any>>(`/rooms/${key}/start-match`);
         if (response.ok && response.data) {
-            return response
+            return response;
         } else {
             throw new Error('Failed to start match');
         }
     } catch (error) {
         throw new Error('Failed to start match');
     }
-}
+};
 
 export const getMovieData = async (roomKey: string): Promise<any> => {
     const api = await createApi();
     const response = await api.get<any>(`/rooms/${roomKey}/get-movies`);
     if (response.ok) {
-        return response
+        return response;
     } else {
         throw new Error('Failed to get movies');
     }
-}
+};
 
 export const postLikeMovie = async (like: MatchLikeFields): Promise<any> => {
     const api = await createApi();
@@ -96,7 +96,7 @@ export const postLikeMovie = async (like: MatchLikeFields): Promise<any> => {
     } else {
         throw new Error('Failed to like movie');
     }
-}
+};
 
 export const updateUserStatus = async (userStatus: MatchUserStatus): Promise<any> => {
     const api = await createApi();
@@ -106,13 +106,16 @@ export const updateUserStatus = async (userStatus: MatchUserStatus): Promise<any
     } else {
         throw new Error('Failed to update user status');
     }
-}
+};
 
-export const getUserStatusByUserId = async (roomKey: string, userId: number):
-    Promise<{ userId: number; userStatus: MatchUserStatusEnum } | null> => {
+export const getUserStatusByUserId = async (
+    roomKey: string,
+    userId: number,
+): Promise<{ userId: number; userStatus: MatchUserStatusEnum } | null> => {
     const api = await createApi();
-    const response = await api.get<{ userId: number; userStatus: MatchUserStatusEnum }>
-        (`/match/${roomKey}/user-status/${userId}`);
+    const response = await api.get<{ userId: number; userStatus: MatchUserStatusEnum }>(
+        `/match/${roomKey}/user-status/${userId}`,
+    );
     try {
         if (response.status === 200 && response.data) {
             return response.data;
@@ -122,7 +125,7 @@ export const getUserStatusByUserId = async (roomKey: string, userId: number):
     } catch (error) {
         throw new Error('Failed to get user status');
     }
-}
+};
 
 export const checkStatus = async (roomKey: string, userId: number): Promise<void> => {
     const api = await createApi();
@@ -136,8 +139,8 @@ export const getMatchData = async (roomKey: string): Promise<any> => {
     const api = await createApi();
     const response = await api.get<any>(`/match/specific-key-info/${roomKey}`);
     if (response.ok) {
-        return response
+        return response;
     } else {
         throw new Error('Failed to get movies');
     }
-}
+};

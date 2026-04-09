@@ -1,8 +1,8 @@
 export type RecoveryPasswordType = {
-    password: string,
-    confirmPassword: string,
-    isFormValidPassword: boolean,
-    isFormValidConfirmPassword: boolean,
+    password: string;
+    confirmPassword: string;
+    isFormValidPassword: boolean;
+    isFormValidConfirmPassword: boolean;
 };
 
 export type RecoveryPasswordActionType =

@@ -22,7 +22,7 @@ describe('createApi', () => {
 
         expect(Keychain.getGenericPassword).toHaveBeenCalledWith({ service: 'token_guard' });
         expect(create).toHaveBeenCalledWith({
-            baseURL: "https://movie-match-x5ue.onrender.com",
+            baseURL: 'https://movie-match-x5ue.onrender.com',
             headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
@@ -38,7 +38,7 @@ describe('createApi', () => {
 
         expect(Keychain.getGenericPassword).toHaveBeenCalledWith({ service: 'token_guard' });
         expect(create).toHaveBeenCalledWith({
-            baseURL: "https://movie-match-x5ue.onrender.com",
+            baseURL: 'https://movie-match-x5ue.onrender.com',
             headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
@@ -54,7 +54,7 @@ describe('createApi', () => {
 
         expect(Keychain.getGenericPassword).toHaveBeenCalledWith({ service: 'token_guard' });
         expect(create).toHaveBeenCalledWith({
-            baseURL: "https://movie-match-x5ue.onrender.com",
+            baseURL: 'https://movie-match-x5ue.onrender.com',
             headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',

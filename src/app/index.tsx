@@ -1,7 +1,7 @@
 import 'react-native-gesture-handler';
 import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux';
 import { StatusBar, View, useColorScheme } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
@@ -33,16 +33,20 @@ export default function AppContainer() {
     return (
         <SafeAreaProvider>
             {loadingApplication ? (
-                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: Color.BACKGROUND_GREY }}>
+                <View
+                    style={{
+                        flex: 1,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        backgroundColor: Color.BACKGROUND_GREY,
+                    }}
+                >
                     <StartMessage />
                 </View>
             ) : (
                 <NavigationContainer>
                     <SafeAreaView
-                        style={[
-                            backgroundStyle,
-                            { flex: 1 }
-                        ]}
+                        style={[backgroundStyle, { flex: 1 }]}
                         testID="appContainer"
                         edges={['top', 'right', 'bottom', 'left']}
                     >
@@ -51,11 +55,7 @@ export default function AppContainer() {
                             barStyle={isDarkMode ? 'light-content' : 'dark-content'}
                             backgroundColor="transparent"
                         />
-                        {
-                            !isAuthenticated ?
-                                <LoginNavigator /> :
-                                <AppNavigation onboarded={onboarded} />
-                        }
+                        {!isAuthenticated ? <LoginNavigator /> : <AppNavigation onboarded={onboarded} />}
 
                         <NetworkStatus status={t('general.network_problem')} />
                     </SafeAreaView>

@@ -1,25 +1,16 @@
-import React, { FC, useCallback } from "react";
-import {
-    StyleSheet,
-    Text,
-    View,
-    FlatList,
-    RefreshControl,
-} from "react-native";
-import { useTranslation } from "react-i18next";
-import { NavigationProp, ParamListBase, useNavigation } from "@react-navigation/native";
+import React, { FC, useCallback } from 'react';
+import { StyleSheet, Text, View, FlatList, RefreshControl } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { NavigationProp, ParamListBase, useNavigation } from '@react-navigation/native';
 
 import { useMoviesList } from './hooks';
-import { MyMovieListComponent, withListOrEmptyState } from "./components/sm-hoc-component";
-import { EmptyListComponent } from "./components/sm-empty-list";
-import { Color } from "styles/colors";
-import { contentWidth, radius, screenPadding, spacing } from "styles/theme";
-import { MovieLoader, SimpleButton } from "shared";
-import { AppRoutes } from "app/constants";
-import { MoviesSavedType } from "features/selection-movies/selection-movies.model";
-import { MovieCard } from "./ui/sm-movie-list-card";
-
-const MyListWithEmptyState = withListOrEmptyState(MyMovieListComponent);
+import { EmptyListComponent } from './components/sm-empty-list';
+import { Color } from 'styles/colors';
+import { contentWidth, radius, screenPadding, spacing } from 'styles/theme';
+import { MovieLoader, SimpleButton } from 'shared';
+import { AppRoutes } from 'app/constants';
+import { MoviesSavedType } from 'features/selection-movies/selection-movies.model';
+import { MovieCard } from './ui/sm-movie-list-card';
 
 export const SoloMatchScreen: FC = () => {
     const navigation: NavigationProp<ParamListBase> = useNavigation();
@@ -38,17 +29,19 @@ export const SoloMatchScreen: FC = () => {
             movies={item.movies}
             label={item.label}
             moviesCount={item.movies.length}
-            onHandlePress={() => navigation.navigate(`${AppRoutes.SELF_SELECT_NAVIGATOR}`, {
-                screen: `${AppRoutes.SM_MOVIE_FULL_LIST}`,
-                params: { headerText: item.label },
-            })}
+            onHandlePress={() =>
+                navigation.navigate(`${AppRoutes.SELF_SELECT_NAVIGATOR}`, {
+                    screen: `${AppRoutes.SM_MOVIE_FULL_LIST}`,
+                    params: { headerText: item.label },
+                })
+            }
         />
     );
 
-    const onNavigate = () => navigation.navigate(
-        AppRoutes.SELF_SELECT_NAVIGATOR, {
-        screen: AppRoutes.SM_CREATE_MOVIE_LIST_SCREEN,
-    });
+    const onNavigate = () =>
+        navigation.navigate(AppRoutes.SELF_SELECT_NAVIGATOR, {
+            screen: AppRoutes.SM_CREATE_MOVIE_LIST_SCREEN,
+        });
 
     return (
         <View style={styles.container}>
@@ -56,11 +49,11 @@ export const SoloMatchScreen: FC = () => {
                 <Text style={styles.headerText}>{t('selection_movie.my_movie_list')}</Text>
             </View>
             <View style={styles.listWrap}>
-                {isLoading ?
+                {isLoading ? (
                     <View style={styles.loader}>
                         <MovieLoader />
                     </View>
-                    :
+                ) : (
                     <FlatList<MoviesSavedType>
                         data={moviesList}
                         renderItem={renderItem}
@@ -68,9 +61,7 @@ export const SoloMatchScreen: FC = () => {
                         ListEmptyComponent={EmptyListComponent}
                         contentContainerStyle={styles.listContent}
                         initialNumToRender={4}
-                        getItemLayout={(data, index) => (
-                            { length: 255, offset: 255 * index, index }
-                        )}
+                        getItemLayout={(data, index) => ({ length: 255, offset: 255 * index, index })}
                         refreshControl={
                             <RefreshControl
                                 refreshing={isRefreshing}
@@ -80,7 +71,8 @@ export const SoloMatchScreen: FC = () => {
                         }
                         showsVerticalScrollIndicator={false}
                         showsHorizontalScrollIndicator={false}
-                    />}
+                    />
+                )}
             </View>
             <SimpleButton
                 color={Color.BUTTON_RED}
@@ -145,7 +137,7 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: '700',
         lineHeight: 28.8,
-        color: Color.WHITE
+        color: Color.WHITE,
     },
     loader: {
         ...StyleSheet.absoluteFillObject,

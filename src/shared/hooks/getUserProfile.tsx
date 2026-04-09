@@ -13,24 +13,30 @@ const useFetchUserProfile = () => {
             try {
                 const resultAction = await dispatch(fetchUserProfile());
                 if (fetchUserProfile.fulfilled.match(resultAction)) {
-                    dispatch(addNotification({
-                        message: 'Get profile data',
-                        type: 'success',
-                        id: Date.now(),
-                    }));
+                    dispatch(
+                        addNotification({
+                            message: 'Get profile data',
+                            type: 'success',
+                            id: Date.now(),
+                        }),
+                    );
                 } else if (fetchUserProfile.rejected.match(resultAction)) {
-                    dispatch(addNotification({
-                        message: 'Failed to fetch profile.',
-                        type: 'error',
-                        id: Date.now(),
-                    }));
+                    dispatch(
+                        addNotification({
+                            message: 'Failed to fetch profile.',
+                            type: 'error',
+                            id: Date.now(),
+                        }),
+                    );
                 }
             } catch (error) {
-                dispatch(addNotification({
-                    message: 'An error occurred.',
-                    type: 'warning',
-                    id: Date.now(),
-                }));
+                dispatch(
+                    addNotification({
+                        message: 'An error occurred.',
+                        type: 'warning',
+                        id: Date.now(),
+                    }),
+                );
             }
         };
 
@@ -38,7 +44,6 @@ const useFetchUserProfile = () => {
     }, [dispatch]);
 
     return { user, loading, error };
-}
+};
 
 export default useFetchUserProfile;
-

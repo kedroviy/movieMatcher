@@ -1,17 +1,12 @@
-import { FC } from "react";
-import { CardStyleInterpolators, createStackNavigator } from "@react-navigation/stack";
-import { useTranslation } from "react-i18next";
+import { FC } from 'react';
+import { CardStyleInterpolators, createStackNavigator } from '@react-navigation/stack';
+import { useTranslation } from 'react-i18next';
 
-import {
-    AppRoutes,
-    RootStackParamList,
-    animationOptions,
-    defaultScreenOptions,
-} from "./constants";
-import { SMCreateMovieListFilter, SMMovieDetails, SMMovieFullList } from "pages";
-import { Color } from "styles/colors";
-import { SMSelectionMovie } from "pages/Main/components/sm-selection-movie";
-import { RouteProp } from "@react-navigation/native";
+import { AppRoutes, RootStackParamList, animationOptions, defaultScreenOptions } from './constants';
+import { SMCreateMovieListFilter, SMMovieDetails, SMMovieFullList } from 'pages';
+import { Color } from 'styles/colors';
+import { SMSelectionMovie } from 'pages/Main/components/sm-selection-movie';
+import { RouteProp } from '@react-navigation/native';
 
 const SelfSelectStack = createStackNavigator<RootStackParamList>();
 
@@ -37,7 +32,7 @@ export const SelfSelectNavigator: FC = () => {
                         marginTop: 24,
                     },
                     cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
-                    ...animationOptions
+                    ...animationOptions,
                 }}
                 key={AppRoutes.SM_CREATE_MOVIE_LIST_SCREEN}
             />
@@ -58,7 +53,7 @@ export const SelfSelectNavigator: FC = () => {
                         marginTop: 24,
                     },
                     cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
-                    ...animationOptions
+                    ...animationOptions,
                 }}
                 key={AppRoutes.SM_SELECTION_MOVIE}
             />
@@ -80,7 +75,7 @@ export const SelfSelectNavigator: FC = () => {
                         marginTop: 24,
                     },
                     cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
-                    ...animationOptions
+                    ...animationOptions,
                 })}
                 key={AppRoutes.SM_MOVIE_FULL_LIST}
             />
@@ -101,10 +96,10 @@ export const SelfSelectNavigator: FC = () => {
                         marginTop: 24,
                     },
                     cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
-                    ...animationOptions
+                    ...animationOptions,
                 }}
                 key={AppRoutes.SM_MOVIE_DETAILS}
             />
         </SelfSelectStack.Navigator>
-    )
-}
+    );
+};

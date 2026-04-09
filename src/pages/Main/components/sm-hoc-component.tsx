@@ -2,10 +2,9 @@ import { Movie } from 'features';
 import React from 'react';
 import { Dimensions, View } from 'react-native';
 
-
 type ListProps<Data> = {
     data: Data[];
-    renderItem: (item: Data) => JSX.Element;
+    renderItem: (item: Data) => React.ReactElement;
     EmptyListComponent: React.ComponentType;
 };
 
@@ -31,10 +30,12 @@ export const withListOrEmptyState = <Data,>(Component: React.ComponentType<ListP
 
 export const MyMovieListComponent = ({ data, renderItem }: ListProps<MyListItemType>) => {
     return (
-        <View style={{
-            width: width - 32,
-            paddingVertical: 12,
-        }}>
+        <View
+            style={{
+                width: width - 32,
+                paddingVertical: 12,
+            }}
+        >
             {data.map((item) => renderItem(item))}
         </View>
     );
