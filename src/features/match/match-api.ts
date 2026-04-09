@@ -8,7 +8,7 @@ export const createApi = async () => {
         const credentials = await Keychain.getGenericPassword({ service: 'token_guard' });
         token = credentials ? credentials.password : null;
     } catch (error) {
-        token = null
+        token = null;
     }
 
     const api = create({

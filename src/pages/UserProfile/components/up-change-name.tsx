@@ -7,20 +7,20 @@ import {
     StyleSheet,
     Text,
     TouchableOpacity,
-} from "react-native"
-import { NavigationProp, ParamListBase, useNavigation } from "@react-navigation/native";
-import { AppRoutes } from "app/constants";
-import { FC, useState } from "react"
-import { useTranslation } from "react-i18next";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "redux/configure-store";
-import { updateUsername } from "redux/userSlice";
-import { AppConstants, CheckSvgIcon, SimpleInput } from "shared"
-import { Color } from "styles/colors";
+} from 'react-native';
+import { NavigationProp, ParamListBase, useNavigation } from '@react-navigation/native';
+import { AppRoutes } from 'app/constants';
+import { FC, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from 'redux/configure-store';
+import { updateUsername } from 'redux/userSlice';
+import { AppConstants, CheckSvgIcon, SimpleInput } from 'shared';
+import { Color } from 'styles/colors';
 
 export const UPChangeName: FC = () => {
     const { t } = useTranslation();
-    const { user, loading } = useSelector((state: RootState) => state.userSlice);
+    const { user } = useSelector((state: RootState) => state.userSlice);
     const dispatch: AppDispatch = useDispatch();
     const navigation: NavigationProp<ParamListBase> = useNavigation();
     const windowWidth = Dimensions.get('window').width;
@@ -37,8 +37,7 @@ export const UPChangeName: FC = () => {
 
             try {
                 if (updateUsername.fulfilled.match(actionResult)) {
-                    navigation.navigate(
-                        AppRoutes.PROFILE_RESULT, {
+                    navigation.navigate(AppRoutes.PROFILE_RESULT, {
                         icon: <CheckSvgIcon />,
                         resultText: t('acc_settings.changeName.success'),
                         buttonText: t('general.continue'),
@@ -46,10 +45,8 @@ export const UPChangeName: FC = () => {
                         onHandlePress: () => {
                             navigation.reset({
                                 index: 0,
-                                routes: [
-                                    { name: AppRoutes.USER_PROFILE_ACC_SETTINGS },
-                                ],
-                            })
+                                routes: [{ name: AppRoutes.USER_PROFILE_ACC_SETTINGS }],
+                            });
                         },
                     });
                 }
@@ -63,8 +60,7 @@ export const UPChangeName: FC = () => {
     return (
         <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            style={[styles.container,
-            { width: windowWidth }]}
+            style={[styles.container, { width: windowWidth }]}
         >
             <ScrollView
                 keyboardShouldPersistTaps="handled"
@@ -80,20 +76,21 @@ export const UPChangeName: FC = () => {
                 />
 
                 <TouchableOpacity
-                    style={[styles.button,
-                    (isFormValidInput) ?
-                        { backgroundColor: '#DC2626', width: windowWidth - 32, height: 48 } :
-                        { backgroundColor: '#940C0C', width: windowWidth - 32, height: 48 }
+                    style={[
+                        styles.button,
+                        isFormValidInput
+                            ? { backgroundColor: '#DC2626', width: windowWidth - 32, height: 48 }
+                            : { backgroundColor: '#940C0C', width: windowWidth - 32, height: 48 },
                     ]}
-                    disabled={(isFormValidInput) ? false : true}
+                    disabled={isFormValidInput ? false : true}
                     onPress={() => handleSubmit()}
-                    testID='myButton'
+                    testID="myButton"
                 >
                     <Text style={styles.text}>{t('acc_settings.changeName.change_name')}</Text>
                 </TouchableOpacity>
             </ScrollView>
-        </KeyboardAvoidingView >
-    )
+        </KeyboardAvoidingView>
+    );
 };
 
 const styles = StyleSheet.create({

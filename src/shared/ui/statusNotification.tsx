@@ -66,13 +66,8 @@ export const StatusNotification: React.FC = () => {
     return (
         <>
             {notifications.map((notification) => (
-                <View
-                    key={notification.id}
-                    style={styles.container}>
-                    <Animated.View style={[
-                        styles.notificationBox,
-                        { opacity: fadeAnim },
-                    ]}>
+                <View key={notification.id} style={styles.container}>
+                    <Animated.View style={[styles.notificationBox, { opacity: fadeAnim }]}>
                         {getIcon(notification.type)}
                         <Text style={[styles.text, { color: getTextColor(notification.type) }]}>
                             {notification.message}

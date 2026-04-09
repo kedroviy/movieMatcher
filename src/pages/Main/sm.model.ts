@@ -1,4 +1,4 @@
-export type FilterOption = { id: number; name?: string; label: string; };
+export type FilterOption = { id: number; name?: string; label: string };
 
 export interface SMFormItem<T> {
     id: T;
@@ -89,4 +89,4 @@ export function reducer<T>(state: SelectMovieType<T>, action: Action<T>): Select
     }
 
     return newState;
-};
+}

@@ -1,23 +1,24 @@
-import { Movie } from "features";
-import { FC } from "react"
-import { Image, StyleSheet, Text, View } from "react-native"
-import { Color } from "styles/colors";
-import { contentWidth, radius } from "styles/theme";
-import { SMMovieChips } from "./sm-movie-chips";
-import { getRatingColor, roundDownToOneTenth } from "../utils";
+import { Movie } from 'features';
+import { FC } from 'react';
+import { Image, StyleSheet, Text, View } from 'react-native';
+import { Color } from 'styles/colors';
+import { contentWidth, radius } from 'styles/theme';
+import { SMMovieChips } from './sm-movie-chips';
+import { getRatingColor, roundDownToOneTenth } from '../utils';
 
 export interface MovieCardItemProps {
     movie: Movie;
 }
 
 export const SMCard: FC<MovieCardItemProps> = ({ movie }) => {
-
     return (
         <View style={styles.movieItem}>
             <View style={styles.poster}>
                 <Image
                     source={
-                        movie.poster ? { uri: movie.poster.previewUrl } : require('../../../../assets/defaultpicture.png')
+                        movie.poster
+                            ? { uri: movie.poster.previewUrl }
+                            : require('../../../../assets/defaultpicture.png')
                     }
                     style={{
                         width: 99,
@@ -26,49 +27,58 @@ export const SMCard: FC<MovieCardItemProps> = ({ movie }) => {
                         borderRadius: radius.sm,
                     }}
                 />
-                <View style={{
-                    position: 'absolute',
-                    width: 30,
-                    height: 20,
-                    paddingVertical: 2,
-                    paddingHorizontal: 4,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    backgroundColor: getRatingColor(movie.rating.kp),
-                    borderRadius: 5,
-                    right: 5,
-                    top: 5,
-                }}>
-                    <Text style={[
-                        styles.text, {
-                            fontSize: 12,
-                        }]}>
+                <View
+                    style={{
+                        position: 'absolute',
+                        width: 30,
+                        height: 20,
+                        paddingVertical: 2,
+                        paddingHorizontal: 4,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        backgroundColor: getRatingColor(movie.rating.kp),
+                        borderRadius: 5,
+                        right: 5,
+                        top: 5,
+                    }}
+                >
+                    <Text
+                        style={[
+                            styles.text,
+                            {
+                                fontSize: 12,
+                            },
+                        ]}
+                    >
                         {roundDownToOneTenth(movie.rating.kp)}
                     </Text>
                 </View>
             </View>
             <View style={styles.movieDescription}>
                 <View style={styles.movieDescriptionText}>
-                    <Text style={[
-                        styles.text,
-                        {
-                            fontSize: 16,
-                            fontWeight: '700',
-                            lineHeight: 19.2,
-                            marginBottom: 5,
-                        }
-                    ]}>
+                    <Text
+                        style={[
+                            styles.text,
+                            {
+                                fontSize: 16,
+                                fontWeight: '700',
+                                lineHeight: 19.2,
+                                marginBottom: 5,
+                            },
+                        ]}
+                    >
                         {movie.name}
                     </Text>
-                    <Text style={[
-                        styles.text,
-                        {
-                            fontSize: 14,
-                            fontWeight: '400',
-                            lineHeight: 15.6,
-                            flexShrink: 1,
-                        }
-                    ]}
+                    <Text
+                        style={[
+                            styles.text,
+                            {
+                                fontSize: 14,
+                                fontWeight: '400',
+                                lineHeight: 15.6,
+                                flexShrink: 1,
+                            },
+                        ]}
                         numberOfLines={5}
                         ellipsizeMode="tail"
                     >
@@ -76,12 +86,7 @@ export const SMCard: FC<MovieCardItemProps> = ({ movie }) => {
                     </Text>
                 </View>
                 <View style={styles.footer}>
-                    <SMMovieChips
-                        label={movie.ageRating}
-                        color={Color.LIGHT_RED}
-                        labelColor={Color.WHITE}
-                        type="age"
-                    />
+                    <SMMovieChips label={movie.ageRating} color={Color.LIGHT_RED} labelColor={Color.WHITE} type="age" />
                     <SMMovieChips
                         label={movie.movieLength}
                         color={Color.LIGHT_RED}
@@ -108,7 +113,7 @@ const styles = StyleSheet.create({
         borderRadius: radius.sm,
     },
     text: {
-        color: Color.WHITE
+        color: Color.WHITE,
     },
     movieItem: {
         width: contentWidth,
@@ -129,5 +134,5 @@ const styles = StyleSheet.create({
         width: 99,
         height: 177,
         resizeMode: 'cover',
-    }
+    },
 });

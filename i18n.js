@@ -5,21 +5,21 @@ import * as RNLocalize from 'react-native-localize';
 const resources = {
     en: {
         translation: {
-            welcome: "Welcome",
+            welcome: 'Welcome',
             movieSelection: 'Movie selection',
             auth: {
                 welcome: 'Welcome to MovieMatch',
                 sub_welcome: 'Select a movie on your own or with friends!',
                 login: {
                     btn_title: 'Login',
-                    btn_google: 'Login with Google'
+                    btn_google: 'Login with Google',
                 },
                 registration: {
                     btn_title: 'Registration',
-                    reg_result: 'Congratulations, you have successfully created an account!'
+                    reg_result: 'Congratulations, you have successfully created an account!',
                 },
                 password_recovery: {
-                    recovery_succ_result: 'Congratulations, your password has been successfully changed!'
+                    recovery_succ_result: 'Congratulations, your password has been successfully changed!',
                 },
             },
             tabs: {
@@ -31,7 +31,7 @@ const resources = {
                 account_settings: 'Account settings',
                 theme: 'Theme',
                 language: 'Language',
-                about_application: 'About application'
+                about_application: 'About application',
             },
             about_app: {
                 version: 'Version',
@@ -49,7 +49,7 @@ const resources = {
                     success: 'Your username has been successfully changed',
                     networkError: 'Something went wrong',
                 },
-                logout_acc: 'Log out of your account'
+                logout_acc: 'Log out of your account',
             },
             selection_movie: {
                 my_movie_list: 'My movies',
@@ -66,8 +66,8 @@ const resources = {
                 movie_details: {
                     watch: 'Watch on Kinopoisk',
                     header: 'Movie details',
-                    actors: 'Actors'
-                }
+                    actors: 'Actors',
+                },
             },
             match_movie: {
                 main_match_screen: {
@@ -79,7 +79,7 @@ const resources = {
                     loading: 'Connecting to the server, please wait...',
                 },
                 lobby: {
-                    lobby_members: 'Lobby members'
+                    lobby_members: 'Lobby members',
                 },
                 filters_settings: {
                     settings: 'Settings',
@@ -90,33 +90,33 @@ const resources = {
                     exclude_genre: 'Exclude genre',
                     other_options: 'Other options',
                 },
-                match_result: 'Result of match'
+                match_result: 'Result of match',
             },
             general: {
                 next_page: 'Next page',
                 enter_in_account: 'Login to account',
                 continue: 'Continue',
                 network_problem: 'No internet connection',
-            }
-        }
+            },
+        },
     },
     ru: {
         translation: {
-            welcome: "Добро пожаловать",
+            welcome: 'Добро пожаловать',
             movieSelection: 'Подбор фильма',
             auth: {
                 welcome: 'Добро пожаловать в MovieMatch',
                 sub_welcome: 'Сделай подбор фильма самостоятельно или в компании друзей!',
                 login: {
                     btn_title: 'Войти',
-                    btn_google: 'Войти с Google'
+                    btn_google: 'Войти с Google',
                 },
                 registration: {
                     btn_title: 'Зарегистрироваться',
-                    reg_result: 'Поздравляем, вы успешно создали аккаунт!'
+                    reg_result: 'Поздравляем, вы успешно создали аккаунт!',
                 },
                 password_recovery: {
-                    recovery_succ_result: 'Поздравляем, пароль успешно изменен!'
+                    recovery_succ_result: 'Поздравляем, пароль успешно изменен!',
                 },
             },
             tabs: {
@@ -128,7 +128,7 @@ const resources = {
                 account_settings: 'Настройки аккаунта',
                 theme: 'Темы',
                 language: 'Язык',
-                about_application: 'О приложении'
+                about_application: 'О приложении',
             },
             about_app: {
                 version: 'Версия',
@@ -146,7 +146,7 @@ const resources = {
                     success: 'Ваше имя успешно изменено!',
                     networkError: 'Что-то пошло не так!',
                 },
-                logout_acc: 'Выйти из аккаунта'
+                logout_acc: 'Выйти из аккаунта',
             },
             selection_movie: {
                 my_movie_list: 'Мои фильмы',
@@ -157,14 +157,15 @@ const resources = {
                     start_select: 'Начать подбор',
                     list_name: 'Название списка',
                 },
-                selection_list_end: 'Предложенные фильмы закончились. Перейдите к подобранным фильмам или продолжите на следующей странице!',
+                selection_list_end:
+                    'Предложенные фильмы закончились. Перейдите к подобранным фильмам или продолжите на следующей странице!',
                 finish_solo_selection: 'На главный экран',
                 empty_list: 'Вы ещё не подбирали ни одного фильма к просмотру. Начните подбор фильма прямо сейчас!',
                 movie_details: {
                     watch: 'Смотреть на Кинопоиске',
                     header: 'Детали фильма',
-                    actors: 'Актёры'
-                }
+                    actors: 'Актёры',
+                },
             },
             match_movie: {
                 main_match_screen: {
@@ -173,10 +174,10 @@ const resources = {
                     join_lobby_btn: 'Присоединиться к лобби',
                     main_text: 'Создавайте лобби для совместного выбора фильма!',
                     greetings: 'Привет',
-                    loading: 'Идёт подключение к серверу, подождите...'
+                    loading: 'Идёт подключение к серверу, подождите...',
                 },
                 lobby: {
-                    lobby_members: 'Участники лобби'
+                    lobby_members: 'Участники лобби',
                 },
                 filters_settings: {
                     settings: 'Настройки',
@@ -187,15 +188,15 @@ const resources = {
                     exclude_genre: 'Исключить жанр',
                     other_options: 'Другие опции',
                 },
-                match_result: 'Результат'
+                match_result: 'Результат',
             },
             general: {
                 next_page: 'Следующая страница',
                 enter_in_account: 'Войти в аккаунт',
                 continue: 'Продолжить',
                 network_problem: 'Нет подключения к интернету',
-            }
-        }
+            },
+        },
     },
     it: {
         translation: {
@@ -210,9 +211,9 @@ const resources = {
                 account_settings: 'Настройка аккаунта',
                 theme: 'Тема',
                 language: 'Язык',
-                about_application: 'О приложении'
-            }
-        }
+                about_application: 'О приложении',
+            },
+        },
     },
     pl: {
         translation: {
@@ -222,21 +223,19 @@ const resources = {
                 selection: 'Wybór',
                 match: 'Mecz',
                 profile: 'Profil',
-            }
-        }
-    }
+            },
+        },
+    },
 };
 
-i18n
-    .use(initReactI18next)
-    .init({
-        compatibilityJSON: 'v3',
-        resources,
-        lng: RNLocalize.getLocales()[0].languageCode,
-        fallbackLng: "en",
-        interpolation: {
-            escapeValue: false,
-        },
-    });
+i18n.use(initReactI18next).init({
+    compatibilityJSON: 'v3',
+    resources,
+    lng: RNLocalize.getLocales()[0].languageCode,
+    fallbackLng: 'en',
+    interpolation: {
+        escapeValue: false,
+    },
+});
 
 export default i18n;

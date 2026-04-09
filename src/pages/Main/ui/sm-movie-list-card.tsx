@@ -19,7 +19,7 @@ interface MovieCardProps {
 export const MovieCard: React.FC<MovieCardProps> = ({ id, label, movies = [], onHandlePress }) => {
     const [currentPage, setCurrentPage] = useState<number>(0);
 
-    const handleScroll = (event: { nativeEvent: { contentOffset: { x: number; }; }; }) => {
+    const handleScroll = (event: { nativeEvent: { contentOffset: { x: number } } }) => {
         const scrollOffset = event.nativeEvent.contentOffset.x;
         const pageWidth = contentWidth + 10;
         const newPageIndex = Math.round(scrollOffset / pageWidth);
@@ -30,8 +30,7 @@ export const MovieCard: React.FC<MovieCardProps> = ({ id, label, movies = [], on
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <Text style={[styles.text, { fontSize: 16, fontWeight: '500', lineHeight: 20.8 }]}
-                >
+                <Text style={[styles.text, { fontSize: 16, fontWeight: '500', lineHeight: 20.8 }]}>
                     Подборка # {label}
                 </Text>
                 <TouchableOpacity
@@ -41,13 +40,10 @@ export const MovieCard: React.FC<MovieCardProps> = ({ id, label, movies = [], on
                         flexDirection: 'row',
                         width: '20%',
                         alignItems: 'center',
-                        justifyContent: 'space-around'
+                        justifyContent: 'space-around',
                     }}
                 >
-                    <Text
-                        style={[styles.text, { fontSize: 18, fontWeight: '400', lineHeight: 20.8 }]}
-                    >Все
-                    </Text>
+                    <Text style={[styles.text, { fontSize: 18, fontWeight: '400', lineHeight: 20.8 }]}>Все</Text>
                     <ChevronRightSVGIcon />
                 </TouchableOpacity>
             </View>
@@ -66,7 +62,7 @@ export const MovieCard: React.FC<MovieCardProps> = ({ id, label, movies = [], on
                 </ScrollView>
             </View>
             <OnboardingPagination
-                totalPages={movies.length > 3 ? 3 : (movies.length >= 2 ? movies.length : 0)}
+                totalPages={movies.length > 3 ? 3 : movies.length >= 2 ? movies.length : 0}
                 currentPage={currentPage}
             />
         </View>
@@ -99,6 +95,6 @@ const styles = StyleSheet.create({
         ...shadowCard,
     },
     text: {
-        color: Color.WHITE
+        color: Color.WHITE,
     },
 });

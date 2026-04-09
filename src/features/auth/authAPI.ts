@@ -1,14 +1,14 @@
-import { create } from 'apisauce'
+import { create } from 'apisauce';
 import { API } from '../../shared';
 
 type IUserFields = {
     email: string;
     password: string;
-}
+};
 
 export type IGoogleAuthCodeToServer = {
     idToken: string;
-}
+};
 
 type Response<T> = {
     token: any;
@@ -37,8 +37,7 @@ export const sendGoogleCodeToServer = async (idToken: string) => {
         } else {
             const data = response.data as { message?: string; error?: string } | undefined;
             const serverMsg =
-                (typeof data?.message === 'string' && data.message) ||
-                (typeof data?.error === 'string' && data.error);
+                (typeof data?.message === 'string' && data.message) || (typeof data?.error === 'string' && data.error);
             return {
                 success: false,
                 error: serverMsg || response.problem || 'Ошибка аутентификации',
@@ -47,7 +46,7 @@ export const sendGoogleCodeToServer = async (idToken: string) => {
     } catch (error) {
         return { success: false, error: 'Ошибка сети' };
     }
-}
+};
 
 export const loginUser = async (body: IUserFields) => {
     try {
@@ -60,7 +59,7 @@ export const loginUser = async (body: IUserFields) => {
     } catch (error) {
         return { success: false, error: 'Ошибка сети' };
     }
-}
+};
 
 export const registrationUser = async (body: IUserFields) => {
     try {
@@ -77,4 +76,4 @@ export const registrationUser = async (body: IUserFields) => {
     } catch (error) {
         return { success: false, error: 'Ошибка сети' };
     }
-}
+};

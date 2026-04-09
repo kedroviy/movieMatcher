@@ -1,12 +1,12 @@
-import { FC, useState } from "react"
-import { Dimensions, Keyboard, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { useDispatch, useSelector } from "react-redux";
+import { FC, useState } from 'react';
+import { Dimensions, Keyboard, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { Input } from "../ui";
-import { AppDispatch, RootState } from "../../../redux/configure-store";
-import { AppConstants, MovieLoader } from "../../../shared";
-import { sendEmailForRecoveryEffect } from "redux/recoveryPasswordSlice";
-import { NavigationProp, ParamListBase, useNavigation } from "@react-navigation/native";
+import { Input } from '../ui';
+import { AppDispatch, RootState } from '../../../redux/configure-store';
+import { AppConstants, MovieLoader } from '../../../shared';
+import { sendEmailForRecoveryEffect } from 'redux/recoveryPasswordSlice';
+import { NavigationProp, ParamListBase, useNavigation } from '@react-navigation/native';
 
 export const LoginAccRecovery: FC = () => {
     const windowWidth = Dimensions.get('window').width;
@@ -32,67 +32,70 @@ export const LoginAccRecovery: FC = () => {
                 console.log('Failed to send email');
             }
         } catch (error) {
-            console.log(error)
+            console.log(error);
         }
     };
 
     return (
         <View style={[styles.container, { width: windowWidth }]}>
-            <View style={{
-                alignItems: 'flex-start',
-                width: windowWidth,
-                paddingHorizontal: 16,
-                gap: 16,
-                flex: 1,
-                top: 24,
-            }}>
-                <Text style={[styles.text, styles.headerText, { marginBottom: 12 }]}>Введите ваш email</Text>
-                <Text style={{
-                    fontFamily: 'Roboto',
-                    fontSize: 16,
-                    fontStyle: 'normal',
-                    fontWeight: '400',
-                    lineHeight: 20.8,
-                    color: '#FAFAFA',
-                    marginBottom: 12
+            <View
+                style={{
+                    alignItems: 'flex-start',
+                    width: windowWidth,
+                    paddingHorizontal: 16,
+                    gap: 16,
+                    flex: 1,
+                    top: 24,
                 }}
+            >
+                <Text style={[styles.text, styles.headerText, { marginBottom: 12 }]}>Введите ваш email</Text>
+                <Text
+                    style={{
+                        fontFamily: 'Roboto',
+                        fontSize: 16,
+                        fontStyle: 'normal',
+                        fontWeight: '400',
+                        lineHeight: 20.8,
+                        color: '#FAFAFA',
+                        marginBottom: 12,
+                    }}
                 >
                     Для восстановления пароля введите ваш адрес электронной почты.
                 </Text>
                 <Input
-                    type='email'
-                    label='Почта'
+                    type="email"
+                    label="Почта"
                     onChangeText={onChangeInputEmail}
                     value={inputEmail}
                     onValidationChange={handleValidationEmail}
-                    placeholder='Введите ваш email'
-                    textError='формат почты name@mail.com'
+                    placeholder="Введите ваш email"
+                    textError="формат почты name@mail.com"
                 />
 
                 <TouchableOpacity
-                    style={[styles.button,
-                    (isFormValidEmail) ?
-                        { backgroundColor: '#DC2626', width: windowWidth - 32, height: 48 } :
-                        { backgroundColor: '#940C0C', width: windowWidth - 32, height: 48 }
+                    style={[
+                        styles.button,
+                        isFormValidEmail
+                            ? { backgroundColor: '#DC2626', width: windowWidth - 32, height: 48 }
+                            : { backgroundColor: '#940C0C', width: windowWidth - 32, height: 48 },
                     ]}
                     disabled={isFormValidEmail ? false : true}
-                    testID='myButton'
+                    testID="myButton"
                     onPress={() => onSendEmail(inputEmail)}
                 >
                     <Text style={styles.text}>Продолжить</Text>
                 </TouchableOpacity>
-
             </View>
             {loading ? <MovieLoader /> : null}
-        </View >
-    )
+        </View>
+    );
 };
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'flex-start'
+        justifyContent: 'flex-start',
     },
     button: {
         alignItems: 'center',

@@ -1,17 +1,16 @@
-import { FC, useReducer } from "react"
-import { Dimensions, Keyboard, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { useDispatch, useSelector } from "react-redux";
-import { NavigationProp, ParamListBase, useNavigation } from "@react-navigation/native";
-import { useTranslation } from "react-i18next";
+import { FC, useReducer } from 'react';
+import { Dimensions, Keyboard, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import { NavigationProp, ParamListBase, useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 
-import { sendRecoveryNewPasswordEffect } from "redux/recoveryPasswordSlice";
-import { RecoveryPasswordActionType, RecoveryPasswordType } from "../login.model";
-import { AppDispatch, RootState } from "../../../redux/configure-store";
-import { CheckSvgIcon, MovieLoader } from "../../../shared";
-import { Input } from "../ui";
-import { AppRoutes } from "app/constants";
-import { Color } from "styles/colors";
-
+import { sendRecoveryNewPasswordEffect } from 'redux/recoveryPasswordSlice';
+import { RecoveryPasswordActionType, RecoveryPasswordType } from '../login.model';
+import { AppDispatch, RootState } from '../../../redux/configure-store';
+import { CheckSvgIcon, MovieLoader } from '../../../shared';
+import { Input } from '../ui';
+import { AppRoutes } from 'app/constants';
+import { Color } from 'styles/colors';
 
 const initialState: RecoveryPasswordType = {
     password: '',
@@ -27,13 +26,13 @@ function reducer(state: RecoveryPasswordType, action: RecoveryPasswordActionType
                 ...state,
                 password: action.payload,
                 isFormValidPassword: action.payload.length >= 6,
-                isFormValidConfirmPassword: action.payload.length >= 6 && state.confirmPassword === action.payload
+                isFormValidConfirmPassword: action.payload.length >= 6 && state.confirmPassword === action.payload,
             };
         case 'SET_CONFIRM_PASSWORD':
             return {
                 ...state,
                 confirmPassword: action.payload,
-                isFormValidConfirmPassword: action.payload.length >= 6 && state.password === action.payload
+                isFormValidConfirmPassword: action.payload.length >= 6 && state.password === action.payload,
             };
         default:
             throw new Error();
@@ -51,7 +50,7 @@ export const LoginAccRecoveryChangePassword: FC = () => {
     const handleChangePassword = (password: string) => {
         dispatch({ type: 'SET_PASSWORD', payload: password });
     };
-    
+
     const handleChangeConfirmPassword = (confirmPassword: string) => {
         dispatch({ type: 'SET_CONFIRM_PASSWORD', payload: confirmPassword });
     };
@@ -71,42 +70,42 @@ export const LoginAccRecoveryChangePassword: FC = () => {
                         onHandlePress: () => {
                             navigation.reset({
                                 index: 0,
-                                routes: [
-                                    { name: AppRoutes.LOGIN_SCREEN },
-                                ],
-                            })
+                                routes: [{ name: AppRoutes.LOGIN_SCREEN }],
+                            });
                         },
                     });
-
                 } else {
                     console.log('Failed to password change');
                 }
             } catch (error) {
-                console.log(error)
+                console.log(error);
             }
         }
     };
 
     return (
         <View style={[styles.container, { width: windowWidth }]}>
-            <View style={{
-                alignItems: 'flex-start',
-                width: windowWidth,
-                paddingHorizontal: 16,
-                gap: 16,
-                flex: 1,
-                top: 24,
-            }}>
-                <Text style={[styles.text, styles.headerText, { marginBottom: 12 }]}>Новый пароль</Text>
-                <Text style={{
-                    fontFamily: 'Roboto',
-                    fontSize: 16,
-                    fontStyle: 'normal',
-                    fontWeight: '400',
-                    lineHeight: 20.8,
-                    color: '#FAFAFA',
-                    marginBottom: 12
+            <View
+                style={{
+                    alignItems: 'flex-start',
+                    width: windowWidth,
+                    paddingHorizontal: 16,
+                    gap: 16,
+                    flex: 1,
+                    top: 24,
                 }}
+            >
+                <Text style={[styles.text, styles.headerText, { marginBottom: 12 }]}>Новый пароль</Text>
+                <Text
+                    style={{
+                        fontFamily: 'Roboto',
+                        fontSize: 16,
+                        fontStyle: 'normal',
+                        fontWeight: '400',
+                        lineHeight: 20.8,
+                        color: '#FAFAFA',
+                        marginBottom: 12,
+                    }}
                 >
                     Создайте новый пароль для своего аккаунта
                 </Text>
@@ -130,21 +129,20 @@ export const LoginAccRecoveryChangePassword: FC = () => {
                 <TouchableOpacity
                     style={[
                         styles.button,
-                        (state.isFormValidPassword && state.isFormValidConfirmPassword)
+                        state.isFormValidPassword && state.isFormValidConfirmPassword
                             ? { backgroundColor: '#DC2626', width: windowWidth - 32, height: 48 }
-                            : { backgroundColor: '#940C0C', width: windowWidth - 32, height: 48 }
+                            : { backgroundColor: '#940C0C', width: windowWidth - 32, height: 48 },
                     ]}
                     disabled={!state.isFormValidPassword || !state.isFormValidConfirmPassword}
-                    testID='myButton'
+                    testID="myButton"
                     onPress={() => onSubmitComponent(email, code, state.password)}
                 >
                     <Text style={styles.text}>Восстановить пароль</Text>
                 </TouchableOpacity>
-
             </View>
             {loading ? <MovieLoader /> : null}
-        </View >
-    )
+        </View>
+    );
 };
 
 const styles = StyleSheet.create({
@@ -152,7 +150,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#353535',
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'flex-start'
+        justifyContent: 'flex-start',
     },
     button: {
         alignItems: 'center',

@@ -1,16 +1,11 @@
-import { FC } from "react";
-import { CardStyleInterpolators, createStackNavigator } from "@react-navigation/stack";
-import { useTranslation } from "react-i18next";
-import { RouteProp } from "@react-navigation/native";
+import { FC } from 'react';
+import { CardStyleInterpolators, createStackNavigator } from '@react-navigation/stack';
+import { useTranslation } from 'react-i18next';
+import { RouteProp } from '@react-navigation/native';
 
-import {
-    AppRoutes,
-    RootStackParamList,
-    animationOptions,
-    defaultScreenOptions,
-} from "./constants";
-import { MatchJoinLobby, MatchLobby, MatchResult, MatchSelectionMovie } from "pages";
-import { Color } from "styles/colors";
+import { AppRoutes, RootStackParamList, animationOptions, defaultScreenOptions } from './constants';
+import { MatchJoinLobby, MatchLobby, MatchResult, MatchSelectionMovie } from 'pages';
+import { Color } from 'styles/colors';
 
 const MatchStack = createStackNavigator<RootStackParamList>();
 
@@ -36,7 +31,7 @@ export const MatchNavigator: FC = () => {
                         marginTop: 24,
                     },
                     cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
-                    ...animationOptions
+                    ...animationOptions,
                 })}
                 key={AppRoutes.MATCH_LOBBY}
             />
@@ -58,7 +53,7 @@ export const MatchNavigator: FC = () => {
                         marginTop: 24,
                     },
                     cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
-                    ...animationOptions
+                    ...animationOptions,
                 }}
                 key={AppRoutes.MATCH_JOIN_LOBBY}
             />
@@ -80,7 +75,7 @@ export const MatchNavigator: FC = () => {
                         marginTop: 24,
                     },
                     cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
-                    ...animationOptions
+                    ...animationOptions,
                 }}
                 key={AppRoutes.MATCH_SELECTION_MOVIE}
             />
@@ -101,10 +96,10 @@ export const MatchNavigator: FC = () => {
                         marginTop: 24,
                     },
                     cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
-                    ...animationOptions
+                    ...animationOptions,
                 }}
                 key={AppRoutes.MATCH_RESULT}
             />
         </MatchStack.Navigator>
-    )
-}
+    );
+};

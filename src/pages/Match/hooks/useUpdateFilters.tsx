@@ -10,10 +10,13 @@ export const useUpdateFilters = () => {
         if (Object.keys(filters).length > 0) {
             await dispatch(updateRoomFiltersRedux({ roomId: roomId, filters: filters }))
                 .unwrap()
-                .then(response => console.log('Update successful:', response))
-                .catch(error => {
+                .then((response) => console.log('Update successful:', response))
+                .catch((error) => {
                     console.error('Failed to update filters:', error);
-                    Alert.alert("Error", typeof error === 'string' ? error : 'Failed to update filters due to an unexpected error');
+                    Alert.alert(
+                        'Error',
+                        typeof error === 'string' ? error : 'Failed to update filters due to an unexpected error',
+                    );
                 });
         }
     };

@@ -1,7 +1,7 @@
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch } from "redux/configure-store";
-import { getUserStatusByUserIdRedux } from "redux/matchSlice";
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch } from 'redux/configure-store';
+import { getUserStatusByUserIdRedux } from 'redux/matchSlice';
 
 export const useGetUserStatusByUserId = (userId: number) => {
     const dispatch: AppDispatch = useDispatch();
@@ -11,7 +11,7 @@ export const useGetUserStatusByUserId = (userId: number) => {
         if (userId && roomKey) {
             dispatch(getUserStatusByUserIdRedux({ roomKey: roomKey, userId: userId }));
         }
-        console.log('state userStatus from hook: ', userStatus)
+        console.log('state userStatus from hook: ', userStatus);
     }, [dispatch, userId, userStatus]);
 
     return userStatus;

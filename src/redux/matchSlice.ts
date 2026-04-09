@@ -52,7 +52,7 @@ const initialState: MatchState = {
     matchStatus: 'pending',
 };
 
-export const createRoom = createAsyncThunk<Room, number, { state: RootState, rejectValue: string }>(
+export const createRoom = createAsyncThunk<Room, number, { state: RootState; rejectValue: string }>(
     'match/createRoom',
     async (userId, { getState, dispatch, rejectWithValue }) => {
         const state = getState().matchSlice;
@@ -70,7 +70,7 @@ export const createRoom = createAsyncThunk<Room, number, { state: RootState, rej
         } finally {
             dispatch(setRequestStatus({ request: 'createRoom', status: false }));
         }
-    }
+    },
 );
 
 export const joinRoom = createAsyncThunk(
@@ -78,12 +78,12 @@ export const joinRoom = createAsyncThunk(
     async ({ key, userId }: { key: string; userId: number }, { dispatch, rejectWithValue }) => {
         try {
             const response = await joinRoomService(key, userId);
-            dispatch(setRoomKey(key))
+            dispatch(setRoomKey(key));
             return response;
         } catch (error) {
             return rejectWithValue((error as any).message);
         }
-    }
+    },
 );
 
 export const leaveRoom = createAsyncThunk(
@@ -94,29 +94,29 @@ export const leaveRoom = createAsyncThunk(
         } catch (error) {
             return rejectWithValue((error as any).message);
         }
-    }
+    },
 );
 
 export const leaveFromMatch = createAsyncThunk(
     'match/leaveFromMatch',
-    async ({ roomKey, userId }: { roomKey: number, userId: number }, { rejectWithValue }) => {
+    async ({ roomKey, userId }: { roomKey: number; userId: number }, { rejectWithValue }) => {
         try {
             const response = await leaveRoomService(roomKey, userId);
             return response.data;
         } catch (error) {
             return rejectWithValue(error || 'An unexpected error occurred');
         }
-    }
+    },
 );
 
-export const handleReduxMatchUpdate = (matchData: any) =>
-    (dispatch: (arg0: { payload: any; type: "match/updateRoomUsers"; }) => void, getState: any) => {
+export const handleReduxMatchUpdate =
+    (matchData: any) => (dispatch: (arg0: { payload: any; type: 'match/updateRoomUsers' }) => void) => {
         dispatch(updateRoomUsers(matchData));
     };
 
 export const updateRoomFiltersRedux = createAsyncThunk(
     'match/updateRoomFilters',
-    async ({ roomId, filters }: { roomId: string, filters: FilterOption }, { rejectWithValue }) => {
+    async ({ roomId, filters }: { roomId: string; filters: FilterOption }, { rejectWithValue }) => {
         try {
             const response = await updateRoomFilters(roomId, filters);
             if (response.ok) {
@@ -125,7 +125,7 @@ export const updateRoomFiltersRedux = createAsyncThunk(
         } catch (error) {
             return rejectWithValue(error || 'An unexpected error occurred');
         }
-    }
+    },
 );
 
 export const doesUserHaveRoomRedux = createAsyncThunk(
@@ -136,33 +136,26 @@ export const doesUserHaveRoomRedux = createAsyncThunk(
         } catch (error) {
             return rejectWithValue('Failed to fetch user room');
         }
-    }
+    },
 );
 
-export const startMatchRedux = createAsyncThunk(
-    'match/startMatch',
-    async (key: string, { rejectWithValue }) => {
-        try {
-            const response = await startMatchService(key);
-            return response.data.status;
-
-        } catch (error) {
-            return rejectWithValue('Failed to start match');
-        }
+export const startMatchRedux = createAsyncThunk('match/startMatch', async (key: string, { rejectWithValue }) => {
+    try {
+        const response = await startMatchService(key);
+        return response.data.status;
+    } catch (error) {
+        return rejectWithValue('Failed to start match');
     }
-)
+});
 
-export const getMoviesRedux = createAsyncThunk(
-    'match/getMovies',
-    async (roomKey: string, { rejectWithValue }) => {
-        try {
-            const response = await getMovieData(roomKey);
-            return response;
-        } catch (error) {
-            return rejectWithValue('Failed to fetch movie data');
-        }
+export const getMoviesRedux = createAsyncThunk('match/getMovies', async (roomKey: string, { rejectWithValue }) => {
+    try {
+        const response = await getMovieData(roomKey);
+        return response;
+    } catch (error) {
+        return rejectWithValue('Failed to fetch movie data');
     }
-)
+});
 
 export const postLikeMovieRedux = createAsyncThunk(
     'match/likeMovie',
@@ -173,8 +166,8 @@ export const postLikeMovieRedux = createAsyncThunk(
         } catch (error) {
             return rejectWithValue('Failed to post movie like');
         }
-    }
-)
+    },
+);
 
 export const updateUserStatusRedux = createAsyncThunk(
     'match/userStatus',
@@ -185,30 +178,30 @@ export const updateUserStatusRedux = createAsyncThunk(
         } catch (error) {
             return rejectWithValue('Failed to post movie like');
         }
-    }
-)
+    },
+);
 
 export const getUserStatusByUserIdRedux = createAsyncThunk(
     'match/getUserStatusByUserId',
-    async ({ roomKey, userId }: { roomKey: string, userId: number }, { rejectWithValue }) => {
+    async ({ roomKey, userId }: { roomKey: string; userId: number }, { rejectWithValue }) => {
         try {
             const response = await getUserStatusByUserId(roomKey, userId);
             return response;
         } catch (error) {
             return rejectWithValue('Failed to post movie like');
         }
-    }
-)
+    },
+);
 
 export const checkStatusRedux = createAsyncThunk(
     'match/checkStatus',
-    async ({ roomKey, userId }: { roomKey: string, userId: number }, { rejectWithValue }) => {
+    async ({ roomKey, userId }: { roomKey: string; userId: number }, { rejectWithValue }) => {
         try {
             await checkStatus(roomKey, userId);
         } catch (error) {
             return rejectWithValue('Failed to check user status');
         }
-    }
+    },
 );
 
 export const getMatchDataRedux = createAsyncThunk(
@@ -220,7 +213,7 @@ export const getMatchDataRedux = createAsyncThunk(
         } catch (error) {
             return rejectWithValue('Failed to check user status');
         }
-    }
+    },
 );
 
 const matchSlice = createSlice({
@@ -247,7 +240,7 @@ const matchSlice = createSlice({
             state.movies = [];
         },
         setRoomKey: (state, action) => {
-            state.roomKey = action.payload
+            state.roomKey = action.payload;
         },
     },
     extraReducers: (builder) => {
@@ -282,25 +275,25 @@ const matchSlice = createSlice({
             state.loading = true;
             state.error = null;
         });
-        builder.addCase(leaveRoom.fulfilled, (state, action) => {
+        builder.addCase(leaveRoom.fulfilled, (state) => {
             state.loading = false;
         });
         builder.addCase(leaveRoom.rejected, (state, action) => {
             state.error = action.payload as string;
             state.loading = false;
-        })
+        });
         builder.addCase(leaveFromMatch.pending, (state) => {
             state.loading = true;
             state.error = null;
-        })
+        });
         builder.addCase(leaveFromMatch.fulfilled, (state, action) => {
             state.loading = false;
             state.room = state.room.filter((room: any) => room.roomKey !== action.meta.arg.roomKey);
-        })
+        });
         builder.addCase(leaveFromMatch.rejected, (state, action) => {
             state.loading = false;
             state.error = action.error.message as string;
-        })
+        });
         builder.addCase(updateRoomFiltersRedux.pending, (state) => {
             state.loading = true;
             state.error = null;
@@ -360,7 +353,7 @@ const matchSlice = createSlice({
             state.loading = true;
             state.error = null;
         });
-        builder.addCase(postLikeMovieRedux.fulfilled, (state, action) => {
+        builder.addCase(postLikeMovieRedux.fulfilled, (state) => {
             state.loading = false;
         });
         builder.addCase(postLikeMovieRedux.rejected, (state, action) => {
@@ -371,7 +364,7 @@ const matchSlice = createSlice({
             state.loading = true;
             state.error = null;
         });
-        builder.addCase(updateUserStatusRedux.fulfilled, (state, action) => {
+        builder.addCase(updateUserStatusRedux.fulfilled, (state) => {
             state.loading = false;
         });
         builder.addCase(updateUserStatusRedux.rejected, (state, action) => {
@@ -400,23 +393,17 @@ const matchSlice = createSlice({
         builder.addCase(getMatchDataRedux.pending, (state) => {
             state.loading = true;
             state.error = null;
-        })
+        });
         builder.addCase(getMatchDataRedux.fulfilled, (state, action) => {
             state.loading = false;
             state.room = action.payload;
-        })
+        });
         builder.addCase(getMatchDataRedux.rejected, (state, action) => {
             state.error = action.payload as string;
         });
-    }
+    },
 });
 
-export const {
-    updateRoomUsers,
-    updateCurrentMovieReducer,
-    setMovie,
-    setRequestStatus,
-    resetMovies,
-    setRoomKey,
-} = matchSlice.actions;
+export const { updateRoomUsers, updateCurrentMovieReducer, setMovie, setRequestStatus, resetMovies, setRoomKey } =
+    matchSlice.actions;
 export default matchSlice.reducer;

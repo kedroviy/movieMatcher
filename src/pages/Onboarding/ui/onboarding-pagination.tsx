@@ -13,10 +13,7 @@ export const OnboardingPagination: FC<OnboardingPaginationType> = ({ totalPages,
             {Array.from({ length: totalPages }, (_, index) => (
                 <View
                     key={index}
-                    style={[
-                        styles.dot,
-                        { backgroundColor: index === currentPage ? Color.BUTTON_RED : Color.WHITE }
-                    ]}
+                    style={[styles.dot, { backgroundColor: index === currentPage ? Color.BUTTON_RED : Color.WHITE }]}
                 />
             ))}
         </View>

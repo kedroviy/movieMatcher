@@ -20,7 +20,7 @@ export const fetchMoviesApi = async (pathSuffix: string): Promise<SMApiResponse>
     }
 
     if (!isSMApiResponse(response.data)) {
-        throw new Error("Received data does not conform to SMApiResponse");
+        throw new Error('Received data does not conform to SMApiResponse');
     }
 
     return response.data;

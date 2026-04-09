@@ -11,65 +11,63 @@ type MockDispatchFn = typeof useDispatch & jest.Mock;
 type MockSelectorFn<TState = unknown> = TypedUseSelectorHook<TState> & jest.Mock;
 
 const mockNavigation = {
-  navigate: jest.fn(),
+    navigate: jest.fn(),
 };
 
 jest.mock('@react-navigation/native', () => ({
-  useNavigation: () => mockNavigation,
+    useNavigation: () => mockNavigation,
 }));
 
 jest.mock('react-redux', () => ({
-  useDispatch: jest.fn(() => jest.fn()),
-  useSelector: jest.fn(),
+    useDispatch: jest.fn(() => jest.fn()),
+    useSelector: jest.fn(),
 }));
 
 const mockDispatch: MockDispatchFn = useDispatch as any;
 const mockSelector: MockSelectorFn = useSelector as any;
 
 beforeEach(() => {
-  jest.clearAllMocks();
+    jest.clearAllMocks();
 
-  (mockDispatch as jest.Mock).mockReturnValue({
-    loading: false,
-    error: null,
-    isAuthenticated: false,
-    loadingApplication: false,
-  });
+    (mockDispatch as jest.Mock).mockReturnValue({
+        loading: false,
+        error: null,
+        isAuthenticated: false,
+        loadingApplication: false,
+    });
 
-  (mockSelector as jest.Mock).mockReturnValue(jest.fn());
+    (mockSelector as jest.Mock).mockReturnValue(jest.fn());
 });
 
-
 describe('LoginAuth Component Testing', () => {
-  it('renders correctly', () => {
-    renderer.create(<LoginAuth />);
-  });
-
-  it('show loader when check authentication', () => {
-    mockSelector.mockReturnValue({
-      loading: true,
-      error: null,
-      isAuthenticated: false,
-      loadingApplication: true,
+    it('renders correctly', () => {
+        renderer.create(<LoginAuth />);
     });
-  });
 
-  it('disables submit button with invalid email and password', () => {
-    const { getByText, getByPlaceholderText } = render(<LoginAuth />);
+    it('show loader when check authentication', () => {
+        mockSelector.mockReturnValue({
+            loading: true,
+            error: null,
+            isAuthenticated: false,
+            loadingApplication: true,
+        });
+    });
 
-    const emailInput = getByPlaceholderText('Введите ваш email');
-    const passwordInput = getByPlaceholderText('Введите ваш пароль');
-    fireEvent.changeText(emailInput, 'invalid');
-    fireEvent.changeText(passwordInput, '123');
+    it('disables submit button with invalid email and password', () => {
+        const { getByPlaceholderText } = render(<LoginAuth />);
 
-  });
+        const emailInput = getByPlaceholderText('Введите ваш email');
+        const passwordInput = getByPlaceholderText('Введите ваш пароль');
+        fireEvent.changeText(emailInput, 'invalid');
+        fireEvent.changeText(passwordInput, '123');
+    });
 
-  it('enables submit button with valid email and password', () => {
-    const { getByText, getByPlaceholderText } = render(<LoginAuth />);
+    it('enables submit button with valid email and password', () => {
+        const { getByPlaceholderText } = render(<LoginAuth />);
 
-    const emailInput = getByPlaceholderText('Введите ваш email');
-    const passwordInput = getByPlaceholderText('Введите ваш пароль');
-    fireEvent.changeText(emailInput, 'test@mail.com');
-    fireEvent.changeText(passwordInput, 'password123');
-  });
+        const emailInput = getByPlaceholderText('Введите ваш email');
+        const passwordInput = getByPlaceholderText('Введите ваш пароль');
+        fireEvent.changeText(emailInput, 'test@mail.com');
+        fireEvent.changeText(passwordInput, 'password123');
+    });
 });

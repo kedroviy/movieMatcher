@@ -1,11 +1,11 @@
-import { FC } from "react"
-import { Dimensions, StyleSheet, Text, View } from "react-native"
-import { Color } from "styles/colors";
-import { SimpleButton } from "./simple-button";
-import Animated, { SlideInDown, SlideOutDown } from "react-native-reanimated";
+import { FC, ReactElement } from 'react';
+import { Dimensions, StyleSheet, Text, View } from 'react-native';
+import { Color } from 'styles/colors';
+import { SimpleButton } from './simple-button';
+import Animated, { SlideInDown, SlideOutDown } from 'react-native-reanimated';
 
 type SimpleNotificationType = {
-    icon: JSX.Element;
+    icon: ReactElement;
     label: string;
     description: string;
     buttonText: string;
@@ -21,7 +21,7 @@ export const SimpleNotification: FC<SimpleNotificationType> = ({
     description,
     buttonText,
     buttonColor,
-    onHandlePress
+    onHandlePress,
 }) => {
     return (
         <View
@@ -31,26 +31,32 @@ export const SimpleNotification: FC<SimpleNotificationType> = ({
                 position: 'absolute',
                 width: width,
                 height: height,
-            }}>
-            <View style={{
-                alignItems: 'center',
-                justifyContent: 'center',
-                position: 'absolute',
-                opacity: 0.7,
-                width: '100%',
-                height: '100%',
-                backgroundColor: Color.NEW_BLACK,
-            }} />
+            }}
+        >
+            <View
+                style={{
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    position: 'absolute',
+                    opacity: 0.7,
+                    width: '100%',
+                    height: '100%',
+                    backgroundColor: Color.NEW_BLACK,
+                }}
+            />
             <Animated.View
                 entering={SlideInDown.springify().damping(18)}
                 exiting={SlideOutDown.springify().damping(20)}
-                style={styles.container}>
-                <View style={{
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: 36,
-                    height: 36
-                }}>
+                style={styles.container}
+            >
+                <View
+                    style={{
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: 36,
+                        height: 36,
+                    }}
+                >
                     {icon}
                 </View>
                 <Text style={styles.label}>{label}</Text>
@@ -64,7 +70,7 @@ export const SimpleNotification: FC<SimpleNotificationType> = ({
                 />
             </Animated.View>
         </View>
-    )
+    );
 };
 
 const styles = StyleSheet.create({
@@ -94,5 +100,5 @@ const styles = StyleSheet.create({
         fontWeight: '400',
         lineHeight: 15.6,
         marginBottom: 10,
-    }
+    },
 });

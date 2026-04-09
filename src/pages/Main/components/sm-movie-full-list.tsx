@@ -1,14 +1,14 @@
-import { FC, useEffect, useState } from "react"
-import { Dimensions, FlatList, Pressable, StyleSheet, View } from "react-native"
-import { NavigationProp, ParamListBase, RouteProp, useNavigation } from "@react-navigation/native";
+import { FC, useEffect, useState } from 'react';
+import { Dimensions, FlatList, Pressable, StyleSheet, View } from 'react-native';
+import { NavigationProp, ParamListBase, RouteProp, useNavigation } from '@react-navigation/native';
 
-import { RootStackParamList } from "app/constants";
-import { Color } from "styles/colors";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Movie, MoviesSavedType } from "features/selection-movies/selection-movies.model";
-import { MovieCardItemProps, SMCard } from "../ui/sm-card";
-import { Loader, SimpleButton } from "shared";
-import { MovieLoader } from "shared/ui/movie-loader";
+import { RootStackParamList } from 'app/constants';
+import { Color } from 'styles/colors';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Movie, MoviesSavedType } from 'features/selection-movies/selection-movies.model';
+import { SMCard } from '../ui/sm-card';
+import { SimpleButton } from 'shared';
+import { MovieLoader } from 'shared/ui/movie-loader';
 
 type SMMovieFullListType = {
     route: RouteProp<RootStackParamList, 'SMMovieFullList'>;
@@ -26,7 +26,7 @@ export const SMMovieFullList: FC<SMMovieFullListType> = ({ route }) => {
             const listString = await AsyncStorage.getItem('@mymovies');
             if (listString) {
                 const listObj: { [key: string]: MoviesSavedType } = JSON.parse(listString);
-                const matchedItem = Object.values(listObj).find(item => item.label === headerText);
+                const matchedItem = Object.values(listObj).find((item) => item.label === headerText);
                 if (matchedItem && matchedItem.movies) {
                     setMoviesList(matchedItem.movies);
                 }
@@ -57,31 +57,30 @@ export const SMMovieFullList: FC<SMMovieFullListType> = ({ route }) => {
 
     return (
         <View style={styles.container}>
-            {moviesList.length ?
+            {moviesList.length ? (
                 <>
                     <FlatList
                         data={moviesList}
                         renderItem={renderItem}
                         keyExtractor={(item: any) => item.id.toString()}
-
                         initialNumToRender={4}
-                        getItemLayout={(data, index) => (
-                            { length: 255, offset: 255 * index, index }
-                        )}
+                        getItemLayout={(data, index) => ({ length: 255, offset: 255 * index, index })}
                         showsVerticalScrollIndicator={false}
-                        showsHorizontalScrollIndicator={false} />
+                        showsHorizontalScrollIndicator={false}
+                    />
                     <SimpleButton
-                        title='Удалить список'
+                        title="Удалить список"
                         color={Color.BUTTON_RED}
                         titleColor={Color.WHITE}
                         buttonWidth={width - 32}
-                        onHandlePress={onHandleDelete} />
+                        onHandlePress={onHandleDelete}
+                    />
                 </>
-                :
+            ) : (
                 <MovieLoader />
-            }
+            )}
         </View>
-    )
+    );
 };
 
 const styles = StyleSheet.create({
@@ -97,5 +96,5 @@ const styles = StyleSheet.create({
         marginVertical: 16,
         backgroundColor: Color.GRAY_BROWN,
         borderRadius: 10,
-    }
+    },
 });

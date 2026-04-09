@@ -1,6 +1,6 @@
-import { Movie } from "features";
-import { Option } from "./sm.model";
-import { BASE_KP_URL } from "shared";
+import { Movie } from 'features';
+import { Option } from './sm.model';
+import { BASE_KP_URL } from 'shared';
 
 const generateYearOptionsWithNestedYears = () => {
     const currentYear = new Date().getFullYear();
@@ -14,7 +14,7 @@ const generateYearOptionsWithNestedYears = () => {
             children: Array.from({ length: 10 }, (_, i) => {
                 const childYear = year + i + 1;
                 return childYear <= currentYear ? { id: childYear, label: String(childYear) } : null;
-            }).filter(option => option !== null) as Option[],
+            }).filter((option) => option !== null) as Option[],
         };
 
         options.push(decade);

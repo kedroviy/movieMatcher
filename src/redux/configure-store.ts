@@ -7,18 +7,18 @@ import moviesSliceReducer from './moviesSlice';
 import matchSliceReducer from './matchSlice';
 
 export const store = configureStore({
-  reducer: {
-    authSlice: authSliceReducer,
-    recoveryPasswordSlice: recoveryPasswordReducer,
-    appSlice: appSliceReducer,
-    userSlice: userSliceReducer,
-    moviesSlice: moviesSliceReducer,
-    matchSlice: matchSliceReducer,
-  },
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
-      serializableCheck: false,
-    }),
+    reducer: {
+        authSlice: authSliceReducer,
+        recoveryPasswordSlice: recoveryPasswordReducer,
+        appSlice: appSliceReducer,
+        userSlice: userSliceReducer,
+        moviesSlice: moviesSliceReducer,
+        matchSlice: matchSliceReducer,
+    },
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware({
+            serializableCheck: false,
+        }),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

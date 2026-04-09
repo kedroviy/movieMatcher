@@ -1,4 +1,5 @@
 import { StackNavigationOptions } from '@react-navigation/stack';
+import type { ReactElement } from 'react';
 import { Movie } from 'features';
 import { Color } from 'styles/colors';
 
@@ -32,7 +33,7 @@ export enum AppRoutes {
     MATCH_JOIN_LOBBY = 'MatchJoinLobby',
     MATCH_SELECTION_MOVIE = 'MatchSelectionMovie',
     MATCH_RESULT = 'MatchResult',
-};
+}
 
 export const defaultScreenOptions: StackNavigationOptions = {
     headerTitle: () => null,
@@ -100,9 +101,9 @@ export const defaultOptions: any = {
         fontStyle: 'normal',
         fontFamily: 'Roboto',
         lineHeight: 14.4,
-        bottom: '20%'
+        bottom: '20%',
     },
-}
+};
 
 export type RootStackParamList = {
     TabNavigator: undefined;
@@ -132,7 +133,7 @@ export type RootStackParamList = {
     UPAccountSettings: undefined;
     UPChangeName: undefined;
     ProfileResult: {
-        icon: JSX.Element;
+        icon: ReactElement;
         resultText: string;
         buttonText: string;
         buttonColor: string;

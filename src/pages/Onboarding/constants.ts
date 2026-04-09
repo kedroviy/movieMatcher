@@ -9,14 +9,16 @@ const PAGES = [
     {
         id: 1,
         header: 'Подбор фильма',
-        subHeader: 'Сделай подбор фильма на вечер, выбрав нужные фильтры, и мы случайно сгенерируем фильм для просмотра.',
+        subHeader:
+            'Сделай подбор фильма на вечер, выбрав нужные фильтры, и мы случайно сгенерируем фильм для просмотра.',
         imageUrl: 'https://drive.google.com/uc?export=download&id=1XyvtSH--FxiGK67-Q9pPcKRCYxDfqGfF',
         buttonText: 'Продолжить',
     },
     {
         id: 2,
         header: 'Соревнование фильмов',
-        subHeader: 'Прими участие в совместном подборе фильма с другими пользователями: победителем станет только один фильм.',
+        subHeader:
+            'Прими участие в совместном подборе фильма с другими пользователями: победителем станет только один фильм.',
         imageUrl: 'https://drive.google.com/uc?export=download&id=1tECPZmWrcO1kiAaAzf-YLX8A-zAqLwvI',
         buttonText: 'Начать',
     },

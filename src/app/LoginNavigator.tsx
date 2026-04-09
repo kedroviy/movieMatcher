@@ -1,11 +1,5 @@
-import { CardStyleInterpolators, createStackNavigator } from "@react-navigation/stack";
-import {
-    AppRoutes,
-    RootStackParamList,
-    animationOptions,
-    defaultScreenOptions,
-    withoutHeader,
-} from "./constants";
+import { CardStyleInterpolators, createStackNavigator } from '@react-navigation/stack';
+import { AppRoutes, RootStackParamList, animationOptions, defaultScreenOptions, withoutHeader } from './constants';
 import {
     LoginAccRecovery,
     LoginAccRecoveryChangePassword,
@@ -14,21 +8,20 @@ import {
     LoginRegistration,
     LoginResult,
     LoginScreen,
-} from "pages";
-import { Color } from "styles/colors";
+} from 'pages';
+import { Color } from 'styles/colors';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
 export const LoginNavigator = () => (
-    <Stack.Navigator screenOptions={defaultScreenOptions} >
-
+    <Stack.Navigator screenOptions={defaultScreenOptions}>
         <Stack.Screen
             name={AppRoutes.LOGIN_SCREEN}
             component={LoginScreen}
             options={{
                 ...withoutHeader,
                 cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
-                ...animationOptions
+                ...animationOptions,
             }}
             key={AppRoutes.LOGIN_SCREEN}
         />
@@ -45,7 +38,7 @@ export const LoginNavigator = () => (
                     marginTop: 24,
                 },
                 cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
-                ...animationOptions
+                ...animationOptions,
             }}
             key={AppRoutes.LOGIN_AUTH_SCREEN}
         />
@@ -62,7 +55,7 @@ export const LoginNavigator = () => (
                     marginTop: 24,
                 },
                 cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
-                ...animationOptions
+                ...animationOptions,
             }}
             key={AppRoutes.LOGIN_REGISTRATION_SCREEN}
         />
@@ -79,7 +72,7 @@ export const LoginNavigator = () => (
                     marginTop: 24,
                 },
                 cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
-                ...animationOptions
+                ...animationOptions,
             }}
             key={AppRoutes.LOGIN_ACC_RECOVERY_SCREEN}
         />
@@ -96,7 +89,7 @@ export const LoginNavigator = () => (
                     marginTop: 24,
                 },
                 cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
-                ...animationOptions
+                ...animationOptions,
             }}
             key={AppRoutes.LOGIN_ACC_RECOVERY_CODE_SCREEN}
         />
@@ -113,7 +106,7 @@ export const LoginNavigator = () => (
                     marginTop: 24,
                 },
                 cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
-                ...animationOptions
+                ...animationOptions,
             }}
             key={AppRoutes.LOGIN_ACC_RECOVERY_NEW_PASSWORD}
         />
@@ -124,10 +117,9 @@ export const LoginNavigator = () => (
             options={{
                 ...withoutHeader,
                 cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
-                ...animationOptions
+                ...animationOptions,
             }}
             key={AppRoutes.LOGIN_RESULT}
         />
-
     </Stack.Navigator>
-)
+);

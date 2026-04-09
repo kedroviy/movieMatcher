@@ -4,18 +4,18 @@ import { useDispatch } from 'react-redux';
 import { setNetworkStatus } from 'redux/appSlice';
 
 const useNetworkStatus = () => {
-  const dispatch = useDispatch();
+    const dispatch = useDispatch();
 
-  useEffect(() => {
-    const unsubscribe = NetInfo.addEventListener((state) => {
-      const isConnected = state.isConnected ?? false;
-      dispatch(setNetworkStatus(isConnected));
-    });
+    useEffect(() => {
+        const unsubscribe = NetInfo.addEventListener((state) => {
+            const isConnected = state.isConnected ?? false;
+            dispatch(setNetworkStatus(isConnected));
+        });
 
-    return () => {
-      unsubscribe();
-    };
-  }, [dispatch]);
+        return () => {
+            unsubscribe();
+        };
+    }, [dispatch]);
 };
 
 export default useNetworkStatus;

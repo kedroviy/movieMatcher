@@ -22,37 +22,36 @@ const initialState: MoviesState = {
     movieDetails: { persons: [] },
 };
 
-export const loadMovies = createAsyncThunk
-    <SMApiResponse, { formData: ISMFormData, sessionLabel: string, page: number }, { rejectValue: string }>(
-        'movies/loadMovies',
-        async ({ formData, sessionLabel, page }, { rejectWithValue, dispatch }) => {
-            try {
-                const movies: SMApiResponse = await fetchMovies(formData, sessionLabel, page);
+export const loadMovies = createAsyncThunk<
+    SMApiResponse,
+    { formData: ISMFormData; sessionLabel: string; page: number },
+    { rejectValue: string }
+>('movies/loadMovies', async ({ formData, sessionLabel, page }, { rejectWithValue, dispatch }) => {
+    try {
+        const movies: SMApiResponse = await fetchMovies(formData, sessionLabel, page);
 
-                if (movies.total === 0) {
-                    return rejectWithValue('No movies found matching your criteria.');
-                }
-                dispatch(setCurrentSessionLabel(sessionLabel))
-                dispatch(setCurrentFormData(formData))
-                return movies;
-            } catch (error) {
-                return rejectWithValue('Failed to fetch movies');
-            }
+        if (movies.total === 0) {
+            return rejectWithValue('No movies found matching your criteria.');
         }
-    );
+        dispatch(setCurrentSessionLabel(sessionLabel));
+        dispatch(setCurrentFormData(formData));
+        return movies;
+    } catch (error) {
+        return rejectWithValue('Failed to fetch movies');
+    }
+});
 
-export const loadMovieDetails = createAsyncThunk
-    <Movie, number, { rejectValue: string }>(
-        'movies/loadMovieDetails',
-        async (movieId, { rejectWithValue }) => {
-            try {
-                const movieDetails = await fetchMovieDetails(movieId);
-                return movieDetails;
-            } catch (error) {
-                return rejectWithValue('Failed to fetch movie details');
-            }
+export const loadMovieDetails = createAsyncThunk<Movie, number, { rejectValue: string }>(
+    'movies/loadMovieDetails',
+    async (movieId, { rejectWithValue }) => {
+        try {
+            const movieDetails = await fetchMovieDetails(movieId);
+            return movieDetails;
+        } catch (error) {
+            return rejectWithValue('Failed to fetch movie details');
         }
-    );
+    },
+);
 
 const moviesSlice = createSlice({
     name: 'movies',
@@ -68,11 +67,11 @@ const moviesSlice = createSlice({
             state.currentPage = action.payload;
         },
         setCurrentFormData(state, action: PayloadAction<ISMFormData>) {
-            state.currentFormData = action.payload
+            state.currentFormData = action.payload;
         },
-        clearResponse(state) {
-            state = initialState;
-        }
+        clearResponse() {
+            return initialState;
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -101,15 +100,9 @@ const moviesSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload ?? 'An error occurred while fetching movie details';
                 state.movieDetails = null;
-            })
+            });
     },
 });
 
-export const {
-    clearError,
-    setCurrentSessionLabel,
-    setCurrentFormData,
-    clearResponse,
-    setPage,
-} = moviesSlice.actions;
+export const { clearError, setCurrentSessionLabel, setCurrentFormData, clearResponse, setPage } = moviesSlice.actions;
 export default moviesSlice.reducer;

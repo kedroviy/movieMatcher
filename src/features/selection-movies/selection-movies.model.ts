@@ -82,8 +82,8 @@ export interface SMApiResponse {
 }
 
 export type MoviesSavedType = {
-    id: string,
-    label: string,
-    link: string,
-    movies: Movie[]
-}
+    id: string;
+    label: string;
+    link: string;
+    movies: Movie[];
+};

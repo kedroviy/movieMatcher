@@ -1,4 +1,3 @@
-
 import { create } from 'apisauce';
 import { sendEmailForRecoveryAPI, sendRecoveryCodeAPI, sendRecoveryNewPasswordAPI } from 'features';
 
@@ -11,8 +10,9 @@ jest.mock('apisauce', () => {
     };
 });
 
-const mockPost = create({ baseURL: 'https://movie-match-x5ue.onrender.com' })
-    .post as jest.MockedFunction<typeof create>['prototype']['post'];
+const mockPost = create({ baseURL: 'https://movie-match-x5ue.onrender.com' }).post as jest.MockedFunction<
+    typeof create
+>['prototype']['post'];
 
 describe('API Functions', () => {
     describe('sendEmailForRecoveryAPI', () => {

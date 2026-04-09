@@ -1,15 +1,15 @@
-import { FC, useEffect, useState } from "react";
-import { Dimensions, StyleSheet, View } from "react-native";
-import { useDispatch, useSelector } from "react-redux";
-import { NavigationProp, ParamListBase, useNavigation } from "@react-navigation/native";
+import { FC, useEffect, useState } from 'react';
+import { Dimensions, StyleSheet, View } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import { NavigationProp, ParamListBase, useNavigation } from '@react-navigation/native';
 
-import { AppRoutes } from "app/constants";
-import { AppDispatch } from "redux/configure-store";
-import { joinRoom } from "redux/matchSlice";
-import { AppConstants, Loader, SimpleButton, SimpleInput } from "shared"
-import { Color } from "styles/colors";
-import useFetchUserProfile from "shared/hooks/getUserProfile";
-import { MovieLoader } from "shared/ui/movie-loader";
+import { AppRoutes } from 'app/constants';
+import { AppDispatch } from 'redux/configure-store';
+import { joinRoom } from 'redux/matchSlice';
+import { AppConstants, SimpleButton, SimpleInput } from 'shared';
+import { Color } from 'styles/colors';
+import useFetchUserProfile from 'shared/hooks/getUserProfile';
+import { MovieLoader } from 'shared/ui/movie-loader';
 
 const { width } = Dimensions.get('window');
 
@@ -17,7 +17,7 @@ export const MatchJoinLobby: FC = () => {
     const dispatch: AppDispatch = useDispatch();
     const navigation = useNavigation<NavigationProp<ParamListBase>>();
     const { loading, error, room } = useSelector((state: any) => state.matchSlice);
-    const { user, loading: userLoading, error: userError } = useFetchUserProfile();
+    const { user } = useFetchUserProfile();
     const [key, setKey] = useState<string>(AppConstants.EMPTY_VALUE);
     const [isFormValidInput, setIsFormValidInput] = useState<boolean>(false);
 
@@ -44,7 +44,7 @@ export const MatchJoinLobby: FC = () => {
         if (isFormValidInput) {
             dispatch(joinRoom({ key: key, userId: userId }))
                 .unwrap()
-                .then((newRoom: any) => {
+                .then(() => {
                     navigation.navigate(AppRoutes.MATCH_NAVIGATOR, {
                         screen: AppRoutes.MATCH_LOBBY,
                         params: { lobbyName: key },
@@ -54,20 +54,20 @@ export const MatchJoinLobby: FC = () => {
                     console.error('Error creating room:', errMsg);
                 });
         }
-    }
+    };
 
     return (
         <View style={styles.container}>
             <SimpleInput
-                label='Lobby key'
+                label="Lobby key"
                 onChangeText={onChangeKey}
                 onValidationChange={handleValidationInput}
                 value={key}
-                placeholder='Enter lobby key'
+                placeholder="Enter lobby key"
                 textError={!isFormValidInput && key.length > 0 ? 'Key must be numeric and 6 chars long' : undefined}
             />
             <SimpleButton
-                title='Enter to lobby'
+                title="Enter to lobby"
                 color={Color.BUTTON_RED}
                 titleColor={Color.WHITE}
                 buttonWidth={width - 32}
@@ -75,7 +75,7 @@ export const MatchJoinLobby: FC = () => {
             />
             {loading ? <MovieLoader /> : null}
         </View>
-    )
+    );
 };
 
 const styles = StyleSheet.create({
@@ -87,6 +87,6 @@ const styles = StyleSheet.create({
         paddingVertical: 32,
     },
     text: {
-        color: Color.WHITE
-    }
+        color: Color.WHITE,
+    },
 });

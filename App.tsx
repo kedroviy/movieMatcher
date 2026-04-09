@@ -7,40 +7,38 @@ import AppContainer from './src/app';
 import { store } from './src/redux/configure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import socketService from 'features/match/match-socketService';
-import { API, StatusNotification } from 'shared';
-import { useTranslation } from 'react-i18next';
+import { API } from 'shared';
 import { useInAppUpdate } from 'shared/hooks/useInAppUpdate';
 
 function App(): React.JSX.Element {
-  const { t } = useTranslation();
-  useInAppUpdate();
-  
-  useEffect(() => {
-    const setLocalization = async () => {
+    useInAppUpdate();
 
-      let currentLanguage = await AsyncStorage.getItem('language');
+    useEffect(() => {
+        const setLocalization = async () => {
+            let currentLanguage = await AsyncStorage.getItem('language');
 
-      if (!currentLanguage) {
-        currentLanguage = RNLocalize.getLocales()[0].languageCode;
-        i18n.changeLanguage(currentLanguage);
-        await AsyncStorage.setItem('language', currentLanguage);
-      }
+            if (!currentLanguage) {
+                currentLanguage = RNLocalize.getLocales()[0].languageCode;
+                i18n.changeLanguage(currentLanguage);
+                await AsyncStorage.setItem('language', currentLanguage);
+            }
 
-      i18n.changeLanguage(currentLanguage);
-    }
-    setLocalization();
-    socketService.connect(API.BASE_URL);
+            i18n.changeLanguage(currentLanguage);
+        };
+        setLocalization();
+        socketService.connect(API.BASE_URL);
 
-    return () => {
-      socketService.disconnect();
-    };
-  }, []);
+        return () => {
+            socketService.disconnect();
+        };
+    }, []);
 
-  return (
-    <Provider store={store}>
-      <AppContainer />
-      {/* <StatusNotification /> */}
-    </Provider>);
+    return (
+        <Provider store={store}>
+            <AppContainer />
+            {/* <StatusNotification /> */}
+        </Provider>
+    );
 }
 
 export default App;

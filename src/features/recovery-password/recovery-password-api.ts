@@ -1,11 +1,11 @@
-import { create } from 'apisauce'
+import { create } from 'apisauce';
 import { API } from '../../shared';
 
 type RecoveryPasswordType = {
     email: string;
     password?: string;
     code?: string;
-}
+};
 
 type Response<T> = {
     code: any;
@@ -30,18 +30,17 @@ export const sendEmailForRecoveryAPI = async (email: string) => {
             },
         });
 
-        if (response.ok) {;
+        if (response.ok) {
             return { success: true };
-        } else {;
+        } else {
             return { success: false };
         }
     } catch (error) {
         return { success: false, error: 'Ошибка сети' };
     }
-}
+};
 
 export const sendRecoveryCodeAPI = async (body: RecoveryPasswordType) => {
-
     try {
         const response = await api.post<Response<{ success: string }>>(API.VERIFY_CHANGE_PASSWORD_CODE, body);
 
@@ -53,10 +52,9 @@ export const sendRecoveryCodeAPI = async (body: RecoveryPasswordType) => {
     } catch (error) {
         return { success: false, error: 'Ошибка сети' };
     }
-}
+};
 
 export const sendRecoveryNewPasswordAPI = async (body: RecoveryPasswordType) => {
-
     try {
         const response = await api.post<Response<{ success: string }>>(API.NEW_PASSWORD, body);
 
@@ -68,4 +66,4 @@ export const sendRecoveryNewPasswordAPI = async (body: RecoveryPasswordType) => 
     } catch (error) {
         return { success: false, error: 'Ошибка сети' };
     }
-}
+};

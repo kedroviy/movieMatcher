@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, TouchableOpacityProps } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Color } from 'styles/colors';
 
 type MatchStatusCardType = {
@@ -21,14 +21,16 @@ export const MatchStatusCard: React.FC<MatchStatusCardType> = ({
 }) => {
     return (
         <View style={[styles.container, containerStyle]}>
-            <View style={{
-                justifyContent: 'center',
-                alignItems: 'center',
-                width: 200,
-                height: 300,
-                borderRadius: 50,
-                marginBottom: 34,
-            }}>
+            <View
+                style={{
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    width: 200,
+                    height: 300,
+                    borderRadius: 50,
+                    marginBottom: 34,
+                }}
+            >
                 {imageSource}
             </View>
             <Text style={styles.title}>{title}</Text>

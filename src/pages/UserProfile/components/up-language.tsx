@@ -1,10 +1,9 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { FC, useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { View, StyleSheet, Dimensions, Text } from "react-native";
-import { MovieLoader, RadioButton } from "shared";
-import { Color } from "styles/colors";
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { FC, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { View, StyleSheet, Dimensions, Text } from 'react-native';
+import { MovieLoader, RadioButton } from 'shared';
+import { Color } from 'styles/colors';
 
 export const UPLanguage: FC = () => {
     const windowWidth = Dimensions.get('window').width;
@@ -34,13 +33,15 @@ export const UPLanguage: FC = () => {
 
     if (language === null) {
         return (
-            <View style={{
-                flex: 1,
-                width: windowWidth,
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: '#353535',
-            }}>
+            <View
+                style={{
+                    flex: 1,
+                    width: windowWidth,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    backgroundColor: '#353535',
+                }}
+            >
                 <MovieLoader />
             </View>
         );
@@ -48,30 +49,24 @@ export const UPLanguage: FC = () => {
 
     return (
         <View style={[styles.container, { width: windowWidth }]}>
-            <View style={{
-                flex: 0.3,
-                top: 24,
-                width: windowWidth,
-                alignItems: 'center',
-                justifyContent: 'flex-start',
-                marginVertical: 34,
-                gap: 16,
-            }}>
+            <View
+                style={{
+                    flex: 0.3,
+                    top: 24,
+                    width: windowWidth,
+                    alignItems: 'center',
+                    justifyContent: 'flex-start',
+                    marginVertical: 34,
+                    gap: 16,
+                }}
+            >
                 <View style={styles.radioContainer}>
                     <Text style={{ color: Color.WHITE }}>English</Text>
-                    <RadioButton
-                        containerSize={24}
-                        selected={language === 'en'}
-                        onChange={() => setLanguage('en')}
-                    />
+                    <RadioButton containerSize={24} selected={language === 'en'} onChange={() => setLanguage('en')} />
                 </View>
                 <View style={styles.radioContainer}>
                     <Text style={{ color: Color.WHITE }}>Русский</Text>
-                    <RadioButton
-                        containerSize={24}
-                        selected={language === 'ru'}
-                        onChange={() => setLanguage('ru')}
-                    />
+                    <RadioButton containerSize={24} selected={language === 'ru'} onChange={() => setLanguage('ru')} />
                 </View>
             </View>
         </View>
@@ -96,5 +91,5 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '500',
         lineHeight: 20.8,
-    }
+    },
 });

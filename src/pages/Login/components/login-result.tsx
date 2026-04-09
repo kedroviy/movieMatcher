@@ -1,7 +1,7 @@
-import { FC } from "react";
-import { StackScreenProps } from "@react-navigation/stack";
-import { RootStackParamList } from "app/constants";
-import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { FC } from 'react';
+import { StackScreenProps } from '@react-navigation/stack';
+import { RootStackParamList } from 'app/constants';
+import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 type Props = StackScreenProps<RootStackParamList, 'LoginResult'>;
 
@@ -11,43 +11,48 @@ export const LoginResult: FC<Props> = ({ route }) => {
 
     return (
         <View style={[styles.container, { width: windowWidth }]}>
-            <View style={{
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                width: windowWidth,
-                paddingHorizontal: 16,
-                paddingVertical: 32,
-                flex: 1,
-            }}>
-
-                <View style={{
-                    flex: 0.55,
+            <View
+                style={{
                     alignItems: 'center',
-                    justifyContent: 'flex-end',
+                    justifyContent: 'space-between',
                     width: windowWidth,
                     paddingHorizontal: 16,
+                    paddingVertical: 32,
+                    flex: 1,
                 }}
-                >
-                    <View style={{
-                        justifyContent: 'center',
+            >
+                <View
+                    style={{
+                        flex: 0.55,
                         alignItems: 'center',
-                        width: 100,
-                        height: 100,
-                        backgroundColor: '#DC2626',
-                        borderRadius: 50,
-                        marginBottom: 34,
-                    }}>
+                        justifyContent: 'flex-end',
+                        width: windowWidth,
+                        paddingHorizontal: 16,
+                    }}
+                >
+                    <View
+                        style={{
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            width: 100,
+                            height: 100,
+                            backgroundColor: '#DC2626',
+                            borderRadius: 50,
+                            marginBottom: 34,
+                        }}
+                    >
                         {icon}
                     </View>
-                    <Text style={{
-                        fontFamily: 'Roboto',
-                        fontSize: 16,
-                        fontStyle: 'normal',
-                        fontWeight: '400',
-                        lineHeight: 20.8,
-                        color: '#FAFAFA',
-                        marginBottom: 12
-                    }}
+                    <Text
+                        style={{
+                            fontFamily: 'Roboto',
+                            fontSize: 16,
+                            fontStyle: 'normal',
+                            fontWeight: '400',
+                            lineHeight: 20.8,
+                            color: '#FAFAFA',
+                            marginBottom: 12,
+                        }}
                     >
                         {resultText}
                     </Text>
@@ -55,16 +60,15 @@ export const LoginResult: FC<Props> = ({ route }) => {
 
                 <TouchableOpacity
                     style={[styles.button, { backgroundColor: buttonColor, width: windowWidth - 32 }]}
-                    testID='myButton'
+                    testID="myButton"
                     onPress={onHandlePress}
                 >
                     <Text style={styles.text}>{buttonText}</Text>
                 </TouchableOpacity>
-
             </View>
-        </View >
-    )
-}
+        </View>
+    );
+};
 
 const styles = StyleSheet.create({
     container: {

@@ -1,22 +1,21 @@
-import { useDispatch, useSelector } from "react-redux";
-import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { Dimensions, StyleSheet, View } from "react-native"
-import Swiper from "react-native-deck-swiper";
-import socketService from "features/match/match-socketService";
-import { OverlayLabel } from "pages/Main/ui/overlay-label";
-import { SMControlBar } from "pages/Main/components/sm-control-bar";
-import { Loader, NotificationType, WaitingSvgIcon } from "shared";
-import { Color } from "styles/colors";
-import { SMSwipeCards } from "pages/Main/components/sm-swipe-cards";
-import { AppDispatch } from "redux/configure-store";
-import { useIsLastCard, useLikeMovieQueue } from "../hooks";
-import { checkStatusRedux, getMoviesRedux, updateUserStatusRedux } from "redux/matchSlice";
-import { MatchStatusCard } from "../ui/match-status-card";
-import { useGetUserStatusByUserId } from "../hooks/useGetUserStatusByUserId";
-import { MatchUserStatusEnum } from "features/match/match.model";
-import { NavigationProp, ParamListBase, useNavigation } from "@react-navigation/native";
-import { addNotification } from "redux/appSlice";
-import { MovieLoader } from "shared/ui/movie-loader";
+import { useDispatch, useSelector } from 'react-redux';
+import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Dimensions, StyleSheet, View } from 'react-native';
+import Swiper from 'react-native-deck-swiper';
+import socketService from 'features/match/match-socketService';
+import { OverlayLabel } from 'pages/Main/ui/overlay-label';
+import { SMControlBar } from 'pages/Main/components/sm-control-bar';
+import { NotificationType, WaitingSvgIcon } from 'shared';
+import { Color } from 'styles/colors';
+import { SMSwipeCards } from 'pages/Main/components/sm-swipe-cards';
+import { AppDispatch } from 'redux/configure-store';
+import { useIsLastCard, useLikeMovieQueue } from '../hooks';
+import { checkStatusRedux, getMoviesRedux, updateUserStatusRedux } from 'redux/matchSlice';
+import { MatchStatusCard } from '../ui/match-status-card';
+import { MatchUserStatusEnum } from 'features/match/match.model';
+import { NavigationProp, ParamListBase, useNavigation } from '@react-navigation/native';
+import { addNotification } from 'redux/appSlice';
+import { MovieLoader } from 'shared/ui/movie-loader';
 
 const { width } = Dimensions.get('window');
 
@@ -25,7 +24,7 @@ export const MatchSelectionMovie: FC = () => {
     const navigation = useNavigation<NavigationProp<ParamListBase>>();
     const { currentUserMatch, movies } = useSelector((state: any) => state.matchSlice);
     const { user } = useSelector((state: any) => state.userSlice);
-    const { likeMovie, isProcessing } = useLikeMovieQueue();
+    const { likeMovie } = useLikeMovieQueue();
     // const { userStatus } = useGetUserStatusByUserId(user?.id);
     const [currentCardIndex, setCurrentCardIndex] = useState<number>(0);
     const [isInitialLoading, setIsInitialLoading] = useState<boolean>(true);
@@ -41,14 +40,14 @@ export const MatchSelectionMovie: FC = () => {
         socketService.subscribeToBroadcastMovies((data: any) => {
             console.log('subscr movies: ', data);
             dispatch(getMoviesRedux(currentUserMatch?.roomKey))
-                .then((action) => {
-                    const { payload } = action;
-                    
-                    dispatch(addNotification({
-                        id: new Date().getTime(),
-                        message: data.messageForClient,
-                        type: 'success' as NotificationType,
-                    }));
+                .then(() => {
+                    dispatch(
+                        addNotification({
+                            id: new Date().getTime(),
+                            message: data.messageForClient,
+                            type: 'success' as NotificationType,
+                        }),
+                    );
 
                     if (data.messageForClient === 'Final movie selected') {
                         navigation.navigate('MatchResult');
@@ -57,11 +56,13 @@ export const MatchSelectionMovie: FC = () => {
                     setIsWaitStatus(false);
                 })
                 .catch((error) => {
-                    dispatch(addNotification({
-                        id: new Date().getTime(),
-                        message: `Error loading movies: ${error.message}`,
-                        type: 'error' as NotificationType,
-                    }));
+                    dispatch(
+                        addNotification({
+                            id: new Date().getTime(),
+                            message: `Error loading movies: ${error.message}`,
+                            type: 'error' as NotificationType,
+                        }),
+                    );
                 });
         });
 
@@ -75,25 +76,32 @@ export const MatchSelectionMovie: FC = () => {
             setIsWaitStatus(true);
             const checkUserStatus = async () => {
                 try {
-                    await dispatch(updateUserStatusRedux(
-                        { roomKey: currentUserMatch?.roomKey, userId: user.id, userStatus: MatchUserStatusEnum.WAITING }
-                    ));
+                    await dispatch(
+                        updateUserStatusRedux({
+                            roomKey: currentUserMatch?.roomKey,
+                            userId: user.id,
+                            userStatus: MatchUserStatusEnum.WAITING,
+                        }),
+                    );
                     await dispatch(checkStatusRedux({ roomKey: currentUserMatch?.roomKey, userId: user.id })).unwrap();
 
-                    dispatch(addNotification({
-                        id: new Date().getTime(),
-                        message: 'User status updated successfully!',
-                        type: 'success' as NotificationType,
-                    }));
-
+                    dispatch(
+                        addNotification({
+                            id: new Date().getTime(),
+                            message: 'User status updated successfully!',
+                            type: 'success' as NotificationType,
+                        }),
+                    );
                 } catch (error) {
                     console.error('Ошибка при обновлении статуса:', error);
-                    
-                    dispatch(addNotification({
-                        id: new Date().getTime(),
-                        message: `Error updating user status: ${error as string}`,
-                        type: 'error' as NotificationType,
-                    }));
+
+                    dispatch(
+                        addNotification({
+                            id: new Date().getTime(),
+                            message: `Error updating user status: ${error as string}`,
+                            type: 'error' as NotificationType,
+                        }),
+                    );
                 }
             };
 
@@ -102,40 +110,45 @@ export const MatchSelectionMovie: FC = () => {
     }, [currentUserMatch?.roomKey, user.id, isLastCard]);
 
     const handleOnSwiped = useCallback(() => {
-        setCurrentCardIndex(prevIndex => prevIndex + 1);
+        setCurrentCardIndex((prevIndex) => prevIndex + 1);
     }, []);
 
     const handleLike = useCallback(() => {
-        console.log(currentUserMatch?.roomKey)
-        if (movies.data?.docs[currentCardIndex]) {
+        const roomKey = currentUserMatch?.roomKey;
+        const doc = movies.data?.docs[currentCardIndex];
+        console.log(roomKey);
+        if (doc && roomKey) {
             likeMovie({
                 userId: user.id,
-                roomKey: currentUserMatch?.roomKey!,
-                movieId: movies.data.docs[currentCardIndex].id,
+                roomKey,
+                movieId: doc.id,
             });
         }
     }, [currentCardIndex, likeMovie, movies.data?.docs, currentUserMatch?.roomKey, user.id]);
 
-    const overlayLabels = useMemo(() => ({
-        left: {
-            title: 'NOPE',
-            element: <OverlayLabel label="NOPE" color="#E5566D" />,
-            style: {
-                wrapper: styles.overlayWrapper,
-            },
-        },
-        right: {
-            title: 'LIKE',
-            element: <OverlayLabel label="LIKE" color="#4CCC93" />,
-            style: {
-                wrapper: {
-                    ...styles.overlayWrapper,
-                    alignItems: 'flex-start',
-                    marginLeft: 30,
+    const overlayLabels = useMemo(
+        () => ({
+            left: {
+                title: 'NOPE',
+                element: <OverlayLabel label="NOPE" color="#E5566D" />,
+                style: {
+                    wrapper: styles.overlayWrapper,
                 },
             },
-        },
-    }), []);
+            right: {
+                title: 'LIKE',
+                element: <OverlayLabel label="LIKE" color="#4CCC93" />,
+                style: {
+                    wrapper: {
+                        ...styles.overlayWrapper,
+                        alignItems: 'flex-start',
+                        marginLeft: 30,
+                    },
+                },
+            },
+        }),
+        [],
+    );
 
     if (isInitialLoading) {
         return (
@@ -147,12 +160,14 @@ export const MatchSelectionMovie: FC = () => {
 
     return (
         <View style={styles.container}>
-            {!isWaitStatus ?
+            {!isWaitStatus ? (
                 <>
-                    <View style={{
-                        width: width,
-                        flex: 1,
-                    }}>
+                    <View
+                        style={{
+                            width: width,
+                            flex: 1,
+                        }}
+                    >
                         <Swiper
                             ref={useSwiper}
                             animateCardOpacity
@@ -173,27 +188,30 @@ export const MatchSelectionMovie: FC = () => {
                             overlayLabels={overlayLabels}
                         />
                     </View>
-                    <View style={{
-                        flex: 0.2,
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'space-evenly',
-                        width: width / 2.2,
-                    }}>
+                    <View
+                        style={{
+                            flex: 0.2,
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            justifyContent: 'space-evenly',
+                            width: width / 2.2,
+                        }}
+                    >
                         <SMControlBar
                             onHandleLike={() => useSwiper.current?.swipeRight()}
                             onHandleDislike={() => useSwiper.current?.swipeLeft()}
                         />
                     </View>
-                </> :
+                </>
+            ) : (
                 <MatchStatusCard
                     imageSource={<WaitingSvgIcon />}
                     title="Wait until others make their choice"
                     description="Wait until others make their choice"
                 />
-            }
+            )}
         </View>
-    )
+    );
 };
 
 const styles = StyleSheet.create({
@@ -228,7 +246,7 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: '700',
         lineHeight: 28.8,
-        color: Color.WHITE
+        color: Color.WHITE,
     },
     loader: {
         position: 'absolute',
@@ -237,6 +255,6 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
         backgroundColor: Color.BLACK,
-        opacity: 0.5
-    }
+        opacity: 0.5,
+    },
 });

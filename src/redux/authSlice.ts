@@ -4,11 +4,7 @@ import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { removeToken, saveToken } from '../shared';
-import {
-    loginUser,
-    registrationUser,
-    sendGoogleCodeToServer,
-} from 'features';
+import { loginUser, registrationUser, sendGoogleCodeToServer } from 'features';
 
 function googleSignInErrorMessage(error: unknown): string {
     if (typeof error === 'string') {
@@ -35,7 +31,7 @@ type AuthState = {
     loadingApplication: boolean;
     success: boolean;
     onboarded: boolean;
-}
+};
 
 const initialState: AuthState = {
     token: null,
@@ -67,37 +63,35 @@ export const authUser = createAsyncThunk(
         } catch (error) {
             return rejectWithValue(error);
         }
-    }
+    },
 );
 
-export const authenticateWithGoogle = createAsyncThunk(
-    'auth/GOOGLE',
-    async (_, { rejectWithValue }) => {
-        try {
-            await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
-            const userInfo = await GoogleSignin.signIn();
-            let idToken = userInfo.idToken;
-            if (!idToken) {
-                const tokens = await GoogleSignin.getTokens();
-                idToken = tokens.idToken;
-            }
-            if (!idToken) {
-                return rejectWithValue(
-                    'Не получен idToken от Google. Проверьте webClientId и настройки OAuth в Google Cloud.',
-                );
-            }
-
-            const response = await sendGoogleCodeToServer(idToken);
-
-            if (response.success) {
-                saveToken(response.token as string);
-            }
-
-            return response;
-        } catch (error) {
-            return rejectWithValue(googleSignInErrorMessage(error));
+export const authenticateWithGoogle = createAsyncThunk('auth/GOOGLE', async (_, { rejectWithValue }) => {
+    try {
+        await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+        const userInfo = await GoogleSignin.signIn();
+        let idToken = userInfo.idToken;
+        if (!idToken) {
+            const tokens = await GoogleSignin.getTokens();
+            idToken = tokens.idToken;
         }
-    });
+        if (!idToken) {
+            return rejectWithValue(
+                'Не получен idToken от Google. Проверьте webClientId и настройки OAuth в Google Cloud.',
+            );
+        }
+
+        const response = await sendGoogleCodeToServer(idToken);
+
+        if (response.success) {
+            saveToken(response.token as string);
+        }
+
+        return response;
+    } catch (error) {
+        return rejectWithValue(googleSignInErrorMessage(error));
+    }
+});
 
 export const authRegistrationUser = createAsyncThunk(
     'auth/REGISTRATION',
@@ -107,56 +101,50 @@ export const authRegistrationUser = createAsyncThunk(
             if (!response.success) {
                 return rejectWithValue(response?.error);
             }
-            return response
+            return response;
         } catch (error) {
             return rejectWithValue(error);
         }
-    }
+    },
 );
 
-export const checkAuthStatus = createAsyncThunk(
-    'auth/CHECK_STATUS',
-    async () => {
-        try {
-            const credentials = await Keychain.getGenericPassword({ service: 'token_guard' });
-            if (credentials) {
-                return { isAuthenticated: true };
-            }
-            return { isAuthenticated: false };
-        } catch (error) {
-            return { isAuthenticated: false };
+export const checkAuthStatus = createAsyncThunk('auth/CHECK_STATUS', async () => {
+    try {
+        const credentials = await Keychain.getGenericPassword({ service: 'token_guard' });
+        if (credentials) {
+            return { isAuthenticated: true };
         }
+        return { isAuthenticated: false };
+    } catch (error) {
+        return { isAuthenticated: false };
     }
-);
+});
 
-export const initializeApp = createAsyncThunk(
-    'auth/INITIALIZE_APP',
-    async (_, { dispatch, rejectWithValue }) => {
-        let timeoutId;
-        try {
-            dispatch(setLoadingApplication(true));
+export const initializeApp = createAsyncThunk('auth/INITIALIZE_APP', async (_, { dispatch, rejectWithValue }) => {
+    let timeoutId;
+    try {
+        dispatch(setLoadingApplication(true));
 
-            const cancellablePromise = new Promise<void>((resolve) => {
-                timeoutId = setTimeout(() => {
-                    resolve();
-                }, 3000);
-            });
-            await cancellablePromise;
+        const cancellablePromise = new Promise<void>((resolve) => {
+            timeoutId = setTimeout(() => {
+                resolve();
+            }, 3000);
+        });
+        await cancellablePromise;
 
-            const authStatusResult = await dispatch(checkAuthStatus()).unwrap();
-            const isAuthenticated = authStatusResult.isAuthenticated;
-            const onboardedValue = await AsyncStorage.getItem('ONBOARDED');
-            const onboarded = !!onboardedValue;
+        const authStatusResult = await dispatch(checkAuthStatus()).unwrap();
+        const isAuthenticated = authStatusResult.isAuthenticated;
+        const onboardedValue = await AsyncStorage.getItem('ONBOARDED');
+        const onboarded = !!onboardedValue;
 
-            return { isAuthenticated, onboarded };
-        } catch (error) {
-            return rejectWithValue('Error while initializing the application');
-        } finally {
-            dispatch(setLoadingApplication(false));
-            clearTimeout(timeoutId);
-        }
+        return { isAuthenticated, onboarded };
+    } catch (error) {
+        return rejectWithValue('Error while initializing the application');
+    } finally {
+        dispatch(setLoadingApplication(false));
+        clearTimeout(timeoutId);
     }
-);
+});
 
 const setLoadingApplication = createAction<boolean>('auth/SET_LOADING_APPLICATION');
 
@@ -190,7 +178,7 @@ const authSlice = createSlice({
             })
             .addCase(initializeApp.rejected, (state) => {
                 state.loadingApplication = false;
-                state.error = "Error while initializing the application";
+                state.error = 'Error while initializing the application';
             })
             .addCase(setLoadingApplication, (state, action) => {
                 state.loadingApplication = action.payload;
@@ -206,7 +194,7 @@ const authSlice = createSlice({
             })
             .addCase(checkAuthStatus.rejected, (state) => {
                 state.loading = false;
-                state.error = "Error checking authentication status";
+                state.error = 'Error checking authentication status';
                 state.loadingApplication = false;
             })
             .addCase(authUser.pending, (state) => {
@@ -246,13 +234,12 @@ const authSlice = createSlice({
             })
             .addCase(authenticateWithGoogle.rejected, (state, action) => {
                 state.loading = false;
-                state.error =
-                    (action.payload as string) || 'Не удалось войти через Google';
+                state.error = (action.payload as string) || 'Не удалось войти через Google';
             })
             .addCase(authRegistrationUser.pending, (state) => {
                 state.loading = true;
             })
-            .addCase(authRegistrationUser.fulfilled, (state, action) => {
+            .addCase(authRegistrationUser.fulfilled, (state) => {
                 state.loading = false;
             })
             .addCase(authRegistrationUser.rejected, (state, action) => {
@@ -261,7 +248,7 @@ const authSlice = createSlice({
             })
             .addCase(saveGoogleAuthCode, (state, action) => {
                 state.googleAuthCode = action.payload;
-            })
+            });
     },
 });
 

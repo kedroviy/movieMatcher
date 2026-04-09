@@ -1,4 +1,3 @@
-
 import { create } from 'apisauce';
 import { loginUser, registrationUser, sendGoogleCodeToServer } from '../authAPI';
 import { API } from 'shared';
@@ -12,8 +11,9 @@ jest.mock('apisauce', () => {
     };
 });
 
-const mockPost = create({ baseURL: 'https://movie-match-x5ue.onrender.com' })
-    .post as jest.MockedFunction<typeof create>['prototype']['post'];
+const mockPost = create({ baseURL: 'https://movie-match-x5ue.onrender.com' }).post as jest.MockedFunction<
+    typeof create
+>['prototype']['post'];
 
 describe('sendGoogleCodeToServer', () => {
     it('should return success and token when the response is successful', async () => {
@@ -28,7 +28,6 @@ describe('sendGoogleCodeToServer', () => {
         console.log('Result:', result);
         expect(result).toEqual({ success: true, token: 'mockToken' });
     });
-
 
     it('should return error when the response is unsuccessful', async () => {
         const mockResponse = {
@@ -111,4 +110,3 @@ describe('registrationUser', () => {
         expect(result).toEqual({ success: false, error: 'Ошибка сети' });
     });
 });
-

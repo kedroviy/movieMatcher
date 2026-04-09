@@ -1,16 +1,10 @@
-import { FC } from "react";
-import { CardStyleInterpolators, createStackNavigator } from "@react-navigation/stack";
-import { useTranslation } from "react-i18next";
+import { FC } from 'react';
+import { CardStyleInterpolators, createStackNavigator } from '@react-navigation/stack';
+import { useTranslation } from 'react-i18next';
 
-import {
-    AppRoutes,
-    RootStackParamList,
-    animationOptions,
-    defaultScreenOptions,
-    withoutHeader,
-} from "./constants";
-import { UPAboutApplication, UPAccountSettings, UPChangeName, UPLanguage, UserProfileResult } from "pages";
-import { Color } from "styles/colors";
+import { AppRoutes, RootStackParamList, animationOptions, defaultScreenOptions, withoutHeader } from './constants';
+import { UPAboutApplication, UPAccountSettings, UPChangeName, UPLanguage, UserProfileResult } from 'pages';
+import { Color } from 'styles/colors';
 
 const ProfileStack = createStackNavigator<RootStackParamList>();
 
@@ -36,7 +30,7 @@ export const ProfileNavigator: FC = () => {
                         marginTop: 24,
                     },
                     cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
-                    ...animationOptions
+                    ...animationOptions,
                 }}
                 key={AppRoutes.USER_PROFILE_ABOUT_SCREEN}
             />
@@ -57,7 +51,7 @@ export const ProfileNavigator: FC = () => {
                         marginTop: 24,
                     },
                     cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
-                    ...animationOptions
+                    ...animationOptions,
                 }}
                 key={AppRoutes.USER_PROFILE_LANGUAGE}
             />
@@ -79,7 +73,7 @@ export const ProfileNavigator: FC = () => {
                         marginTop: 24,
                     },
                     cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
-                    ...animationOptions
+                    ...animationOptions,
                 }}
                 key={AppRoutes.USER_PROFILE_ACC_SETTINGS}
             />
@@ -98,7 +92,7 @@ export const ProfileNavigator: FC = () => {
                         marginTop: 24,
                     },
                     cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
-                    ...animationOptions
+                    ...animationOptions,
                 }}
                 key={AppRoutes.USER_PROFILE_CHANGENAME}
             />
@@ -109,11 +103,10 @@ export const ProfileNavigator: FC = () => {
                 options={{
                     ...withoutHeader,
                     cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
-                    ...animationOptions
+                    ...animationOptions,
                 }}
                 key={AppRoutes.PROFILE_RESULT}
             />
-
         </ProfileStack.Navigator>
-    )
-}
+    );
+};
