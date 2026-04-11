@@ -4,7 +4,7 @@ export const useIsLastCard = (currentIndex: number, totalCards: number) => {
     const [isLastCard, setIsLastCard] = useState(false);
 
     useEffect(() => {
-        if (currentIndex === totalCards) {
+        if (totalCards > 0 && currentIndex === totalCards) {
             setIsLastCard(true);
         } else {
             setIsLastCard(false);

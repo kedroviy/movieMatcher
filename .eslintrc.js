@@ -24,7 +24,7 @@ module.exports = {
   },
   overrides: [
     {
-      files: ['metro.config.js', 'jest.setup.js', 'babel.config.js'],
+      files: ['metro.config.js', 'jest.setup.js', 'babel.config.js', 'scripts/**/*.js'],
       rules: {
         '@typescript-eslint/no-var-requires': 'off',
       },

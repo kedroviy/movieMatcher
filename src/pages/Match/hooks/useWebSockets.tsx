@@ -5,14 +5,13 @@ export function useWebSocket() {
     const [data, setData] = useState<any>(null);
 
     useEffect(() => {
-        socketService.subscribeToMatchUpdates((dataFromSocket: any) => {
+        const unsub = socketService.subscribeToMatchUpdates((dataFromSocket: any) => {
             console.log(dataFromSocket);
             setData(dataFromSocket);
         });
 
         return () => {
-            socketService.unsubscribeFromMatchUpdates();
-            socketService.disconnect();
+            unsub();
         };
     }, []);
 

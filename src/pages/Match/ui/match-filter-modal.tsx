@@ -1,8 +1,9 @@
 import { Slider } from '@miblanchard/react-native-slider';
 import { FILTERS_DATA } from 'pages/Main/constants';
+import { useMovieFilterLabels } from 'pages/Main/hooks/use-movie-filter-labels';
 import { FilterOption, initialState, reducer } from 'pages/Main/sm.model';
 import { SMMultiSelectInput } from 'pages/Main/ui/sm-multi-select-input';
-import { FC, useReducer, useState } from 'react';
+import { FC, useMemo, useReducer, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Modal, View, StyleSheet, Dimensions, ScrollView, Text, TouchableOpacity } from 'react-native';
 import { DeleteSvgIcon, SimpleButton } from 'shared';
@@ -18,6 +19,7 @@ const { width, height } = Dimensions.get('window');
 
 export const MatchFilterModal: FC<MatchFilterModalType> = ({ modalVisible, setModalVisible, onFiltersChange }) => {
     const { t } = useTranslation();
+    const { countryOptions, genreOptions, localizeCountries, localizeGenres } = useMovieFilterLabels();
     const [state, SMdispatch] = useReducer(reducer<FilterOption>, initialState);
     const [range, setRange] = useState<[number, number]>([0, 10]);
 
@@ -44,15 +46,23 @@ export const MatchFilterModal: FC<MatchFilterModalType> = ({ modalVisible, setMo
         SMdispatch({ type: 'SET_EXCLUDE_GENRE', payload: excludeGenre });
     };
 
-    const genreOptionsWithDisabled = FILTERS_DATA.genre.options.map((genre) => ({
-        ...genre,
-        disabled: state.excludeGenre.some((excludedGenre) => excludedGenre.id === genre.id),
-    }));
+    const genreOptionsWithDisabled = useMemo(
+        () =>
+            genreOptions.map((genre) => ({
+                ...genre,
+                disabled: state.excludeGenre.some((excludedGenre) => excludedGenre.id === genre.id),
+            })),
+        [genreOptions, state.excludeGenre],
+    );
 
-    const excludeGenreOptionsWithDisabled = FILTERS_DATA.genre.options.map((genre) => ({
-        ...genre,
-        disabled: state.selectedGenres.some((selectedGenre) => selectedGenre.id === genre.id),
-    }));
+    const excludeGenreOptionsWithDisabled = useMemo(
+        () =>
+            genreOptions.map((genre) => ({
+                ...genre,
+                disabled: state.selectedGenres.some((selectedGenre) => selectedGenre.id === genre.id),
+            })),
+        [genreOptions, state.selectedGenres],
+    );
 
     const applyFilters = () => {
         onFiltersChange(state);
@@ -86,10 +96,10 @@ export const MatchFilterModal: FC<MatchFilterModalType> = ({ modalVisible, setMo
                     >
                         <SMMultiSelectInput
                             label={t('match_movie.filters_settings.country')}
-                            options={FILTERS_DATA.country.options}
-                            selectedOptions={state.selectedCountries}
+                            options={countryOptions}
+                            selectedOptions={localizeCountries(state.selectedCountries)}
                             onSelectionChange={handleCountrySelectionChange}
-                            placeholder="Select countries"
+                            placeholder={t('movie_filters.placeholder_country')}
                         />
 
                         <SMMultiSelectInput
@@ -97,23 +107,23 @@ export const MatchFilterModal: FC<MatchFilterModalType> = ({ modalVisible, setMo
                             options={FILTERS_DATA.year.options}
                             selectedOptions={state.selectedYears}
                             onSelectionChange={handleYearSelectionChange}
-                            placeholder="Select countries"
+                            placeholder={t('movie_filters.placeholder_year')}
                         />
 
                         <SMMultiSelectInput
                             label={t('match_movie.filters_settings.genre')}
                             options={genreOptionsWithDisabled}
-                            selectedOptions={state.selectedGenres}
+                            selectedOptions={localizeGenres(state.selectedGenres)}
                             onSelectionChange={handleGenreSelectionChange}
-                            placeholder={FILTERS_DATA.genre.placeholder}
+                            placeholder={t('movie_filters.placeholder_genre')}
                         />
 
                         <SMMultiSelectInput
                             label={t('match_movie.filters_settings.exclude_genre')}
                             options={excludeGenreOptionsWithDisabled}
-                            selectedOptions={state.excludeGenre}
+                            selectedOptions={localizeGenres(state.excludeGenre)}
                             onSelectionChange={handleExcludeGenreChange}
-                            placeholder={FILTERS_DATA.genre.placeholder}
+                            placeholder={t('movie_filters.placeholder_genre')}
                         />
                         <View style={styles.sliderContainer}>
                             <Text style={styles.sliderLabelText}>Rating</Text>

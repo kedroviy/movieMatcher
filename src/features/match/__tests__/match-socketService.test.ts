@@ -29,6 +29,7 @@ describe('SocketService', () => {
 
     afterEach(() => {
         jest.clearAllMocks();
+        socketService.disconnect();
     });
 
     it('should connect to the server and set up listeners', () => {
@@ -109,9 +110,10 @@ describe('SocketService', () => {
         const data = { message: 'New movies' };
 
         socketService.connect('http://localhost');
-        socketService.subscribeToBroadcastMovies(callback);
+        const unsub = socketService.subscribeToBroadcastMovies(callback);
 
-        mockSocket.on.mock.calls.find((call: string[]) => call[0] === 'broadcastMovies')[1](data);
+        const handler = mockSocket.on.mock.calls.find((call: string[]) => call[0] === 'broadcastMovies')[1];
+        handler(data);
 
         expect(callback).toHaveBeenCalledWith(data);
         expect(store.dispatch).toHaveBeenCalledWith(
@@ -121,6 +123,30 @@ describe('SocketService', () => {
                 id: expect.any(Number),
             }),
         );
+
+        unsub();
+        expect(mockSocket.off).toHaveBeenCalledWith('broadcastMovies', expect.any(Function));
+    });
+
+    it('should fan out broadcastMovies to multiple subscribers', () => {
+        const a = jest.fn();
+        const b = jest.fn();
+        const data = { messageForClient: 'Movies data updated' };
+
+        socketService.connect('http://localhost');
+        const unsubA = socketService.subscribeToBroadcastMovies(a);
+        socketService.subscribeToBroadcastMovies(b);
+
+        const handler = mockSocket.on.mock.calls.find((call: string[]) => call[0] === 'broadcastMovies')[1];
+        handler(data);
+
+        expect(a).toHaveBeenCalledWith(data);
+        expect(b).toHaveBeenCalledWith(data);
+
+        unsubA();
+        handler(data);
+        expect(a).toHaveBeenCalledTimes(1);
+        expect(b).toHaveBeenCalledTimes(2);
     });
 
     it('should disconnect from the server', () => {

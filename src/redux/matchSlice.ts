@@ -21,7 +21,8 @@ interface MatchState {
     loading: boolean;
     error: null | string;
     room: Room[];
-    movies: any[];
+    /** apisauce response for get-movies (has `.data.docs`, etc.) */
+    movies: any;
     currentUserMatch: Match | null;
     currentMovie: any;
     currentPage: number;
@@ -195,9 +196,12 @@ export const getUserStatusByUserIdRedux = createAsyncThunk(
 
 export const checkStatusRedux = createAsyncThunk(
     'match/checkStatus',
-    async ({ roomKey, userId }: { roomKey: string; userId: number }, { rejectWithValue }) => {
+    async (
+        { roomKey, userId, idempotencyKey }: { roomKey: string; userId: number; idempotencyKey?: string },
+        { rejectWithValue },
+    ) => {
         try {
-            await checkStatus(roomKey, userId);
+            await checkStatus(roomKey, userId, idempotencyKey);
         } catch (error) {
             return rejectWithValue('Failed to check user status');
         }
@@ -241,6 +245,10 @@ const matchSlice = createSlice({
         },
         setRoomKey: (state, action) => {
             state.roomKey = action.payload;
+        },
+        /** Same shape as apisauce `get` response for `/rooms/:key/get-movies` (used by TanStack Query sync). */
+        setMoviesPayload(state, action) {
+            state.movies = action.payload;
         },
     },
     extraReducers: (builder) => {
@@ -404,6 +412,13 @@ const matchSlice = createSlice({
     },
 });
 
-export const { updateRoomUsers, updateCurrentMovieReducer, setMovie, setRequestStatus, resetMovies, setRoomKey } =
-    matchSlice.actions;
+export const {
+    updateRoomUsers,
+    updateCurrentMovieReducer,
+    setMovie,
+    setRequestStatus,
+    resetMovies,
+    setRoomKey,
+    setMoviesPayload,
+} = matchSlice.actions;
 export default matchSlice.reducer;

@@ -2,9 +2,11 @@ import i18n from './i18n';
 import { useEffect } from 'react';
 import * as RNLocalize from 'react-native-localize';
 import { Provider } from 'react-redux';
+import { QueryClientProvider } from '@tanstack/react-query';
 
 import AppContainer from './src/app';
 import { store } from './src/redux/configure-store';
+import { queryClient } from './src/features/match/query-client';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import socketService from 'features/match/match-socketService';
 import { API } from 'shared';
@@ -35,8 +37,9 @@ function App(): React.JSX.Element {
 
     return (
         <Provider store={store}>
-            <AppContainer />
-            {/* <StatusNotification /> */}
+            <QueryClientProvider client={queryClient}>
+                <AppContainer />
+            </QueryClientProvider>
         </Provider>
     );
 }
