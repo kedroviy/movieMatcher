@@ -8,4 +8,5 @@ export {
     getUserStatusByUserId,
     checkStatus,
     getMatchData,
+    getRoomState,
 } from './match-service';

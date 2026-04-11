@@ -134,6 +134,17 @@ describe('Match Service', () => {
         expect(mockApi.post).toHaveBeenCalledWith('/match/check-status/roomKey', { userId: 1 });
     });
 
+    it('checkStatus should pass idempotencyKey when provided', async () => {
+        const mockResponse = { ok: true };
+        mockApi.post.mockResolvedValueOnce(mockResponse);
+
+        await checkStatus('roomKey', 1, 'key-abc');
+        expect(mockApi.post).toHaveBeenCalledWith('/match/check-status/roomKey', {
+            userId: 1,
+            idempotencyKey: 'key-abc',
+        });
+    });
+
     it('getMatchData should fetch match data', async () => {
         const mockResponse = { ok: true, data: {} };
         mockApi.get.mockResolvedValueOnce(mockResponse);

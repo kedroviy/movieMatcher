@@ -40,7 +40,6 @@ export const TabNavigator = () => {
                     unmountOnBlur: true,
                     cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
                     ...animationOptions,
-                    key: AppRoutes.SOLO_MATCH_SCREEN,
                 }}
                 key={AppRoutes.SOLO_MATCH_SCREEN}
             />
@@ -54,9 +53,8 @@ export const TabNavigator = () => {
                     unmountOnBlur: true,
                     cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
                     ...animationOptions,
-                    key: AppRoutes.MATCH_SCREEN,
                 }}
-                key={AppRoutes.SOLO_MATCH_SCREEN}
+                key={AppRoutes.MATCH_SCREEN}
             />
             <Tabs.Screen
                 name={AppRoutes.USER_PROFILE_SCREEN}
@@ -68,7 +66,6 @@ export const TabNavigator = () => {
                     unmountOnBlur: true,
                     cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
                     ...animationOptions,
-                    key: AppRoutes.USER_PROFILE_SCREEN,
                 }}
                 key={AppRoutes.USER_PROFILE_SCREEN}
             />

@@ -1,7 +1,8 @@
-import { FC, useCallback, useEffect, useState } from 'react';
+import { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, Dimensions, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { NavigationProp, ParamListBase, RouteProp, useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { MovieLoader, SettingSvgIcon, SimpleButton } from 'shared';
 import { Color } from 'styles/colors';
@@ -11,15 +12,10 @@ import { MatchUserCard } from './match-user-card';
 import { useTranslation } from 'react-i18next';
 import { AppDispatch } from 'redux/configure-store';
 import { MatchFilterModal } from '../ui';
-import {
-    getMatchDataRedux,
-    getMoviesRedux,
-    startMatchRedux,
-    updateRoomFiltersRedux,
-    updateRoomUsers,
-} from 'redux/matchSlice';
+import { getMatchDataRedux, startMatchRedux, updateRoomFiltersRedux, updateRoomUsers } from 'redux/matchSlice';
 import { useWebSocket } from '../hooks';
 import { Role } from 'features/match/match.model';
+import { refetchRoomMoviesToRedux, useRoomMoviesSync, useRoomStateSync } from 'features/match/use-room-movies-sync';
 
 type MatchLobbyProps = {
     route: RouteProp<RootStackParamList, 'MatchLobby'>;
@@ -27,95 +23,100 @@ type MatchLobbyProps = {
 
 const { width } = Dimensions.get('window');
 
-export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
-    const { lobbyName } = route.params;
+export const MatchLobby: FC<MatchLobbyProps> = ({ route: _route }) => {
     const navigation = useNavigation<NavigationProp<ParamListBase>>();
     const dispatch: AppDispatch = useDispatch();
+    const queryClient = useQueryClient();
     const { t } = useTranslation();
-    const { loading, room, role, currentUserMatch, currentMovie, movies, matchStatus } = useSelector(
-        (state: any) => state.matchSlice,
-    );
+    const { loading, room, role, currentUserMatch, currentMovie, movies } = useSelector((state: any) => state.matchSlice);
     const { user } = useSelector((state: any) => state.userSlice);
     const [refreshing, setRefreshing] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
     const [filters, setFilters] = useState<any>({});
     const dataFromSocket = useWebSocket();
 
+    const roomKeyRef = useRef<string | undefined>(undefined);
+    roomKeyRef.current = currentUserMatch?.roomKey ?? room?.[0]?.roomKey;
+
+    const roomKeyForMovies = currentUserMatch?.roomKey ?? room?.[0]?.roomKey;
+    useRoomMoviesSync(roomKeyForMovies);
+    useRoomStateSync(roomKeyForMovies);
+
     const onRefresh = useCallback(async () => {
         setRefreshing(true);
         try {
-            await dispatch(getMatchDataRedux(currentUserMatch?.roomKey));
+            const key = currentUserMatch?.roomKey ?? room?.[0]?.roomKey;
+            if (key) {
+                await dispatch(getMatchDataRedux(key));
+                await refetchRoomMoviesToRedux(queryClient, dispatch, key);
+            }
         } finally {
             setRefreshing(false);
         }
-    }, [lobbyName, currentUserMatch?.roomKey]);
+    }, [currentUserMatch?.roomKey, room?.[0]?.roomKey, dispatch, queryClient]);
 
     useEffect(() => {
-        if (currentUserMatch?.roomKey) {
-            dispatch(getMatchDataRedux(currentUserMatch?.roomKey));
-            dispatch(getMoviesRedux(currentUserMatch?.roomKey));
+        const rk = currentUserMatch?.roomKey ?? room?.[0]?.roomKey;
+        if (rk) {
+            dispatch(getMatchDataRedux(rk));
         }
-    }, []);
+    }, [currentUserMatch?.roomKey, room?.[0]?.roomKey, dispatch]);
+
+    useEffect(() => {
+        const roomKey = currentUserMatch?.roomKey ?? room?.[0]?.roomKey;
+        if (roomKey && user?.id != null) {
+            socketService.joinRoom(roomKey, String(user.id));
+        }
+    }, [currentUserMatch?.roomKey, room?.[0]?.roomKey, user?.id]);
+
+    useEffect(() => {
+        if (dataFromSocket) {
+            dispatch(updateRoomUsers(dataFromSocket));
+        }
+    }, [dataFromSocket, dispatch]);
+
+    useEffect(() => {
+        if (movies.data?.docs.length) {
+            navigation.navigate('MatchSelectionMovie', { movie: currentMovie });
+        }
+    }, [movies.data?.docs.length, navigation, currentMovie]);
 
     useEffect(() => {
         const handleFiltersUpdated = (data: any) => {
             setFilters(data.filters);
         };
 
-        socketService.subscribeToBroadcastMatchUpdate(async () => {
-            await dispatch(getMatchDataRedux(room[0].roomKey));
-        });
-
-        socketService.subscribeToRequestMatchUpdate(async () => {
-            if (currentUserMatch?.roomKey) {
-                await dispatch(getMatchDataRedux(currentUserMatch?.roomKey));
-            } else if (room[0].roomKey) {
-                await dispatch(getMatchDataRedux(room[0].roomKey));
+        const unsubBroadcastMatch = socketService.subscribeToBroadcastMatchUpdate(async () => {
+            const key = roomKeyRef.current;
+            if (key) {
+                await dispatch(getMatchDataRedux(key));
             }
         });
 
-        socketService.filtersUpdateBroadcast(handleFiltersUpdated);
+        const unsubRequestMatch = socketService.subscribeToRequestMatchUpdate(async () => {
+            const key = roomKeyRef.current;
+            if (key) {
+                await dispatch(getMatchDataRedux(key));
+            }
+        });
 
-        socketService.subscribeToBroadcastMovies(async (data: any) => {
+        const unsubFilters = socketService.filtersUpdateBroadcast(handleFiltersUpdated);
+
+        const unsubBroadcastMovies = socketService.subscribeToBroadcastMovies(async (data: any) => {
             console.log('lobby movies broadcasting', data);
-            if (currentUserMatch?.roomKey) {
-                await dispatch(getMoviesRedux(currentUserMatch?.roomKey));
-            } else if (room[0].roomKey) {
-                await dispatch(getMoviesRedux(room[0].roomKey));
+            const key = roomKeyRef.current;
+            if (key) {
+                await refetchRoomMoviesToRedux(queryClient, dispatch, key);
             }
         });
-
-        if (dataFromSocket) {
-            console.log('dataFromSocket: ', dataFromSocket);
-            dispatch(updateRoomUsers(dataFromSocket));
-        }
-
-        if (movies.data?.docs.length) {
-            navigation.navigate('MatchSelectionMovie', { movie: currentMovie });
-        }
-
-        console.log('room: ', room);
 
         return () => {
-            socketService.unsubscribeFromRequestMatchUpdate();
-            socketService.unsubscribeFromRequestMatchResponse();
-            socketService.unsubscribeToBroadcastMatchUpdate();
-            socketService.unsubscribeBroadcastMovies();
-            socketService.unsubscribeFromMatchUpdates();
-            socketService.unsubscribeToJoinNewUser();
+            unsubBroadcastMatch();
+            unsubRequestMatch();
+            unsubFilters();
+            unsubBroadcastMovies();
         };
-    }, [
-        dataFromSocket,
-        socketService,
-        currentUserMatch?.roomKey,
-        room,
-        dispatch,
-        user.id,
-        role,
-        filters,
-        movies.data?.docs.length,
-        matchStatus,
-    ]);
+    }, [dispatch, queryClient]);
 
     const handleOnSubmit = async () => {
         const actionResult = await dispatch(startMatchRedux(room[0].roomKey));
@@ -141,9 +142,6 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
                 )
                     .unwrap()
                     .then(() => {
-                        socketService.filtersUpdateBroadcast((filtersFromSocket: any) => {
-                            setFilters(filtersFromSocket);
-                        });
                         Alert.alert('Success', 'Filters updated successfully.');
                     })
                     .catch((error) => {

@@ -1,6 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Dimensions, StyleSheet, View } from 'react-native';
+import { useQueryClient } from '@tanstack/react-query';
 import Swiper from 'react-native-deck-swiper';
 import socketService from 'features/match/match-socketService';
 import { OverlayLabel } from 'pages/Main/ui/overlay-label';
@@ -8,9 +9,10 @@ import { SMControlBar } from 'pages/Main/components/sm-control-bar';
 import { NotificationType, WaitingSvgIcon } from 'shared';
 import { Color } from 'styles/colors';
 import { SMSwipeCards } from 'pages/Main/components/sm-swipe-cards';
-import { AppDispatch } from 'redux/configure-store';
+import { AppDispatch, store } from 'redux/configure-store';
 import { useIsLastCard, useLikeMovieQueue } from '../hooks';
-import { checkStatusRedux, getMoviesRedux, updateUserStatusRedux } from 'redux/matchSlice';
+import { checkStatusRedux, updateUserStatusRedux } from 'redux/matchSlice';
+import { refetchRoomMoviesToRedux, useRoomMoviesSync, useRoomStateSync } from 'features/match/use-room-movies-sync';
 import { MatchStatusCard } from '../ui/match-status-card';
 import { MatchUserStatusEnum } from 'features/match/match.model';
 import { NavigationProp, ParamListBase, useNavigation } from '@react-navigation/native';
@@ -21,6 +23,7 @@ const { width } = Dimensions.get('window');
 
 export const MatchSelectionMovie: FC = () => {
     const dispatch: AppDispatch = useDispatch();
+    const queryClient = useQueryClient();
     const navigation = useNavigation<NavigationProp<ParamListBase>>();
     const { currentUserMatch, movies } = useSelector((state: any) => state.matchSlice);
     const { user } = useSelector((state: any) => state.userSlice);
@@ -31,15 +34,38 @@ export const MatchSelectionMovie: FC = () => {
     const [isWaitStatus, setIsWaitStatus] = useState<boolean>(false);
     const isLastCard = useIsLastCard(currentCardIndex, movies.data?.docs.length || 0);
     const useSwiper = useRef<Swiper<any>>(null);
+    /** Must not change on every swipe — otherwise we `off('broadcastMovies')` and can miss the server push. */
+    const roomKeyRef = useRef<string | undefined>(undefined);
+    roomKeyRef.current = currentUserMatch?.roomKey;
+
+    useRoomMoviesSync(currentUserMatch?.roomKey);
+    useRoomStateSync(currentUserMatch?.roomKey);
+
+    /** Deck finished when entering wait; if Redux gets a new list (e.g. lobby refreshed movies), leave wait. */
+    const deckSnapshotAtWaitRef = useRef<string | null>(null);
+
+    useEffect(() => {
+        const rk = currentUserMatch?.roomKey;
+        if (rk && user?.id != null) {
+            socketService.joinRoom(rk, String(user.id));
+        }
+    }, [currentUserMatch?.roomKey, user?.id]);
 
     useEffect(() => {
         if (movies.data?.docs.length) {
             setIsInitialLoading(false);
         }
+    }, [movies.data?.docs.length]);
 
-        socketService.subscribeToBroadcastMovies((data: any) => {
+    /** Stable subscription: room key from ref so we do not detach `broadcastMovies` on roomKey churn. */
+    useEffect(() => {
+        const handler = (data: any) => {
+            const roomKey = roomKeyRef.current;
+            if (!roomKey) {
+                return;
+            }
             console.log('subscr movies: ', data);
-            dispatch(getMoviesRedux(currentUserMatch?.roomKey))
+            refetchRoomMoviesToRedux(queryClient, dispatch, roomKey)
                 .then(() => {
                     dispatch(
                         addNotification({
@@ -54,8 +80,9 @@ export const MatchSelectionMovie: FC = () => {
                     }
                     setCurrentCardIndex(0);
                     setIsWaitStatus(false);
+                    deckSnapshotAtWaitRef.current = null;
                 })
-                .catch((error) => {
+                .catch((error: Error) => {
                     dispatch(
                         addNotification({
                             id: new Date().getTime(),
@@ -64,15 +91,41 @@ export const MatchSelectionMovie: FC = () => {
                         }),
                     );
                 });
-        });
+        };
+
+        const unsub = socketService.subscribeToBroadcastMovies(handler);
 
         return () => {
-            socketService.unsubscribeBroadcastMovies();
+            unsub();
         };
-    }, [socketService, movies.data?.docs.length, currentCardIndex, isLastCard, isWaitStatus]);
+    }, [dispatch, navigation, queryClient]);
+
+    useEffect(() => {
+        if (!isWaitStatus) {
+            return;
+        }
+        const baseline = deckSnapshotAtWaitRef.current;
+        if (!baseline) {
+            return;
+        }
+        const docs = movies.data?.docs;
+        if (!docs?.length) {
+            return;
+        }
+        const snap = `${docs.length}:${docs[0]?.id}:${docs[docs.length - 1]?.id}`;
+        if (snap !== baseline) {
+            deckSnapshotAtWaitRef.current = null;
+            setCurrentCardIndex(0);
+            setIsWaitStatus(false);
+        }
+    }, [movies.data?.docs, isWaitStatus]);
 
     useEffect(() => {
         if (isLastCard) {
+            const docs = movies.data?.docs;
+            deckSnapshotAtWaitRef.current = docs?.length
+                ? `${docs.length}:${docs[0]?.id}:${docs[docs.length - 1]?.id}`
+                : null;
             setIsWaitStatus(true);
             const checkUserStatus = async () => {
                 try {
@@ -83,7 +136,37 @@ export const MatchSelectionMovie: FC = () => {
                             userStatus: MatchUserStatusEnum.WAITING,
                         }),
                     );
-                    await dispatch(checkStatusRedux({ roomKey: currentUserMatch?.roomKey, userId: user.id })).unwrap();
+                    const idempotencyKey = `${user.id}-${currentUserMatch?.roomKey}-${Date.now()}-${Math.random()
+                        .toString(36)
+                        .slice(2, 11)}`;
+                    await dispatch(
+                        checkStatusRedux({
+                            roomKey: currentUserMatch?.roomKey,
+                            userId: user.id,
+                            idempotencyKey,
+                        }),
+                    ).unwrap();
+
+                    if (currentUserMatch?.roomKey) {
+                        try {
+                            const moviesState = store.getState().matchSlice.movies as { data?: { docs?: { id: number }[] } };
+                            const beforeDocs = moviesState?.data?.docs;
+                            const beforeKey =
+                                beforeDocs?.length &&
+                                `${beforeDocs.length}:${beforeDocs[0]!.id}:${beforeDocs[beforeDocs.length - 1]!.id}`;
+                            await refetchRoomMoviesToRedux(queryClient, dispatch, currentUserMatch.roomKey);
+                            const afterDocs = (store.getState().matchSlice.movies as typeof moviesState)?.data?.docs;
+                            const afterKey =
+                                afterDocs?.length &&
+                                `${afterDocs.length}:${afterDocs[0]!.id}:${afterDocs[afterDocs.length - 1]!.id}`;
+                            if (afterKey && afterKey !== beforeKey) {
+                                setCurrentCardIndex(0);
+                                setIsWaitStatus(false);
+                            }
+                        } catch {
+                            // Room list may still be unchanged while waiting for partner; WS will refresh when ready.
+                        }
+                    }
 
                     dispatch(
                         addNotification({
@@ -94,6 +177,7 @@ export const MatchSelectionMovie: FC = () => {
                     );
                 } catch (error) {
                     console.error('Ошибка при обновлении статуса:', error);
+                    setIsWaitStatus(false);
 
                     dispatch(
                         addNotification({
@@ -107,7 +191,7 @@ export const MatchSelectionMovie: FC = () => {
 
             checkUserStatus();
         }
-    }, [currentUserMatch?.roomKey, user.id, isLastCard]);
+    }, [currentUserMatch?.roomKey, user.id, isLastCard, dispatch, queryClient]);
 
     const handleOnSwiped = useCallback(() => {
         setCurrentCardIndex((prevIndex) => prevIndex + 1);

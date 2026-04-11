@@ -82,6 +82,13 @@ export const getMovieData = async (roomKey: string): Promise<any> => {
     const api = await createApi();
     const response = await api.get<any>(`/rooms/${roomKey}/get-movies`);
     if (response.ok) {
+        if (typeof response.data === 'string') {
+            try {
+                return { ...response, data: JSON.parse(response.data) };
+            } catch {
+                throw new Error('Invalid movies payload from server');
+            }
+        }
         return response;
     } else {
         throw new Error('Failed to get movies');
@@ -127,12 +134,26 @@ export const getUserStatusByUserId = async (
     }
 };
 
-export const checkStatus = async (roomKey: string, userId: number): Promise<void> => {
+export const checkStatus = async (roomKey: string, userId: number, idempotencyKey?: string): Promise<void> => {
     const api = await createApi();
-    const response = await api.post<any>(`/match/check-status/${roomKey}`, { userId });
+    const body: { userId: number; idempotencyKey?: string } = { userId };
+    if (idempotencyKey) {
+        body.idempotencyKey = idempotencyKey;
+    }
+    const response = await api.post<any>(`/match/check-status/${roomKey}`, body);
     if (!response.ok) {
         throw new Error('Failed to check status');
     }
+};
+
+/** Room aggregate (phase, version, participants, deck summary) — prefer over ad-hoc joins of several calls. */
+export const getRoomState = async (roomKey: string): Promise<any> => {
+    const api = await createApi();
+    const response = await api.get<any>(`/rooms/${roomKey}/state`);
+    if (response.ok) {
+        return response;
+    }
+    throw new Error('Failed to get room state');
 };
 
 export const getMatchData = async (roomKey: string): Promise<any> => {
