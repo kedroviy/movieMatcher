@@ -1,8 +1,11 @@
-import { FC, Key, useEffect, useState } from 'react';
+import { FC, Key, useCallback, useEffect, useState } from 'react';
 import { Alert, Dimensions, Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
+import { NavigationProp, ParamListBase, useNavigation } from '@react-navigation/native';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { Color } from 'styles/colors';
+import { AppRoutes } from 'app/constants';
 
 import { useTranslation } from 'react-i18next';
 import { AppDispatch } from 'redux/configure-store';
@@ -14,14 +17,17 @@ import { SimpleButton } from 'shared';
 
 const { width } = Dimensions.get('window');
 
+const bottomButtonGap = 12;
+const horizontalPadding = 32;
+
 export const MatchResult: FC = () => {
     const dispatch: AppDispatch = useDispatch();
+    const queryClient = useQueryClient();
+    const navigation = useNavigation<NavigationProp<ParamListBase>>();
     const { movies } = useSelector((state: any) => state.matchSlice);
     const { t } = useTranslation();
     const [isExpanded, setIsExpanded] = useState<boolean>(false);
 
-    console.log('movies: ', movies.data.docs[0]);
-    console.log(movies.data.docs[0].rating.kp);
     useEffect(() => {
         dispatch(loadMovieDetails(movies.data.docs[0].id));
     }, [dispatch, movies.data.docs[0].id]);
@@ -38,6 +44,19 @@ export const MatchResult: FC = () => {
             Alert.alert('Не удалось открыть URL: ' + url);
         }
     };
+
+    const handleExitToMatch = useCallback(async () => {
+        await queryClient.invalidateQueries({ queryKey: ['rooms', 'my-memberships'] });
+        const rootNav = navigation.getParent();
+        if (rootNav) {
+            rootNav.navigate(AppRoutes.TAB_NAVIGATOR as never, {
+                screen: AppRoutes.MATCH_SCREEN,
+            } as never);
+        }
+    }, [navigation, queryClient]);
+
+    const bottomRowWidth = width - horizontalPadding;
+    const bottomButtonWidth = (bottomRowWidth - bottomButtonGap) / 2;
 
     // const renderActorsInColumns = () => {
     //     const columns = [];
@@ -179,13 +198,26 @@ export const MatchResult: FC = () => {
                     </View>
                 } */}
             </ScrollView>
-            <View>
+            <View
+                style={{
+                    flexDirection: 'row',
+                    width: bottomRowWidth,
+                    justifyContent: 'space-between',
+                }}
+            >
                 <SimpleButton
                     title={t('selection_movie.movie_details.watch')}
                     color={Color.BUTTON_RED}
                     titleColor={Color.WHITE}
-                    buttonWidth={width - 32}
+                    buttonWidth={bottomButtonWidth}
                     onHandlePress={handlePress}
+                />
+                <SimpleButton
+                    title={t('match_movie.exit_to_match_screen')}
+                    color={Color.INPUT_GREY}
+                    titleColor={Color.WHITE}
+                    buttonWidth={bottomButtonWidth}
+                    onHandlePress={handleExitToMatch}
                 />
             </View>
         </View>

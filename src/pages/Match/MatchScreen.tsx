@@ -2,120 +2,111 @@ import { NavigationProp, ParamListBase, useNavigation } from '@react-navigation/
 import { AppRoutes } from 'app/constants';
 import { FC, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { View, Text, StyleSheet, Image, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Image, Dimensions, Alert, ScrollView } from 'react-native';
+import { useQueryClient } from '@tanstack/react-query';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from 'redux/configure-store';
-import { createRoom, resetMovies } from 'redux/matchSlice';
-import { MovieLoader, SimpleButton } from 'shared';
+import { createRoom, doesUserHaveRoomRedux, resetMovies } from 'redux/matchSlice';
 import useFetchUserProfile from 'shared/hooks/getUserProfile';
 import { Color } from 'styles/colors';
-import useUserHasRoom from './hooks/useUserHasRoom';
+import { MatchLobbyActionsSkeleton } from './components/match-lobby-actions-skeleton';
+import { MatchMembershipsBlock } from './components/match-memberships-block';
+import { MatchScreenLobbyActionsRow } from './components/match-screen-lobby-actions-row';
 
 const { width } = Dimensions.get('window');
 
 export const MatchScreen: FC = () => {
     const navigation = useNavigation<NavigationProp<ParamListBase>>();
     const dispatch: AppDispatch = useDispatch();
+    const queryClient = useQueryClient();
     const { t } = useTranslation();
     const { user, loading: userLoading } = useFetchUserProfile();
-    const { currentUserMatch, loading: roomLoading } = useUserHasRoom(user?.id);
 
     useEffect(() => {
         dispatch(resetMovies());
-    }, []);
+    }, [dispatch]);
 
-    const handleCreateRoom = async (userId: number) => {
-        if (currentUserMatch?.roomKey) {
+    const handleCreateRoom = async (userId: number | undefined) => {
+        if (userId == null) {
+            return;
+        }
+        try {
+            const newRoom: any = await dispatch(createRoom(userId)).unwrap();
+
+            await queryClient.invalidateQueries({ queryKey: ['rooms', 'my-memberships'] });
+            dispatch(doesUserHaveRoomRedux(userId));
+
             navigation.navigate(AppRoutes.MATCH_NAVIGATOR, {
                 screen: AppRoutes.MATCH_LOBBY,
-                params: { lobbyName: currentUserMatch?.roomKey },
+                params: { lobbyName: newRoom.roomKey },
             });
-        } else {
-            try {
-                const newRoom: any = await dispatch(createRoom(userId)).unwrap();
-
-                navigation.navigate(AppRoutes.MATCH_NAVIGATOR, {
-                    screen: AppRoutes.MATCH_LOBBY,
-                    params: { lobbyName: newRoom.roomKey },
-                });
-            } catch (errMsg) {
-                throw new Error(errMsg as string);
-            }
+        } catch (errMsg) {
+            const message = typeof errMsg === 'string' ? errMsg : String(errMsg);
+            Alert.alert(t('match_movie.main_match_screen.create_lobby_btn'), message);
         }
     };
 
+    const userReady = Boolean(user?.id && !userLoading);
+
     return (
         <View style={styles.container}>
-            <View style={styles.headerContainer}>
-                <Text
-                    style={[
-                        styles.text,
-                        {
-                            fontSize: 24,
-                            fontWeight: '700',
-                            lineHeight: 28.8,
-                        },
-                    ]}
-                >
-                    {t('match_movie.main_match_screen.greetings')}, {user ? user.username : 'Username'}!
-                </Text>
-            </View>
-            <View style={styles.mainContainer}>
-                <Image style={{ height: 220, marginBottom: 16 }} source={require('../../../assets/image41.png')} />
-                <Text
-                    style={[
-                        styles.text,
-                        {
-                            textAlign: 'center',
-                            fontSize: 16,
-                            fontWeight: '400',
-                            lineHeight: 20.8,
-                        },
-                    ]}
-                >
-                    {t('match_movie.main_match_screen.main_text')}
-                </Text>
-            </View>
-            <View style={styles.controlsContainer}>
-                {roomLoading || (userLoading && !user) ? (
-                    <MovieLoader />
-                ) : (
-                    <>
-                        <SimpleButton
-                            title={
-                                userLoading
-                                    ? t('match_movie.main_match_screen.loading')
-                                    : t(
-                                          currentUserMatch?.roomKey
-                                              ? 'match_movie.main_match_screen.reconnect_lobby_btn'
-                                              : 'match_movie.main_match_screen.create_lobby_btn',
-                                      )
-                            }
-                            color={Color.BUTTON_RED}
-                            titleColor={Color.WHITE}
-                            buttonWidth={width - 32}
-                            onHandlePress={() => handleCreateRoom(user.id)}
-                            disabled={userLoading}
-                        />
-                        <SimpleButton
-                            title={t('match_movie.main_match_screen.join_lobby_btn')}
-                            color={Color.BACKGROUND_GREY}
-                            titleColor={Color.WHITE}
-                            buttonWidth={width - 32}
-                            onHandlePress={() =>
-                                navigation.navigate(AppRoutes.MATCH_NAVIGATOR, {
-                                    screen: AppRoutes.MATCH_JOIN_LOBBY,
-                                })
-                            }
-                            buttonStyle={{
-                                borderWidth: 1,
-                                borderStyle: 'solid',
-                                borderColor: Color.WHITE,
-                            }}
-                        />
-                    </>
-                )}
-            </View>
+            <ScrollView
+                contentContainerStyle={styles.scrollContent}
+                keyboardShouldPersistTaps="handled"
+                showsVerticalScrollIndicator={false}
+            >
+                <View style={styles.headerContainer}>
+                    <Text
+                        style={[
+                            styles.text,
+                            {
+                                fontSize: 24,
+                                fontWeight: '700',
+                                lineHeight: 28.8,
+                            },
+                        ]}
+                    >
+                        {t('match_movie.main_match_screen.greetings')}, {user ? user.username : 'Username'}!
+                    </Text>
+                </View>
+                <View style={styles.mainContainer}>
+                    <Image style={{ height: 220, marginBottom: 16 }} source={require('../../../assets/image41.png')} />
+                    <Text
+                        style={[
+                            styles.text,
+                            {
+                                textAlign: 'center',
+                                fontSize: 16,
+                                fontWeight: '400',
+                                lineHeight: 20.8,
+                            },
+                        ]}
+                    >
+                        {t('match_movie.main_match_screen.main_text')}
+                    </Text>
+                </View>
+                <View style={styles.controlsContainer}>
+                    {userLoading && !user ? (
+                        <MatchLobbyActionsSkeleton />
+                    ) : (
+                        <>
+                            <MatchScreenLobbyActionsRow
+                                createTitle={t('match_movie.main_match_screen.create_lobby_btn')}
+                                joinTitle={t('match_movie.main_match_screen.join_lobby_btn')}
+                                onCreate={() => void handleCreateRoom(user?.id)}
+                                onJoin={() =>
+                                    navigation.navigate(AppRoutes.MATCH_NAVIGATOR, {
+                                        screen: AppRoutes.MATCH_JOIN_LOBBY,
+                                    })
+                                }
+                                createDisabled={userLoading || user?.id == null}
+                                joinDisabled={userLoading}
+                            />
+                            <MatchMembershipsBlock userId={user?.id} userReady={userReady} />
+                        </>
+                    )}
+                </View>
+            </ScrollView>
         </View>
     );
 };
@@ -124,24 +115,27 @@ const styles = StyleSheet.create({
     container: {
         backgroundColor: Color.BACKGROUND_GREY,
         flex: 1,
+    },
+    scrollContent: {
         alignItems: 'center',
-        justifyContent: 'space-between',
         paddingVertical: 32,
+        paddingBottom: 48,
     },
     headerContainer: {
         width: width,
         paddingLeft: 16,
+        marginBottom: 8,
     },
     mainContainer: {
         alignItems: 'center',
         justifyContent: 'flex-start',
-        flex: 0.8,
         width: width - 32,
+        marginBottom: 16,
     },
     controlsContainer: {
-        gap: 16,
         alignSelf: 'stretch',
         alignItems: 'center',
+        marginBottom: 16,
     },
     text: {
         color: Color.WHITE,

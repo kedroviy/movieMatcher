@@ -7,6 +7,8 @@
     "android:emulators-sequential": "node scripts/run-android-emulators-sequential.js",
     "android:reverse-metro": "node scripts/adb-reverse-metro-all.js",
     "android:dev-multi": "node scripts/dev-android-multi-emulators.js",
+    "android:dev-multi-all": "node scripts/dev-android-multi-emulators.js --all-adb-devices",
+    "android:emulators-sequential-all": "node scripts/run-android-emulators-sequential.js --all-adb-devices",
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",

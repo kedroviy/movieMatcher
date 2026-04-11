@@ -14,6 +14,10 @@
  *
  * Override device list (comma-separated adb serials):
  *   set ANDROID_DEVICE_SERIALS=emulator-5554,emulator-5556&& npm run android:emulators-sequential
+ *
+ * All connected adb devices (emulators + USB phone/tablet), when you cannot list serials by hand:
+ *   npm run android:emulators-sequential-all
+ *   (same as passing --all-adb-devices or ANDROID_USE_ALL_ADB_DEVICES=1)
  */
 const { execSync, spawnSync } = require('child_process');
 const fs = require('fs');
@@ -27,6 +31,10 @@ const FORCE_ACTIVE_ARCH_ONLY = process.env.ANDROID_FORCE_ACTIVE_ARCH_ONLY === '1
 const DEBUG_APK = path.join(ROOT, 'android', 'app', 'build', 'outputs', 'apk', 'debug', 'app-debug.apk');
 const MAIN_ACTIVITY = 'com.moviematcher/.MainActivity';
 
+if (process.argv.includes('--all-adb-devices')) {
+    process.env.ANDROID_USE_ALL_ADB_DEVICES = '1';
+}
+
 function adbEmulators() {
     const out = execSync('adb devices', { encoding: 'utf8', cwd: ROOT });
     return out
@@ -37,17 +45,34 @@ function adbEmulators() {
         .filter((id) => id.startsWith('emulator-'));
 }
 
+function adbAllDevices() {
+    const out = execSync('adb devices', { encoding: 'utf8', cwd: ROOT });
+    return out
+        .split(/\r?\n/)
+        .map((l) => l.trim())
+        .filter((l) => l && !l.startsWith('List'))
+        .filter((l) => /\tdevice$/.test(l))
+        .map((l) => l.split(/\s+/)[0]);
+}
+
 async function main() {
     const fromEnv = process.env.ANDROID_DEVICE_SERIALS;
+    const useAll = process.env.ANDROID_USE_ALL_ADB_DEVICES === '1';
     const devices = fromEnv
         ? fromEnv
               .split(',')
               .map((s) => s.trim())
               .filter(Boolean)
-        : adbEmulators();
+        : useAll
+          ? adbAllDevices()
+          : adbEmulators();
 
     if (devices.length === 0) {
-        console.error('No emulators found (adb devices). Start AVDs or set ANDROID_DEVICE_SERIALS.');
+        console.error(
+            useAll
+                ? 'No devices in "device" state (adb devices). Plug USB / start emulators or set ANDROID_DEVICE_SERIALS.'
+                : 'No emulators found (adb devices). Start AVDs, set ANDROID_DEVICE_SERIALS, or use --all-adb-devices / ANDROID_USE_ALL_ADB_DEVICES=1.',
+        );
         process.exit(1);
     }
 
@@ -64,7 +89,7 @@ async function main() {
 
     const runAndroidArgs = (serial, opts = {}) => {
         const activeArchOnly = opts.activeArchOnly !== false;
-        const args = [rnCli, 'run-android', '--no-packager', '--deviceId', serial];
+        const args = [rnCli, 'run-android', '--no-packager', '--device', serial];
         if (activeArchOnly) {
             args.push('--active-arch-only');
         }
@@ -117,13 +142,13 @@ async function main() {
                     });
                 }
             }
-            // Use --deviceId (not --device): RN CLI runOnSpecificDevice only reads deviceId.
+            // Use --device (RN CLI 15+; old --deviceId is deprecated).
             // ANDROID_SERIAL: Gradle installDebug otherwise pushes to every connected device and both launch → white screen on one.
             const archNote = useActiveArchOnlyFirst()
                 ? '--active-arch-only (single device or ANDROID_FORCE_ACTIVE_ARCH_ONLY=1)'
                 : 'full ABI APK (needed so the same app-debug.apk can install on every connected emulator)';
             console.log(
-                `\n--- ${i + 1}/${devices.length}: --deviceId ${serial} (${archNote}; ANDROID_SERIAL=${serial}) ---\n`,
+                `\n--- ${i + 1}/${devices.length}: --device ${serial} (${archNote}; ANDROID_SERIAL=${serial}) ---\n`,
             );
             const r = spawnSync(
                 process.execPath,

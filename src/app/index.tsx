@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { StatusBar, View, useColorScheme } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 
@@ -31,36 +32,38 @@ export default function AppContainer() {
     }, [dispatch]);
 
     return (
-        <SafeAreaProvider>
-            {loadingApplication ? (
-                <View
-                    style={{
-                        flex: 1,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        backgroundColor: Color.BACKGROUND_GREY,
-                    }}
-                >
-                    <StartMessage />
-                </View>
-            ) : (
-                <NavigationContainer>
-                    <SafeAreaView
-                        style={[backgroundStyle, { flex: 1 }]}
-                        testID="appContainer"
-                        edges={['top', 'right', 'bottom', 'left']}
+        <GestureHandlerRootView style={{ flex: 1 }}>
+            <SafeAreaProvider>
+                {loadingApplication ? (
+                    <View
+                        style={{
+                            flex: 1,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            backgroundColor: Color.BACKGROUND_GREY,
+                        }}
                     >
-                        <StatusBar
-                            translucent
-                            barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-                            backgroundColor="transparent"
-                        />
-                        {!isAuthenticated ? <LoginNavigator /> : <AppNavigation onboarded={onboarded} />}
+                        <StartMessage />
+                    </View>
+                ) : (
+                    <NavigationContainer>
+                        <SafeAreaView
+                            style={[backgroundStyle, { flex: 1 }]}
+                            testID="appContainer"
+                            edges={['top', 'right', 'bottom', 'left']}
+                        >
+                            <StatusBar
+                                translucent
+                                barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+                                backgroundColor="transparent"
+                            />
+                            {!isAuthenticated ? <LoginNavigator /> : <AppNavigation onboarded={onboarded} />}
 
-                        <NetworkStatus status={t('general.network_problem')} />
-                    </SafeAreaView>
-                </NavigationContainer>
-            )}
-        </SafeAreaProvider>
+                            <NetworkStatus status={t('general.network_problem')} />
+                        </SafeAreaView>
+                    </NavigationContainer>
+                )}
+            </SafeAreaProvider>
+        </GestureHandlerRootView>
     );
 }

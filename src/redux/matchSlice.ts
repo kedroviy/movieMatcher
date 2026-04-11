@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { SMApiResponse, createRoomService, joinRoomService, leaveRoomService } from 'features';
+import { SMApiResponse, createRoomService, joinRoomService, leaveRoomService, leaveMyRoomMembershipService } from 'features';
 import {
     checkStatus,
     doesUserHaveRoomService,
@@ -100,12 +100,12 @@ export const leaveRoom = createAsyncThunk(
 
 export const leaveFromMatch = createAsyncThunk(
     'match/leaveFromMatch',
-    async ({ roomKey, userId }: { roomKey: number; userId: number }, { rejectWithValue }) => {
+    async ({ roomKey }: { roomKey: string }, { rejectWithValue }) => {
         try {
-            const response = await leaveRoomService(roomKey, userId);
-            return response.data;
+            await leaveMyRoomMembershipService(roomKey);
+            return { roomKey };
         } catch (error) {
-            return rejectWithValue(error || 'An unexpected error occurred');
+            return rejectWithValue((error as Error).message || 'Failed to leave room');
         }
     },
 );
@@ -203,7 +203,8 @@ export const checkStatusRedux = createAsyncThunk(
         try {
             await checkStatus(roomKey, userId, idempotencyKey);
         } catch (error) {
-            return rejectWithValue('Failed to check user status');
+            const msg = error instanceof Error ? error.message : 'Failed to check user status';
+            return rejectWithValue(msg);
         }
     },
 );
@@ -215,7 +216,8 @@ export const getMatchDataRedux = createAsyncThunk(
             const response = await getMatchData(roomKey);
             return response.data;
         } catch (error) {
-            return rejectWithValue('Failed to check user status');
+            const msg = error instanceof Error ? error.message : 'Failed to load match data';
+            return rejectWithValue(msg);
         }
     },
 );
@@ -396,6 +398,7 @@ const matchSlice = createSlice({
                 state.loading = false;
             })
             .addCase(checkStatusRedux.rejected, (state, action) => {
+                state.loading = false;
                 state.error = action.payload as string;
             });
         builder.addCase(getMatchDataRedux.pending, (state) => {
@@ -407,6 +410,7 @@ const matchSlice = createSlice({
             state.room = action.payload;
         });
         builder.addCase(getMatchDataRedux.rejected, (state, action) => {
+            state.loading = false;
             state.error = action.payload as string;
         });
     },

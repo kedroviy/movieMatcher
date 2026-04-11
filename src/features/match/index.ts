@@ -9,4 +9,7 @@ export {
     checkStatus,
     getMatchData,
     getRoomState,
+    getMyRoomMembershipsService,
+    leaveMyRoomMembershipService,
 } from './match-service';
+export type { UserRoomMembership } from './match-service';

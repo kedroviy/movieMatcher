@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { StyleSheet, Text, TouchableOpacity, ViewStyle } from 'react-native';
+import { StyleProp, StyleSheet, Text, TextStyle, TouchableOpacity, ViewStyle } from 'react-native';
 import { radius } from 'styles/theme';
 
 type WidthType = number | `${number}%` | undefined;
@@ -10,7 +10,8 @@ type SimpleButtonType = {
     titleColor: string;
     buttonWidth: WidthType;
     onHandlePress: () => void;
-    buttonStyle?: ViewStyle;
+    buttonStyle?: StyleProp<ViewStyle>;
+    titleStyle?: StyleProp<TextStyle>;
     disabled?: boolean;
 };
 
@@ -21,6 +22,7 @@ export const SimpleButton: FC<SimpleButtonType> = ({
     titleColor,
     buttonWidth,
     buttonStyle,
+    titleStyle,
     disabled,
 }) => {
     return (
@@ -31,10 +33,12 @@ export const SimpleButton: FC<SimpleButtonType> = ({
                 {
                     flexDirection: 'row',
                     width: buttonWidth,
-                    height: 48,
+                    minHeight: 48,
                     backgroundColor: color,
                     alignItems: 'center',
                     justifyContent: 'center',
+                    paddingVertical: 12,
+                    paddingHorizontal: 12,
                 },
                 buttonStyle,
             ]}
@@ -42,11 +46,16 @@ export const SimpleButton: FC<SimpleButtonType> = ({
             disabled={disabled}
         >
             <Text
-                style={{
-                    color: titleColor,
-                    fontSize: 18,
-                    fontWeight: '500',
-                }}
+                style={[
+                    {
+                        color: titleColor,
+                        fontSize: 18,
+                        fontWeight: '500',
+                        textAlign: 'center',
+                        width: '100%',
+                    },
+                    titleStyle,
+                ]}
             >
                 {title}
             </Text>
@@ -56,10 +65,6 @@ export const SimpleButton: FC<SimpleButtonType> = ({
 
 const styles = StyleSheet.create({
     button: {
-        padding: 10,
-        width: 328,
-        height: 44,
-        gap: 10,
         borderRadius: radius.md,
     },
 });
