@@ -1,6 +1,6 @@
-import { FC, useEffect, useReducer, useState } from 'react';
+import { FC, useEffect, useMemo, useReducer, useState } from 'react';
 import { NavigationProp, ParamListBase, useNavigation } from '@react-navigation/native';
-import { View, StyleSheet, ScrollView, Dimensions, Text } from 'react-native';
+import { View, StyleSheet, Dimensions, Text } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 
@@ -9,6 +9,7 @@ import { AlertCircleSvgIcon, SimpleButton, SimpleNotification } from 'shared';
 import { Color } from 'styles/colors';
 import { SMMultiSelectInput } from '../ui/sm-multi-select-input';
 import { FILTERS_DATA } from '../constants';
+import { useMovieFilterLabels } from '../hooks/use-movie-filter-labels';
 import { reducer, FilterOption, initialState, ISMFormData, SelectMovieType, Country, Year } from '../sm.model';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from 'redux/configure-store';
@@ -22,6 +23,7 @@ export const SMCreateMovieListFilter: FC = () => {
     const [state, SMdispatch] = useReducer(reducer<FilterOption>, initialState);
     const dispatch: AppDispatch = useDispatch();
     const { t } = useTranslation();
+    const { countryOptions, genreOptions, localizeCountries, localizeGenres } = useMovieFilterLabels();
     const { data, loading, error } = useSelector((state: any) => state.moviesSlice);
     const navigation = useNavigation<NavigationProp<ParamListBase>>();
     const [isNotificationHide, setIsNotificationHide] = useState<boolean>(true);
@@ -95,54 +97,61 @@ export const SMCreateMovieListFilter: FC = () => {
         SMdispatch({ type: 'SET_EXCLUDE_GENRE', payload: excludeGenre });
     };
 
-    const genreOptionsWithDisabled = FILTERS_DATA.genre.options.map((genre) => ({
-        ...genre,
-        disabled: state.excludeGenre.some((excludedGenre) => excludedGenre.id === genre.id),
-    }));
+    const genreOptionsWithDisabled = useMemo(
+        () =>
+            genreOptions.map((genre) => ({
+                ...genre,
+                disabled: state.excludeGenre.some((excludedGenre) => excludedGenre.id === genre.id),
+            })),
+        [genreOptions, state.excludeGenre],
+    );
 
-    const excludeGenreOptionsWithDisabled = FILTERS_DATA.genre.options.map((genre) => ({
-        ...genre,
-        disabled: state.selectedGenres.some((selectedGenre) => selectedGenre.id === genre.id),
-    }));
+    const excludeGenreOptionsWithDisabled = useMemo(
+        () =>
+            genreOptions.map((genre) => ({
+                ...genre,
+                disabled: state.selectedGenres.some((selectedGenre) => selectedGenre.id === genre.id),
+            })),
+        [genreOptions, state.selectedGenres],
+    );
 
     return (
         <View style={styles.container}>
-            <ScrollView style={styles.scrollView}>
                 <View
                     style={{
-                        height: height / 1.3,
+                        height: height / 2.5,
                     }}
                 >
                     <SMMultiSelectInput
-                        label="Страна"
-                        options={FILTERS_DATA.country.options}
-                        selectedOptions={state.selectedCountries}
+                        label={t('match_movie.filters_settings.country')}
+                        options={countryOptions}
+                        selectedOptions={localizeCountries(state.selectedCountries)}
                         onSelectionChange={handleCountrySelectionChange}
-                        placeholder="Select countries"
+                        placeholder={t('movie_filters.placeholder_country')}
                     />
 
                     <SMMultiSelectInput
-                        label="Год"
+                        label={t('match_movie.filters_settings.year')}
                         options={FILTERS_DATA.year.options}
                         selectedOptions={state.selectedYears}
                         onSelectionChange={handleYearSelectionChange}
-                        placeholder="Select countries"
+                        placeholder={t('movie_filters.placeholder_year')}
                     />
 
                     <SMMultiSelectInput
-                        label="Жанр"
+                        label={t('match_movie.filters_settings.genre')}
                         options={genreOptionsWithDisabled}
-                        selectedOptions={state.selectedGenres}
+                        selectedOptions={localizeGenres(state.selectedGenres)}
                         onSelectionChange={handleGenreSelectionChange}
-                        placeholder={FILTERS_DATA.genre.placeholder}
+                        placeholder={t('movie_filters.placeholder_genre')}
                     />
 
                     <SMMultiSelectInput
-                        label="Исключить жанр"
+                        label={t('match_movie.filters_settings.exclude_genre')}
                         options={excludeGenreOptionsWithDisabled}
-                        selectedOptions={state.excludeGenre}
+                        selectedOptions={localizeGenres(state.excludeGenre)}
                         onSelectionChange={handleExcludeGenreChange}
-                        placeholder={FILTERS_DATA.genre.placeholder}
+                        placeholder={t('movie_filters.placeholder_genre')}
                     />
 
                     <View style={styles.sliderContainer}>
@@ -165,7 +174,6 @@ export const SMCreateMovieListFilter: FC = () => {
                         />
                     </View>
                 </View>
-            </ScrollView>
             <SimpleButton
                 color={Color.BUTTON_RED}
                 titleColor={Color.WHITE}

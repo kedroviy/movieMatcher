@@ -20,7 +20,7 @@ export const withListOrEmptyState = <Data,>(Component: React.ComponentType<ListP
     return (props: ListProps<Data>) => {
         const { data, EmptyListComponent } = props;
 
-        if (data && data.length > 0) {
+        if (data?.length > 0) {
             return <Component {...props} />;
         } else {
             return <EmptyListComponent />;
