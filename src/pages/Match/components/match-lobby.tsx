@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useRef, useState } from 'react';
+import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, Dimensions, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { NavigationProp, ParamListBase, RouteProp, useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
@@ -15,6 +15,7 @@ import { MatchFilterModal } from '../ui';
 import { getMatchDataRedux, startMatchRedux, updateRoomFiltersRedux, updateRoomUsers } from 'redux/matchSlice';
 import { useWebSocket } from '../hooks';
 import { Role } from 'features/match/match.model';
+import { roomMoviesQueryKey } from 'features/match/query-client';
 import { refetchRoomMoviesToRedux, useRoomMoviesSync, useRoomStateSync } from 'features/match/use-room-movies-sync';
 
 type MatchLobbyProps = {
@@ -24,7 +25,6 @@ type MatchLobbyProps = {
 const { width } = Dimensions.get('window');
 
 export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
-    void route;
     const navigation = useNavigation<NavigationProp<ParamListBase>>();
     const dispatch: AppDispatch = useDispatch();
     const queryClient = useQueryClient();
@@ -38,39 +38,61 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
     const [, setFilters] = useState<any>({});
     const dataFromSocket = useWebSocket();
 
-    const roomKeyRef = useRef<string | undefined>(undefined);
-    roomKeyRef.current = currentUserMatch?.roomKey ?? room?.[0]?.roomKey;
+    /** Screen is opened for this key (from table «Open» or stack params); do not rely only on `currentUserMatch`. */
+    const lobbyRoomKey = useMemo(() => {
+        const fromRoute = route.params?.lobbyName;
+        if (fromRoute) {
+            return fromRoute;
+        }
+        return currentUserMatch?.roomKey ?? (Array.isArray(room) ? room[0]?.roomKey : undefined);
+    }, [route.params?.lobbyName, currentUserMatch?.roomKey, room]);
 
-    const roomKeyForMovies = currentUserMatch?.roomKey ?? room?.[0]?.roomKey;
+    const myRoleInLobby = useMemo(() => {
+        if (!user?.id || !Array.isArray(room) || room.length === 0) {
+            return role;
+        }
+        const row = room.find((m: { userId: number }) => m.userId === user.id);
+        return (row?.role as Role) ?? role;
+    }, [room, user?.id, role]);
+
+    const myRoomIdForFilters = useMemo(() => {
+        if (!user?.id || !Array.isArray(room) || room.length === 0) {
+            return currentUserMatch?.roomId;
+        }
+        const row = room.find((m: { userId: number }) => m.userId === user.id);
+        return row?.roomId ?? currentUserMatch?.roomId;
+    }, [room, user?.id, currentUserMatch?.roomId]);
+
+    const roomKeyRef = useRef<string | undefined>(undefined);
+    roomKeyRef.current = lobbyRoomKey;
+
+    const roomKeyForMovies = lobbyRoomKey;
     useRoomMoviesSync(roomKeyForMovies);
     useRoomStateSync(roomKeyForMovies);
 
     const onRefresh = useCallback(async () => {
         setRefreshing(true);
         try {
-            const key = currentUserMatch?.roomKey ?? room?.[0]?.roomKey;
-            if (key) {
-                await dispatch(getMatchDataRedux(key));
-                await refetchRoomMoviesToRedux(queryClient, dispatch, key);
+            if (lobbyRoomKey) {
+                await dispatch(getMatchDataRedux(lobbyRoomKey));
+                await refetchRoomMoviesToRedux(queryClient, dispatch, lobbyRoomKey);
             }
         } finally {
             setRefreshing(false);
         }
-    }, [currentUserMatch?.roomKey, room?.[0]?.roomKey, dispatch, queryClient]);
+    }, [lobbyRoomKey, dispatch, queryClient]);
 
     useEffect(() => {
-        const rk = currentUserMatch?.roomKey ?? room?.[0]?.roomKey;
-        if (rk) {
-            dispatch(getMatchDataRedux(rk));
+        if (lobbyRoomKey) {
+            dispatch(getMatchDataRedux(lobbyRoomKey));
         }
-    }, [currentUserMatch?.roomKey, room?.[0]?.roomKey, dispatch]);
+    }, [lobbyRoomKey, dispatch]);
 
     useEffect(() => {
-        const roomKey = currentUserMatch?.roomKey ?? room?.[0]?.roomKey;
-        if (roomKey && user?.id != null) {
-            socketService.joinRoom(roomKey, String(user.id));
+        if (lobbyRoomKey && user?.id != null) {
+            socketService.joinRoom(lobbyRoomKey, String(user.id));
         }
-    }, [currentUserMatch?.roomKey, room?.[0]?.roomKey, user?.id]);
+    }, [lobbyRoomKey, user?.id]);
 
     useEffect(() => {
         if (dataFromSocket) {
@@ -79,22 +101,28 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
     }, [dataFromSocket, dispatch]);
 
     useEffect(() => {
-        if (movies.data?.docs.length) {
-            navigation.navigate('MatchSelectionMovie', { movie: currentMovie });
+        if (movies.data?.docs.length && lobbyRoomKey) {
+            navigation.navigate('MatchSelectionMovie', { movie: currentMovie, roomKey: lobbyRoomKey });
         }
-    }, [movies.data?.docs.length, navigation, currentMovie]);
+    }, [movies.data?.docs.length, navigation, currentMovie, lobbyRoomKey]);
 
     useEffect(() => {
         const handleFiltersUpdated = (data: any) => {
             setFilters(data.filters);
         };
 
-        const unsubBroadcastMatch = socketService.subscribeToBroadcastMatchUpdate(async () => {
-            const key = roomKeyRef.current;
-            if (key) {
+        const unsubBroadcastMatch = socketService.subscribeToBroadcastMatchUpdate(
+            async (data: { roomKey?: string } | undefined) => {
+                const key = roomKeyRef.current;
+                if (!key) {
+                    return;
+                }
+                if (data?.roomKey != null && data.roomKey !== key) {
+                    return;
+                }
                 await dispatch(getMatchDataRedux(key));
-            }
-        });
+            },
+        );
 
         const unsubRequestMatch = socketService.subscribeToRequestMatchUpdate(async () => {
             const key = roomKeyRef.current;
@@ -105,13 +133,19 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
 
         const unsubFilters = socketService.filtersUpdateBroadcast(handleFiltersUpdated);
 
-        const unsubBroadcastMovies = socketService.subscribeToBroadcastMovies(async (data: any) => {
-            console.log('lobby movies broadcasting', data);
-            const key = roomKeyRef.current;
-            if (key) {
+        const unsubBroadcastMovies = socketService.subscribeToBroadcastMovies(
+            async (data: { roomKey?: string } | undefined) => {
+                const key = roomKeyRef.current;
+                if (!key) {
+                    return;
+                }
+                if (data?.roomKey != null && data.roomKey !== key) {
+                    return;
+                }
+                await queryClient.invalidateQueries({ queryKey: roomMoviesQueryKey(key) });
                 await refetchRoomMoviesToRedux(queryClient, dispatch, key);
-            }
-        });
+            },
+        );
 
         return () => {
             unsubBroadcastMatch();
@@ -119,12 +153,15 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
             unsubFilters();
             unsubBroadcastMovies();
         };
-    }, [dispatch, queryClient]);
+    }, [dispatch, queryClient, lobbyRoomKey]);
 
     const handleOnSubmit = async () => {
-        const actionResult = await dispatch(startMatchRedux(room[0].roomKey));
+        if (!lobbyRoomKey) {
+            return;
+        }
+        const actionResult = await dispatch(startMatchRedux(lobbyRoomKey));
         if (startMatchRedux.fulfilled.match(actionResult)) {
-            await socketService.requestBroadcatingMovies(room[0].roomKey);
+            await socketService.requestBroadcatingMovies(lobbyRoomKey);
         } else {
             console.log('handleSubmit: Action failed:', actionResult);
         }
@@ -139,7 +176,7 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
                 await dispatch(
                     updateRoomFiltersRedux({
                         userId: user.id,
-                        roomId: currentUserMatch?.roomId,
+                        roomId: myRoomIdForFilters,
                         filters: filters,
                     } as any),
                 )
@@ -183,7 +220,7 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
                     >
                         {t('match_movie.lobby.lobby_members')}
                     </Text>
-                    {Boolean(role) && (
+                    {myRoleInLobby === Role.ADMIN && (
                         <TouchableOpacity
                             style={{
                                 alignItems: 'center',
@@ -215,11 +252,15 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
                     color={Color.BUTTON_RED}
                     titleColor={Color.WHITE}
                     buttonWidth={width - 32}
-                    onHandlePress={() => navigation.navigate('MatchSelectionMovie', { movie: currentMovie })}
+                    onHandlePress={() =>
+                        lobbyRoomKey
+                            ? navigation.navigate('MatchSelectionMovie', { movie: currentMovie, roomKey: lobbyRoomKey })
+                            : navigation.navigate('MatchSelectionMovie', { movie: currentMovie })
+                    }
                     disabled={loading}
                 />
             ) : (
-                role === Role.ADMIN && (
+                myRoleInLobby === Role.ADMIN && (
                     <SimpleButton
                         title="Start Match"
                         color={Color.BUTTON_RED}

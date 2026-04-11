@@ -4,6 +4,9 @@
  *
  *   npm run android:dev-multi
  *
+ * Every adb device (emulator + USB), same as android:dev-multi-all:
+ *   npm run android:dev-multi-all
+ *
  * If Metro was started here, it keeps running after installs; Ctrl+C stops Metro.
  * If Metro was already running, this process exits when Android steps finish.
  */
@@ -53,6 +56,10 @@ function shutdown() {
 }
 
 async function main() {
+    if (process.argv.includes('--all-adb-devices')) {
+        process.env.ANDROID_USE_ALL_ADB_DEVICES = '1';
+    }
+
     process.on('SIGINT', shutdown);
     process.on('SIGTERM', shutdown);
 

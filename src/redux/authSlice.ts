@@ -99,11 +99,14 @@ export const authRegistrationUser = createAsyncThunk(
         try {
             const response = await registrationUser(userData);
             if (!response.success) {
-                return rejectWithValue(response?.error);
+                return rejectWithValue({
+                    errorCode: response.errorCode,
+                    params: response.params,
+                });
             }
             return response;
         } catch (error) {
-            return rejectWithValue(error);
+            return rejectWithValue({ errorCode: 'AUTH_NETWORK' });
         }
     },
 );
@@ -202,10 +205,8 @@ const authSlice = createSlice({
             })
             .addCase(authUser.fulfilled, (state, action) => {
                 state.loading = false;
-                state.token = action.payload.token as string;
-
                 if (action.payload.success) {
-                    state.token = action.payload.token as string;
+                    state.token = action.payload.token;
                     state.isAuthenticated = true;
                 } else {
                     state.isAuthenticated = false;
@@ -229,7 +230,7 @@ const authSlice = createSlice({
                 } else {
                     state.isAuthenticated = false;
                     state.token = null;
-                    state.error = action.payload.error ?? 'Не удалось войти через Google';
+                    state.error = null;
                 }
             })
             .addCase(authenticateWithGoogle.rejected, (state, action) => {
@@ -242,9 +243,8 @@ const authSlice = createSlice({
             .addCase(authRegistrationUser.fulfilled, (state) => {
                 state.loading = false;
             })
-            .addCase(authRegistrationUser.rejected, (state, action) => {
+            .addCase(authRegistrationUser.rejected, (state) => {
                 state.loading = false;
-                state.error = action.payload as string;
             })
             .addCase(saveGoogleAuthCode, (state, action) => {
                 state.googleAuthCode = action.payload;

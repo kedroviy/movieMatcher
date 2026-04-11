@@ -1,29 +1,96 @@
 import { useEffect } from 'react';
 import { Platform } from 'react-native';
-import SpInAppUpdates, { NeedsUpdateResponse, IAUUpdateKind, StartUpdateOptions } from 'sp-react-native-in-app-updates';
+import DeviceInfo from 'react-native-device-info';
+import SpInAppUpdates, {
+    IAUInstallStatus,
+    IAUUpdateKind,
+    type AndroidInAppUpdateExtras,
+    type NeedsUpdateResponse,
+    type StartUpdateOptions,
+    type StatusUpdateEvent,
+} from 'sp-react-native-in-app-updates';
 
 const inAppUpdates = new SpInAppUpdates(__DEV__);
 
+/** Play returns `versionCode`; we compare it to the running app's `versionCode` (Android). */
+function compareAndroidVersionCodes(storeVersion: string, currentVersion: string): -1 | 0 | 1 {
+    const a = parseInt(storeVersion, 10);
+    const b = parseInt(currentVersion, 10);
+    if (!Number.isFinite(a) || !Number.isFinite(b)) {
+        return 0;
+    }
+    if (a > b) return 1;
+    if (a < b) return -1;
+    return 0;
+}
+
 export const useInAppUpdate = () => {
     useEffect(() => {
-        // Play In-App Updates need a Play-signed build; dev / most emulators will error or behave oddly.
         if (__DEV__) {
             return;
         }
-        inAppUpdates
-            .checkNeedsUpdate({ curVersion: '0.0.3' })
-            .then((result: NeedsUpdateResponse) => {
-                if (result.shouldUpdate) {
-                    let updateOptions: StartUpdateOptions = {};
-                    if (Platform.OS === 'android') {
-                        updateOptions = {
-                            updateType: IAUUpdateKind.FLEXIBLE,
-                        };
+
+        let removeFlexStatusListener: (() => void) | undefined;
+
+        const run = async () => {
+            try {
+                const checkOptions =
+                    Platform.OS === 'android'
+                        ? {
+                              curVersion: String(DeviceInfo.getBuildNumber()),
+                              customVersionComparator: compareAndroidVersionCodes,
+                          }
+                        : undefined;
+
+                const result: NeedsUpdateResponse = await inAppUpdates.checkNeedsUpdate(checkOptions);
+                if (!result.shouldUpdate) {
+                    return;
+                }
+
+                if (Platform.OS === 'android') {
+                    const extras = result.other as AndroidInAppUpdateExtras;
+
+                    if (extras.isImmediateUpdateAllowed) {
+                        await inAppUpdates.startUpdate({ updateType: IAUUpdateKind.IMMEDIATE });
+                        return;
                     }
 
-                    inAppUpdates.startUpdate(updateOptions);
+                    if (extras.isFlexibleUpdateAllowed) {
+                        const onStatus = (event: StatusUpdateEvent) => {
+                            if (event.status === IAUInstallStatus.DOWNLOADED) {
+                                inAppUpdates.removeStatusUpdateListener(onStatus);
+                                removeFlexStatusListener = undefined;
+                                inAppUpdates.installUpdate();
+                            }
+                        };
+                        inAppUpdates.addStatusUpdateListener(onStatus);
+                        removeFlexStatusListener = () => inAppUpdates.removeStatusUpdateListener(onStatus);
+                        await inAppUpdates.startUpdate({ updateType: IAUUpdateKind.FLEXIBLE });
+                        return;
+                    }
+
+                    console.warn(
+                        '[InAppUpdate] Store reports an update but neither immediate nor flexible is allowed.',
+                    );
+                    return;
                 }
-            })
-            .catch((error) => console.log(error));
+
+                const iosOptions: StartUpdateOptions = {
+                    title: 'Доступно обновление',
+                    message: 'Вышла новая версия приложения. Обновить?',
+                    buttonUpgradeText: 'Обновить',
+                    buttonCancelText: 'Позже',
+                };
+                await inAppUpdates.startUpdate(iosOptions);
+            } catch (error) {
+                console.warn('[InAppUpdate]', error);
+            }
+        };
+
+        void run();
+
+        return () => {
+            removeFlexStatusListener?.();
+        };
     }, []);
 };

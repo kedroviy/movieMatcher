@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
+import { StyleSheet } from 'react-native';
 import { SimpleButton } from '../simple-button';
 
 describe('SimpleButton Component', () => {
@@ -23,7 +24,7 @@ describe('SimpleButton Component', () => {
         const buttonText = getByText('Click Me');
 
         expect(buttonText).toBeTruthy();
-        expect(buttonText.props.style.color).toBe('#FFFFFF');
+        expect(StyleSheet.flatten(buttonText.props.style).color).toBe('#FFFFFF');
     });
 
     it('calls the onHandlePress function when pressed', () => {

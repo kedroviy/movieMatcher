@@ -3,6 +3,17 @@ import { createApi } from './match-api';
 import { ApiResponse, Match, MatchLikeFields, MatchUserStatus, MatchUserStatusEnum, Room } from './match.model';
 import { handleApiResponse } from './match.utils';
 
+export type UserRoomMembership = {
+    roomKey: string;
+    roomId: string;
+    role: string;
+    isAuthor: boolean;
+    userStatus: string;
+    matchPhase: string;
+    roomStatus: string;
+    roomName: string | null;
+};
+
 export const createRoomService = async (userId: number): Promise<any> => {
     try {
         const api = await createApi();
@@ -31,11 +42,26 @@ export const leaveRoomService = async (key: number, userId: number): Promise<any
     return handleApiResponse(response);
 };
 
-export const leaveFromMatchService = async (roomKey: number, userId: number): Promise<any> => {
+/** Authenticated user leaves a room (participant) or deletes it as author — `POST /rooms/my/leave`. */
+export const leaveMyRoomMembershipService = async (roomKey: string): Promise<{ message: string }> => {
     const api = await createApi();
-    const response = await api.post<ApiResponse<any>>(`/rooms/leave-from-match`, { roomKey, userId });
-    if (!response.ok) throw new Error(response.problem || 'Unknown API error');
-    return response.data;
+    const response = await api.post<{ message: string }>('/rooms/my/leave', { roomKey });
+    if (!response.ok) {
+        throw new Error(response.problem || 'Failed to leave room');
+    }
+    return response.data ?? { message: 'OK' };
+};
+
+export const getMyRoomMembershipsService = async (): Promise<UserRoomMembership[]> => {
+    const api = await createApi();
+    const response = await api.get<UserRoomMembership[]>('/rooms/my/memberships');
+    if (!response.ok) {
+        throw new Error(response.problem || 'Failed to load your rooms');
+    }
+    if (!response.data) {
+        return [];
+    }
+    return Array.isArray(response.data) ? response.data : [];
 };
 
 export const updateRoomFilters = async (roomId: string, filters: FilterOption): Promise<any> => {

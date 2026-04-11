@@ -207,9 +207,10 @@ class SocketService {
     }
 
     private attachBroadcastMatchListener(): void {
-        if (!this.socket || this.broadcastMatchAttached || this.broadcastMatchSubscribers.size === 0) {
+        if (!this.socket || this.broadcastMatchSubscribers.size === 0) {
             return;
         }
+        this.socket.off('broadcastMatchDataUpdated', this.broadcastMatchPipe);
         this.socket.on('broadcastMatchDataUpdated', this.broadcastMatchPipe);
         this.broadcastMatchAttached = true;
     }
@@ -223,9 +224,10 @@ class SocketService {
     }
 
     private attachMatchUpdatedListener(): void {
-        if (!this.socket || this.matchUpdatedAttached || this.matchUpdatedSubscribers.size === 0) {
+        if (!this.socket || this.matchUpdatedSubscribers.size === 0) {
             return;
         }
+        this.socket.off('matchUpdated', this.matchUpdatedPipe);
         this.socket.on('matchUpdated', this.matchUpdatedPipe);
         this.matchUpdatedAttached = true;
     }
@@ -239,9 +241,10 @@ class SocketService {
     }
 
     private attachSendNextMovieListener(): void {
-        if (!this.socket || this.sendNextMovieAttached || this.sendNextMovieSubscribers.size === 0) {
+        if (!this.socket || this.sendNextMovieSubscribers.size === 0) {
             return;
         }
+        this.socket.off('sendNextMovieToRoom', this.sendNextMoviePipe);
         this.socket.on('sendNextMovieToRoom', this.sendNextMoviePipe);
         this.sendNextMovieAttached = true;
     }
@@ -255,9 +258,10 @@ class SocketService {
     }
 
     private attachFiltersUpdatedListener(): void {
-        if (!this.socket || this.filtersUpdatedAttached || this.filtersUpdatedSubscribers.size === 0) {
+        if (!this.socket || this.filtersUpdatedSubscribers.size === 0) {
             return;
         }
+        this.socket.off('filtersUpdated', this.filtersUpdatedPipe);
         this.socket.on('filtersUpdated', this.filtersUpdatedPipe);
         this.filtersUpdatedAttached = true;
     }
@@ -295,9 +299,10 @@ class SocketService {
     }
 
     private attachBroadcastMoviesListener(): void {
-        if (!this.socket || this.broadcastMoviesAttached || this.broadcastMoviesSubscribers.size === 0) {
+        if (!this.socket || this.broadcastMoviesSubscribers.size === 0) {
             return;
         }
+        this.socket.off('broadcastMovies', this.broadcastMoviesPipe);
         this.socket.on('broadcastMovies', this.broadcastMoviesPipe);
         this.broadcastMoviesAttached = true;
     }

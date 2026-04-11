@@ -37,14 +37,14 @@ describe('sendGoogleCodeToServer', () => {
         mockPost.mockResolvedValueOnce(mockResponse);
 
         const result = await sendGoogleCodeToServer('mockIdToken');
-        expect(result).toEqual({ success: false, error: 'Ошибка сети' });
+        expect(result).toEqual({ success: false, errorCode: 'AUTH_UNKNOWN' });
     });
 
     it('should return network error when an exception is thrown', async () => {
         mockPost.mockRejectedValueOnce(new Error('Network Error'));
 
         const result = await sendGoogleCodeToServer('mockIdToken');
-        expect(result).toEqual({ success: false, error: 'Ошибка сети' });
+        expect(result).toEqual({ success: false, errorCode: 'AUTH_NETWORK' });
     });
 });
 
@@ -69,14 +69,14 @@ describe('loginUser', () => {
         mockPost.mockResolvedValueOnce(mockResponse);
 
         const result = await loginUser({ email: 'test@example.com', password: 'password123' });
-        expect(result).toEqual({ success: false, error: 'Ошибка сети' });
+        expect(result).toEqual({ success: false, errorCode: 'AUTH_UNKNOWN' });
     });
 
     it('should return network error when an exception is thrown', async () => {
         mockPost.mockRejectedValueOnce(new Error('Network Error'));
 
         const result = await loginUser({ email: 'test@example.com', password: 'password123' });
-        expect(result).toEqual({ success: false, error: 'Ошибка сети' });
+        expect(result).toEqual({ success: false, errorCode: 'AUTH_NETWORK' });
     });
 });
 
@@ -100,13 +100,13 @@ describe('registrationUser', () => {
         mockPost.mockResolvedValueOnce(mockResponse);
 
         const result = await registrationUser({ email: 'test@example.com', password: 'password123' });
-        expect(result).toEqual({ success: false, error: 'Ошибка сети' });
+        expect(result).toEqual({ success: false, errorCode: 'AUTH_UNKNOWN' });
     });
 
     it('should return network error when an exception is thrown', async () => {
         mockPost.mockRejectedValueOnce(new Error('Network Error'));
 
         const result = await registrationUser({ email: 'test@example.com', password: 'password123' });
-        expect(result).toEqual({ success: false, error: 'Ошибка сети' });
+        expect(result).toEqual({ success: false, errorCode: 'AUTH_NETWORK' });
     });
 });

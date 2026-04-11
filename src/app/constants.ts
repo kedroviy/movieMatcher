@@ -145,6 +145,6 @@ export type RootStackParamList = {
     SMMovieDetails: { movie: Movie };
     MatchLobby: { lobbyName: string };
     MatchJoinLobby: undefined;
-    MatchSelectionMovie: undefined;
+    MatchSelectionMovie: { movie?: unknown; roomKey?: string };
     MatchResult: undefined;
 };

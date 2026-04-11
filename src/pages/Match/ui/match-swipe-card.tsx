@@ -16,8 +16,6 @@ export const MatchSwipeCards: FC<SMSwipeCardType> = ({ card }) => {
     const [isExpanded, setIsExpanded] = useState<boolean>(false);
     const descriptionHeight = useSharedValue(80);
 
-    console.log('card: ', card);
-
     const animatedStyle = useAnimatedStyle(() => {
         return {
             height: withTiming(descriptionHeight.value, {
@@ -72,32 +70,36 @@ export const MatchSwipeCards: FC<SMSwipeCardType> = ({ card }) => {
             )}
             <View style={styles.movieDescriptionContainer}>
                 <Text style={styles.headerText}>{`${card?.name}  (${card?.year})`}</Text>
-                <View style={{ flexDirection: 'row', width: width - 32, marginVertical: 12 }}>
-                    <SMMovieChips
-                        label={card?.ageRating ?? 'unknown'}
-                        color={Color.LIGHT_RED}
-                        labelColor={Color.WHITE}
-                        type="age"
-                    />
-                    <SMMovieChips
-                        label={card?.movieLength ?? 'unknown'}
-                        color={Color.LIGHT_RED}
-                        labelColor={Color.WHITE}
-                        type="time"
-                    />
-                    {card?.countries && (
+                <View style={styles.chipsRow}>
+                    {card?.ageRating != null && Number(card.ageRating) > 0 ? (
+                        <SMMovieChips
+                            label={card.ageRating}
+                            color={Color.LIGHT_RED}
+                            labelColor={Color.WHITE}
+                            type="age"
+                        />
+                    ) : null}
+                    {card?.movieLength != null && Number(card.movieLength) > 0 ? (
+                        <SMMovieChips
+                            label={card.movieLength}
+                            color={Color.LIGHT_RED}
+                            labelColor={Color.WHITE}
+                            type="time"
+                        />
+                    ) : null}
+                    {card?.countries?.[0]?.name ? (
                         <SMMovieChips label={card.countries[0].name} color={Color.LIGHT_RED} labelColor={Color.WHITE} />
-                    )}
-                    {card?.genres && (
+                    ) : null}
+                    {card?.genres?.[0]?.name ? (
                         <SMMovieChips label={card.genres[0].name} color={Color.LIGHT_RED} labelColor={Color.WHITE} />
-                    )}
-                    {card?.releaseYears && (
+                    ) : null}
+                    {card?.releaseYears?.[0] ? (
                         <SMMovieChips
                             label={`${card.releaseYears[0].start}-${card.releaseYears[0].end}`}
                             color={Color.LIGHT_RED}
                             labelColor={Color.WHITE}
                         />
-                    )}
+                    ) : null}
                 </View>
                 <Animated.View style={animatedStyle}>
                     <Text
@@ -137,6 +139,16 @@ const styles = StyleSheet.create({
         flex: 1,
         width: '100%',
         backgroundColor: Color.NEW_BLACK,
+    },
+    chipsRow: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        alignItems: 'center',
+        alignContent: 'flex-start',
+        width: '100%',
+        maxWidth: width - 32,
+        marginVertical: 12,
+        paddingRight: 4,
     },
     movieDescriptionContainer: {
         gap: 8,

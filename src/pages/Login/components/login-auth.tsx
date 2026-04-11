@@ -1,5 +1,6 @@
 import { FC, useState } from 'react';
 import {
+    Alert,
     Dimensions,
     Keyboard,
     KeyboardAvoidingView,
@@ -15,12 +16,15 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { AppDispatch, RootState } from '../../../redux/configure-store';
 import { authUser } from '../../../redux/authSlice';
+import { translateAuthError } from 'features/auth/authErrorI18n';
 import { AppConstants } from '@shared/index';
+import { useTranslation } from 'react-i18next';
 import { Input } from '../ui';
 import { STRINGS } from '../constants';
 import { MovieLoader } from 'shared/ui/movie-loader';
 
 export const LoginAuth: FC = () => {
+    const { t } = useTranslation();
     const windowWidth = Dimensions.get('window').width;
     const navigation: NavigationProp<ParamListBase> = useNavigation();
     const dispatch: AppDispatch = useDispatch();
@@ -32,7 +36,14 @@ export const LoginAuth: FC = () => {
 
     const onLoginUser = async (user: { email: string; password: string }) => {
         Keyboard.dismiss();
-        await dispatch(authUser(user));
+        const action = await dispatch(authUser(user));
+        if (authUser.fulfilled.match(action) && !action.payload.success) {
+            const payload = action.payload as { errorCode?: string; params?: { seconds?: number } };
+            Alert.alert(t('auth.errors.alert_title'), translateAuthError(t, payload.errorCode, payload.params));
+        }
+        if (authUser.rejected.match(action)) {
+            Alert.alert(t('auth.errors.alert_title'), t('auth.errors.AUTH_UNKNOWN'));
+        }
     };
 
     const handleValidationEmail = (isValid: boolean) => {

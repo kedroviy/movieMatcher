@@ -24,6 +24,7 @@ export {
 } from './icons';
 export { RadioButton } from './radio-button';
 export { SimpleInput } from './text-input';
+export { NumericOtpInput } from './numeric-otp-input';
 export { SimpleButton } from './simple-button';
 export { SimpleNotification } from './simple-notification';
 export { StatusNotification } from './statusNotification';

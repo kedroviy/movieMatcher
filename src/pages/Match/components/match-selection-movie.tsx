@@ -15,7 +15,8 @@ import { checkStatusRedux, updateUserStatusRedux } from 'redux/matchSlice';
 import { refetchRoomMoviesToRedux, useRoomMoviesSync, useRoomStateSync } from 'features/match/use-room-movies-sync';
 import { MatchStatusCard } from '../ui/match-status-card';
 import { MatchUserStatusEnum } from 'features/match/match.model';
-import { NavigationProp, ParamListBase, useNavigation } from '@react-navigation/native';
+import { NavigationProp, ParamListBase, RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import { RootStackParamList } from 'app/constants';
 import { addNotification } from 'redux/appSlice';
 import { MovieLoader } from 'shared/ui/movie-loader';
 
@@ -25,31 +26,39 @@ export const MatchSelectionMovie: FC = () => {
     const dispatch: AppDispatch = useDispatch();
     const queryClient = useQueryClient();
     const navigation = useNavigation<NavigationProp<ParamListBase>>();
-    const { currentUserMatch, movies } = useSelector((state: any) => state.matchSlice);
+    const route = useRoute<RouteProp<RootStackParamList, 'MatchSelectionMovie'>>();
+    const { currentUserMatch, movies, room } = useSelector((state: any) => state.matchSlice);
     const { user } = useSelector((state: any) => state.userSlice);
-    const { likeMovie } = useLikeMovieQueue();
+    const { likeMovie, waitForPendingLikes } = useLikeMovieQueue();
     // const { userStatus } = useGetUserStatusByUserId(user?.id);
     const [currentCardIndex, setCurrentCardIndex] = useState<number>(0);
     const [isInitialLoading, setIsInitialLoading] = useState<boolean>(true);
     const [isWaitStatus, setIsWaitStatus] = useState<boolean>(false);
     const isLastCard = useIsLastCard(currentCardIndex, movies.data?.docs.length || 0);
     const useSwiper = useRef<Swiper<any>>(null);
+    const selectionRoomKey = useMemo(() => {
+        const fromRoute = route.params?.roomKey;
+        if (typeof fromRoute === 'string' && fromRoute.length > 0) {
+            return fromRoute;
+        }
+        return currentUserMatch?.roomKey ?? (Array.isArray(room) ? room[0]?.roomKey : undefined);
+    }, [route.params?.roomKey, currentUserMatch?.roomKey, room]);
+
     /** Must not change on every swipe — otherwise we `off('broadcastMovies')` and can miss the server push. */
     const roomKeyRef = useRef<string | undefined>(undefined);
-    roomKeyRef.current = currentUserMatch?.roomKey;
+    roomKeyRef.current = selectionRoomKey;
 
-    useRoomMoviesSync(currentUserMatch?.roomKey);
-    useRoomStateSync(currentUserMatch?.roomKey);
+    useRoomMoviesSync(selectionRoomKey);
+    useRoomStateSync(selectionRoomKey);
 
     /** Deck finished when entering wait; if Redux gets a new list (e.g. lobby refreshed movies), leave wait. */
     const deckSnapshotAtWaitRef = useRef<string | null>(null);
 
     useEffect(() => {
-        const rk = currentUserMatch?.roomKey;
-        if (rk && user?.id != null) {
-            socketService.joinRoom(rk, String(user.id));
+        if (selectionRoomKey && user?.id != null) {
+            socketService.joinRoom(selectionRoomKey, String(user.id));
         }
-    }, [currentUserMatch?.roomKey, user?.id]);
+    }, [selectionRoomKey, user?.id]);
 
     useEffect(() => {
         if (movies.data?.docs.length) {
@@ -93,10 +102,15 @@ export const MatchSelectionMovie: FC = () => {
                 });
         };
 
-        const unsub = socketService.subscribeToBroadcastMovies(handler);
+        let unsubscribe: (() => void) | undefined;
+        try {
+            unsubscribe = socketService.subscribeToBroadcastMovies(handler);
+        } catch {
+            unsubscribe = undefined;
+        }
 
         return () => {
-            unsub();
+            unsubscribe?.();
         };
     }, [dispatch, navigation, queryClient]);
 
@@ -122,6 +136,9 @@ export const MatchSelectionMovie: FC = () => {
 
     useEffect(() => {
         if (isLastCard) {
+            if (!selectionRoomKey || user?.id == null) {
+                return;
+            }
             const docs = movies.data?.docs;
             deckSnapshotAtWaitRef.current = docs?.length
                 ? `${docs.length}:${docs[0]?.id}:${docs[docs.length - 1]?.id}`
@@ -129,25 +146,26 @@ export const MatchSelectionMovie: FC = () => {
             setIsWaitStatus(true);
             const checkUserStatus = async () => {
                 try {
+                    await waitForPendingLikes();
                     await dispatch(
                         updateUserStatusRedux({
-                            roomKey: currentUserMatch?.roomKey,
+                            roomKey: selectionRoomKey,
                             userId: user.id,
                             userStatus: MatchUserStatusEnum.WAITING,
                         }),
                     );
-                    const idempotencyKey = `${user.id}-${currentUserMatch?.roomKey}-${Date.now()}-${Math.random()
+                    const idempotencyKey = `${user.id}-${selectionRoomKey}-${Date.now()}-${Math.random()
                         .toString(36)
                         .slice(2, 11)}`;
                     await dispatch(
                         checkStatusRedux({
-                            roomKey: currentUserMatch?.roomKey,
+                            roomKey: selectionRoomKey,
                             userId: user.id,
                             idempotencyKey,
                         }),
                     ).unwrap();
 
-                    if (currentUserMatch?.roomKey) {
+                    if (selectionRoomKey) {
                         try {
                             const moviesState = store.getState().matchSlice.movies as {
                                 data?: { docs?: { id: number }[] };
@@ -156,7 +174,7 @@ export const MatchSelectionMovie: FC = () => {
                             const beforeKey =
                                 beforeDocs?.length &&
                                 `${beforeDocs.length}:${beforeDocs[0]!.id}:${beforeDocs[beforeDocs.length - 1]!.id}`;
-                            await refetchRoomMoviesToRedux(queryClient, dispatch, currentUserMatch.roomKey);
+                            await refetchRoomMoviesToRedux(queryClient, dispatch, selectionRoomKey);
                             const afterDocs = (store.getState().matchSlice.movies as typeof moviesState)?.data?.docs;
                             const afterKey =
                                 afterDocs?.length &&
@@ -181,10 +199,18 @@ export const MatchSelectionMovie: FC = () => {
                     console.error('Ошибка при обновлении статуса:', error);
                     setIsWaitStatus(false);
 
+                    const errText =
+                        typeof error === 'string'
+                            ? error
+                            : error instanceof Error
+                            ? error.message
+                            : typeof (error as { message?: string })?.message === 'string'
+                            ? (error as { message: string }).message
+                            : 'Unknown error';
                     dispatch(
                         addNotification({
                             id: new Date().getTime(),
-                            message: `Error updating user status: ${error as string}`,
+                            message: `Error updating user status: ${errText}`,
                             type: 'error' as NotificationType,
                         }),
                     );
@@ -193,24 +219,27 @@ export const MatchSelectionMovie: FC = () => {
 
             checkUserStatus();
         }
-    }, [currentUserMatch?.roomKey, user.id, isLastCard, dispatch, queryClient]);
+    }, [selectionRoomKey, user?.id, isLastCard, dispatch, queryClient, waitForPendingLikes]);
 
     const handleOnSwiped = useCallback(() => {
         setCurrentCardIndex((prevIndex) => prevIndex + 1);
     }, []);
 
-    const handleLike = useCallback(() => {
-        const roomKey = currentUserMatch?.roomKey;
-        const doc = movies.data?.docs[currentCardIndex];
-        console.log(roomKey);
-        if (doc && roomKey) {
-            likeMovie({
+    const handleLike = useCallback(
+        (_cardIndex: number, card?: { id?: number }) => {
+            const roomKey = selectionRoomKey;
+            const movieId = card?.id ?? movies.data?.docs[currentCardIndex]?.id;
+            if (movieId == null || !roomKey || user?.id == null) {
+                return;
+            }
+            void likeMovie({
                 userId: user.id,
                 roomKey,
-                movieId: doc.id,
+                movieId: Number(movieId),
             });
-        }
-    }, [currentCardIndex, likeMovie, movies.data?.docs, currentUserMatch?.roomKey, user.id]);
+        },
+        [currentCardIndex, likeMovie, movies.data?.docs, selectionRoomKey, user?.id],
+    );
 
     const overlayLabels = useMemo(
         () => ({
@@ -248,12 +277,7 @@ export const MatchSelectionMovie: FC = () => {
         <View style={styles.container}>
             {!isWaitStatus ? (
                 <>
-                    <View
-                        style={{
-                            width: width,
-                            flex: 1,
-                        }}
-                    >
+                    <View style={styles.swiperClip}>
                         <Swiper
                             ref={useSwiper}
                             animateCardOpacity
@@ -274,15 +298,7 @@ export const MatchSelectionMovie: FC = () => {
                             overlayLabels={overlayLabels}
                         />
                     </View>
-                    <View
-                        style={{
-                            flex: 0.2,
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            justifyContent: 'space-evenly',
-                            width: width / 2.2,
-                        }}
-                    >
+                    <View style={styles.controlsBar}>
                         <SMControlBar
                             onHandleLike={() => useSwiper.current?.swipeRight()}
                             onHandleDislike={() => useSwiper.current?.swipeLeft()}
@@ -312,8 +328,24 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
     },
+    swiperClip: {
+        width,
+        flex: 1,
+        overflow: 'hidden',
+    },
     swiperContainer: {
-        flex: 0.8,
+        flex: 1,
+    },
+    controlsBar: {
+        flexShrink: 0,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-evenly',
+        width: width / 2.2,
+        paddingVertical: 8,
+        paddingBottom: 12,
+        zIndex: 20,
+        elevation: 20,
     },
     buttonsContainer: {
         justifyContent: 'space-between',
