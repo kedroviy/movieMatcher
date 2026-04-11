@@ -117,63 +117,63 @@ export const SMCreateMovieListFilter: FC = () => {
 
     return (
         <View style={styles.container}>
-                <View
-                    style={{
-                        height: height / 2.5,
-                    }}
-                >
-                    <SMMultiSelectInput
-                        label={t('match_movie.filters_settings.country')}
-                        options={countryOptions}
-                        selectedOptions={localizeCountries(state.selectedCountries)}
-                        onSelectionChange={handleCountrySelectionChange}
-                        placeholder={t('movie_filters.placeholder_country')}
-                    />
+            <View
+                style={{
+                    height: height / 2.5,
+                }}
+            >
+                <SMMultiSelectInput
+                    label={t('match_movie.filters_settings.country')}
+                    options={countryOptions}
+                    selectedOptions={localizeCountries(state.selectedCountries)}
+                    onSelectionChange={handleCountrySelectionChange}
+                    placeholder={t('movie_filters.placeholder_country')}
+                />
 
-                    <SMMultiSelectInput
-                        label={t('match_movie.filters_settings.year')}
-                        options={FILTERS_DATA.year.options}
-                        selectedOptions={state.selectedYears}
-                        onSelectionChange={handleYearSelectionChange}
-                        placeholder={t('movie_filters.placeholder_year')}
-                    />
+                <SMMultiSelectInput
+                    label={t('match_movie.filters_settings.year')}
+                    options={FILTERS_DATA.year.options}
+                    selectedOptions={state.selectedYears}
+                    onSelectionChange={handleYearSelectionChange}
+                    placeholder={t('movie_filters.placeholder_year')}
+                />
 
-                    <SMMultiSelectInput
-                        label={t('match_movie.filters_settings.genre')}
-                        options={genreOptionsWithDisabled}
-                        selectedOptions={localizeGenres(state.selectedGenres)}
-                        onSelectionChange={handleGenreSelectionChange}
-                        placeholder={t('movie_filters.placeholder_genre')}
-                    />
+                <SMMultiSelectInput
+                    label={t('match_movie.filters_settings.genre')}
+                    options={genreOptionsWithDisabled}
+                    selectedOptions={localizeGenres(state.selectedGenres)}
+                    onSelectionChange={handleGenreSelectionChange}
+                    placeholder={t('movie_filters.placeholder_genre')}
+                />
 
-                    <SMMultiSelectInput
-                        label={t('match_movie.filters_settings.exclude_genre')}
-                        options={excludeGenreOptionsWithDisabled}
-                        selectedOptions={localizeGenres(state.excludeGenre)}
-                        onSelectionChange={handleExcludeGenreChange}
-                        placeholder={t('movie_filters.placeholder_genre')}
-                    />
+                <SMMultiSelectInput
+                    label={t('match_movie.filters_settings.exclude_genre')}
+                    options={excludeGenreOptionsWithDisabled}
+                    selectedOptions={localizeGenres(state.excludeGenre)}
+                    onSelectionChange={handleExcludeGenreChange}
+                    placeholder={t('movie_filters.placeholder_genre')}
+                />
 
-                    <View style={styles.sliderContainer}>
-                        <Text style={styles.sliderLabelText}>Rating</Text>
-                        <View style={styles.sliderLabel}>
-                            <Text style={styles.label}>{range[0]}</Text>
-                            <Text style={styles.label}>{range[1]}</Text>
-                        </View>
-                        <Slider
-                            value={range}
-                            onValueChange={handleRangeChange}
-                            minimumValue={0}
-                            maximumValue={10}
-                            step={1}
-                            minimumTrackTintColor={Color.RED}
-                            maximumTrackTintColor={Color.WHITE}
-                            thumbTintColor={Color.BUTTON_RED}
-                            trackStyle={styles.sliderTrack}
-                            thumbStyle={styles.sliderThumb}
-                        />
+                <View style={styles.sliderContainer}>
+                    <Text style={styles.sliderLabelText}>Rating</Text>
+                    <View style={styles.sliderLabel}>
+                        <Text style={styles.label}>{range[0]}</Text>
+                        <Text style={styles.label}>{range[1]}</Text>
                     </View>
+                    <Slider
+                        value={range}
+                        onValueChange={handleRangeChange}
+                        minimumValue={0}
+                        maximumValue={10}
+                        step={1}
+                        minimumTrackTintColor={Color.RED}
+                        maximumTrackTintColor={Color.WHITE}
+                        thumbTintColor={Color.BUTTON_RED}
+                        trackStyle={styles.sliderTrack}
+                        thumbStyle={styles.sliderThumb}
+                    />
                 </View>
+            </View>
             <SimpleButton
                 color={Color.BUTTON_RED}
                 titleColor={Color.WHITE}

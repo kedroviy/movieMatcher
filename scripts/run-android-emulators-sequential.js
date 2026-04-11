@@ -40,7 +40,10 @@ function adbEmulators() {
 async function main() {
     const fromEnv = process.env.ANDROID_DEVICE_SERIALS;
     const devices = fromEnv
-        ? fromEnv.split(',').map((s) => s.trim()).filter(Boolean)
+        ? fromEnv
+              .split(',')
+              .map((s) => s.trim())
+              .filter(Boolean)
         : adbEmulators();
 
     if (devices.length === 0) {
@@ -57,8 +60,7 @@ async function main() {
     const envForAdbSingleTarget = (serial) => ({ ...process.env, ANDROID_SERIAL: serial });
 
     const rnCli = path.join(ROOT, 'node_modules', 'react-native', 'cli.js');
-    const useActiveArchOnlyFirst = () =>
-        FORCE_ACTIVE_ARCH_ONLY || devices.length === 1;
+    const useActiveArchOnlyFirst = () => FORCE_ACTIVE_ARCH_ONLY || devices.length === 1;
 
     const runAndroidArgs = (serial, opts = {}) => {
         const activeArchOnly = opts.activeArchOnly !== false;
@@ -75,7 +77,9 @@ async function main() {
 
         if (useFastInstall) {
             console.log(
-                `\n--- ${i + 1}/${devices.length}: adb install -r (reuse APK from first build; avoids second Gradle hang at ~99%) ---\n`,
+                `\n--- ${i + 1}/${
+                    devices.length
+                }: adb install -r (reuse APK from first build; avoids second Gradle hang at ~99%) ---\n`,
             );
             const ins = spawnSync('adb', ['-s', serial, 'install', '-r', DEBUG_APK], {
                 stdio: 'inherit',
@@ -118,7 +122,9 @@ async function main() {
             const archNote = useActiveArchOnlyFirst()
                 ? '--active-arch-only (single device or ANDROID_FORCE_ACTIVE_ARCH_ONLY=1)'
                 : 'full ABI APK (needed so the same app-debug.apk can install on every connected emulator)';
-            console.log(`\n--- ${i + 1}/${devices.length}: --deviceId ${serial} (${archNote}; ANDROID_SERIAL=${serial}) ---\n`);
+            console.log(
+                `\n--- ${i + 1}/${devices.length}: --deviceId ${serial} (${archNote}; ANDROID_SERIAL=${serial}) ---\n`,
+            );
             const r = spawnSync(
                 process.execPath,
                 runAndroidArgs(serial, { activeArchOnly: useActiveArchOnlyFirst() }),

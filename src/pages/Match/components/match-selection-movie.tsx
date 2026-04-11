@@ -149,7 +149,9 @@ export const MatchSelectionMovie: FC = () => {
 
                     if (currentUserMatch?.roomKey) {
                         try {
-                            const moviesState = store.getState().matchSlice.movies as { data?: { docs?: { id: number }[] } };
+                            const moviesState = store.getState().matchSlice.movies as {
+                                data?: { docs?: { id: number }[] };
+                            };
                             const beforeDocs = moviesState?.data?.docs;
                             const beforeKey =
                                 beforeDocs?.length &&

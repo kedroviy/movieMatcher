@@ -23,16 +23,19 @@ type MatchLobbyProps = {
 
 const { width } = Dimensions.get('window');
 
-export const MatchLobby: FC<MatchLobbyProps> = ({ route: _route }) => {
+export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
+    void route;
     const navigation = useNavigation<NavigationProp<ParamListBase>>();
     const dispatch: AppDispatch = useDispatch();
     const queryClient = useQueryClient();
     const { t } = useTranslation();
-    const { loading, room, role, currentUserMatch, currentMovie, movies } = useSelector((state: any) => state.matchSlice);
+    const { loading, room, role, currentUserMatch, currentMovie, movies } = useSelector(
+        (state: any) => state.matchSlice,
+    );
     const { user } = useSelector((state: any) => state.userSlice);
     const [refreshing, setRefreshing] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
-    const [filters, setFilters] = useState<any>({});
+    const [, setFilters] = useState<any>({});
     const dataFromSocket = useWebSocket();
 
     const roomKeyRef = useRef<string | undefined>(undefined);

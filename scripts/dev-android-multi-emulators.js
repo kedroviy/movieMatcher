@@ -106,9 +106,7 @@ async function main() {
     }
 
     if (metroChild) {
-        console.log(
-            '\n--- Готово: эмуляторы обновлены. Metro всё ещё работает; Ctrl+C — остановить Metro. ---\n',
-        );
+        console.log('\n--- Готово: эмуляторы обновлены. Metro всё ещё работает; Ctrl+C — остановить Metro. ---\n');
         await new Promise(() => {});
     } else {
         console.log('\n--- Готово: эмуляторы обновлены (Metro был уже запущен отдельно). ---\n');
