@@ -1,10 +1,11 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { View, StyleSheet, Dimensions, Text, TouchableOpacity, Image } from 'react-native';
+import { View, StyleSheet, Dimensions, Text, TouchableOpacity, Image, Alert } from 'react-native';
 import { NavigationProp, ParamListBase, useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 
-import { AppDispatch } from '../../redux/configure-store';
+import { AppDispatch, RootState } from '../../redux/configure-store';
 import { authenticateWithGoogle } from '../../redux/authSlice';
+import { translateAuthError } from 'features/auth/authErrorI18n';
 import { GoogleSvgIcon, MovieLoader } from '@shared/index';
 import { Color } from 'styles/colors';
 
@@ -13,11 +14,22 @@ const windowWidth = Dimensions.get('window').width;
 export const LoginScreen = () => {
     const dispatch: AppDispatch = useDispatch();
     const { t } = useTranslation();
-    const { loading, error } = useSelector((state: any) => state.authSlice);
+    const { loading } = useSelector((state: RootState) => state.authSlice);
     const navigation: NavigationProp<ParamListBase> = useNavigation();
 
     const onAuthWithGoogle = async () => {
-        await dispatch(authenticateWithGoogle());
+        const action = await dispatch(authenticateWithGoogle());
+        if (authenticateWithGoogle.rejected.match(action)) {
+            Alert.alert(t('auth.errors.alert_title'), (action.payload as string) || t('auth.errors.AUTH_UNKNOWN'));
+            return;
+        }
+        if (authenticateWithGoogle.fulfilled.match(action) && !action.payload.success) {
+            const payload = action.payload as { errorCode?: string; params?: { seconds?: number } };
+            Alert.alert(
+                t('auth.errors.alert_title'),
+                translateAuthError(t, payload.errorCode, payload.params),
+            );
+        }
     };
 
     return (
@@ -141,20 +153,6 @@ export const LoginScreen = () => {
                     </Text>
                 </TouchableOpacity>
             </View>
-            {error ? (
-                <Text
-                    style={{
-                        color: '#ED0E0E',
-                        fontSize: 14,
-                        marginTop: 16,
-                        paddingHorizontal: 16,
-                        textAlign: 'center',
-                    }}
-                    accessibilityRole="alert"
-                >
-                    {error}
-                </Text>
-            ) : null}
             {loading ? <MovieLoader /> : null}
         </View>
     );

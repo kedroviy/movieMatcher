@@ -21,6 +21,21 @@ const resources = {
                 password_recovery: {
                     recovery_succ_result: 'Congratulations, your password has been successfully changed!',
                 },
+                errors: {
+                    alert_title: 'Sign-in problem',
+                    AUTH_UNKNOWN: 'Something went wrong. Please try again.',
+                    AUTH_NETWORK: 'Network error. Check your connection.',
+                    AUTH_USER_NOT_FOUND: 'No account exists for this email.',
+                    AUTH_INVALID_CREDENTIALS: 'Incorrect email or password.',
+                    AUTH_LOGIN_RATE_LIMITED: 'Too many attempts. Try again in {{seconds}} s.',
+                    AUTH_EMAIL_ALREADY_EXISTS: 'An account with this email already exists.',
+                    AUTH_REGISTRATION_FAILED: 'Registration could not be completed. Please try again.',
+                    AUTH_GOOGLE_INVALID_TOKEN: 'Google sign-in failed. Please try again.',
+                    AUTH_GOOGLE_EMAIL_NOT_IN_TOKEN: 'Could not read email from Google. Please try again.',
+                    AUTH_GOOGLE_PROVIDER_MISMATCH:
+                        'This email is already registered with a password. Sign in with email instead.',
+                    AUTH_GOOGLE_REGISTRATION_FAILED: 'Could not create an account with Google. Please try again.',
+                },
             },
             tabs: {
                 selection: 'Selection',
@@ -197,6 +212,21 @@ const resources = {
                 },
                 password_recovery: {
                     recovery_succ_result: 'Поздравляем, пароль успешно изменен!',
+                },
+                errors: {
+                    alert_title: 'Не удалось выполнить вход',
+                    AUTH_UNKNOWN: 'Что-то пошло не так. Попробуйте ещё раз.',
+                    AUTH_NETWORK: 'Ошибка сети. Проверьте подключение к интернету.',
+                    AUTH_USER_NOT_FOUND: 'Аккаунта с такой почтой не существует.',
+                    AUTH_INVALID_CREDENTIALS: 'Неверная почта или пароль.',
+                    AUTH_LOGIN_RATE_LIMITED: 'Слишком много попыток. Повторите через {{seconds}} с.',
+                    AUTH_EMAIL_ALREADY_EXISTS: 'Аккаунт с такой почтой уже зарегистрирован.',
+                    AUTH_REGISTRATION_FAILED: 'Не удалось завершить регистрацию. Попробуйте ещё раз.',
+                    AUTH_GOOGLE_INVALID_TOKEN: 'Не удалось войти через Google. Попробуйте ещё раз.',
+                    AUTH_GOOGLE_EMAIL_NOT_IN_TOKEN: 'Не удалось получить почту из Google. Попробуйте ещё раз.',
+                    AUTH_GOOGLE_PROVIDER_MISMATCH:
+                        'Эта почта уже зарегистрирована с паролем. Войдите через почту и пароль.',
+                    AUTH_GOOGLE_REGISTRATION_FAILED: 'Не удалось создать аккаунт через Google. Попробуйте ещё раз.',
                 },
             },
             tabs: {

@@ -1,4 +1,5 @@
 import { create } from 'apisauce';
+import { ApiResponse } from 'apisauce';
 import { API } from '../../shared';
 
 type IUserFields = {
@@ -17,12 +18,45 @@ type Response<T> = {
     data: T;
 };
 
+type AuthErrorBody = {
+    code?: string;
+    retryAfterSeconds?: number;
+    message?: string | string[];
+};
+
+export type AuthFailureParams = { seconds?: number };
+
+export type AuthApiFailure = {
+    success: false;
+    errorCode: string;
+    params?: AuthFailureParams;
+};
+
+export type LoginUserResult = { success: true; token: string } | AuthApiFailure;
+
+export type RegistrationUserResult = { success: true; message: string } | AuthApiFailure;
+
+export type GoogleAuthResult = { success: true; token: string } | AuthApiFailure;
+
+function parseAuthErrorFromResponse(response: ApiResponse<unknown>): AuthApiFailure {
+    const data = response.data as AuthErrorBody | undefined;
+    if (data && typeof data === 'object' && typeof data.code === 'string') {
+        const retryAfterSeconds = data.retryAfterSeconds;
+        const params =
+            typeof retryAfterSeconds === 'number' && Number.isFinite(retryAfterSeconds)
+                ? { seconds: retryAfterSeconds }
+                : undefined;
+        return { success: false, errorCode: data.code, params };
+    }
+    return { success: false, errorCode: 'AUTH_UNKNOWN' };
+}
+
 const api = create({
     baseURL: API.BASE_URL,
     headers: { Accept: 'application/vnd.github.v3+json' },
 });
 
-export const sendGoogleCodeToServer = async (idToken: string) => {
+export const sendGoogleCodeToServer = async (idToken: string): Promise<GoogleAuthResult> => {
     try {
         const formData = new URLSearchParams();
         formData.append('idToken', idToken);
@@ -34,34 +68,26 @@ export const sendGoogleCodeToServer = async (idToken: string) => {
         });
         if (response.ok && response.data) {
             return { success: true, token: response.data.token };
-        } else {
-            const data = response.data as { message?: string; error?: string } | undefined;
-            const serverMsg =
-                (typeof data?.message === 'string' && data.message) || (typeof data?.error === 'string' && data.error);
-            return {
-                success: false,
-                error: serverMsg || response.problem || 'Ошибка аутентификации',
-            };
         }
+        return parseAuthErrorFromResponse(response);
     } catch (error) {
-        return { success: false, error: 'Ошибка сети' };
+        return { success: false, errorCode: 'AUTH_NETWORK' };
     }
 };
 
-export const loginUser = async (body: IUserFields) => {
+export const loginUser = async (body: IUserFields): Promise<LoginUserResult> => {
     try {
         const response = await api.post<Response<{ token: string }>>(API.LOGIN, body);
         if (response.ok && response.data) {
             return { success: true, token: response.data?.token };
-        } else {
-            return { success: false, error: response.problem || 'Ошибка аутентификации' };
         }
+        return parseAuthErrorFromResponse(response);
     } catch (error) {
-        return { success: false, error: 'Ошибка сети' };
+        return { success: false, errorCode: 'AUTH_NETWORK' };
     }
 };
 
-export const registrationUser = async (body: IUserFields) => {
+export const registrationUser = async (body: IUserFields): Promise<RegistrationUserResult> => {
     try {
         const response = await api.post<Response<{ message: string }>>(API.REGISTRATION, body, {
             headers: {
@@ -70,10 +96,9 @@ export const registrationUser = async (body: IUserFields) => {
         });
         if (response.ok && response.data) {
             return { success: true, message: response.data.message };
-        } else {
-            return { success: false, error: response.problem || 'Ошибка аутентификации' };
         }
+        return parseAuthErrorFromResponse(response);
     } catch (error) {
-        return { success: false, error: 'Ошибка сети' };
+        return { success: false, errorCode: 'AUTH_NETWORK' };
     }
 };

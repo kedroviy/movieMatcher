@@ -21,6 +21,9 @@ import { AppRoutes } from 'app/constants';
 import { Color } from 'styles/colors';
 import { useTranslation } from 'react-i18next';
 import { MovieLoader } from 'shared/ui/movie-loader';
+import { translateAuthError } from 'features/auth/authErrorI18n';
+
+type RegistrationRejectPayload = { errorCode?: string; params?: { seconds?: number } };
 
 export const LoginRegistration: FC = () => {
     const windowWidth = Dimensions.get('window').width;
@@ -58,10 +61,11 @@ export const LoginRegistration: FC = () => {
                     },
                 });
             } else if (authRegistrationUser.rejected.match(actionResult)) {
-                Alert.alert('Неудачно!', 'Что-то пошло не так', [
-                    { text: 'OK', onPress: () => console.log('OK Pressed') },
-                ]);
-                console.log(actionResult);
+                const payload = actionResult.payload as RegistrationRejectPayload | undefined;
+                Alert.alert(
+                    t('auth.errors.alert_title'),
+                    translateAuthError(t, payload?.errorCode, payload?.params),
+                );
             }
         } catch (error) {
             console.log(error);
