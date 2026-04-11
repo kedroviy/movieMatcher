@@ -101,10 +101,10 @@ const resources = {
                     action_open: 'Open',
                     action_leave: 'Leave',
                     empty_memberships: 'You are not in any room yet.',
+                    empty_memberships_hint: 'Create a lobby or join with a code — your active rooms will appear here.',
                     confirm_leave_title: 'Leave room?',
                     confirm_leave_participant_body: 'You will leave this lobby.',
-                    confirm_leave_author_body:
-                        'You are the host: the whole room will be closed for all participants.',
+                    confirm_leave_author_body: 'You are the host: the whole room will be closed for all participants.',
                     cancel: 'Cancel',
                 },
                 lobby: {
@@ -294,10 +294,10 @@ const resources = {
                     action_open: 'Открыть',
                     action_leave: 'Выйти',
                     empty_memberships: 'Вы пока не состоите ни в одной комнате.',
+                    empty_memberships_hint: 'Создайте лобби или войдите по коду — активные комнаты появятся здесь.',
                     confirm_leave_title: 'Покинуть комнату?',
                     confirm_leave_participant_body: 'Вы выйдете из этого лобби.',
-                    confirm_leave_author_body:
-                        'Вы ведущий: комната будет удалена для всех участников.',
+                    confirm_leave_author_body: 'Вы ведущий: комната будет удалена для всех участников.',
                     cancel: 'Отмена',
                 },
                 lobby: {

@@ -43,6 +43,7 @@ export const MatchMembershipsBlock: FC<MatchMembershipsBlockProps> = ({ userId, 
             open: t('match_movie.main_match_screen.action_open'),
             leave: t('match_movie.main_match_screen.action_leave'),
             empty: t('match_movie.main_match_screen.empty_memberships'),
+            emptyHint: t('match_movie.main_match_screen.empty_memberships_hint'),
         }),
         [t],
     );
