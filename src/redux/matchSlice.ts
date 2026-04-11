@@ -1,5 +1,11 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { SMApiResponse, createRoomService, joinRoomService, leaveRoomService, leaveMyRoomMembershipService } from 'features';
+import {
+    SMApiResponse,
+    createRoomService,
+    joinRoomService,
+    leaveRoomService,
+    leaveMyRoomMembershipService,
+} from 'features';
 import {
     checkStatus,
     doesUserHaveRoomService,

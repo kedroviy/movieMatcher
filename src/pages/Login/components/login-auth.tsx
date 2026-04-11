@@ -39,10 +39,7 @@ export const LoginAuth: FC = () => {
         const action = await dispatch(authUser(user));
         if (authUser.fulfilled.match(action) && !action.payload.success) {
             const payload = action.payload as { errorCode?: string; params?: { seconds?: number } };
-            Alert.alert(
-                t('auth.errors.alert_title'),
-                translateAuthError(t, payload.errorCode, payload.params),
-            );
+            Alert.alert(t('auth.errors.alert_title'), translateAuthError(t, payload.errorCode, payload.params));
         }
         if (authUser.rejected.match(action)) {
             Alert.alert(t('auth.errors.alert_title'), t('auth.errors.AUTH_UNKNOWN'));

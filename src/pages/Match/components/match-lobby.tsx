@@ -111,16 +111,18 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
             setFilters(data.filters);
         };
 
-        const unsubBroadcastMatch = socketService.subscribeToBroadcastMatchUpdate(async (data: { roomKey?: string } | undefined) => {
-            const key = roomKeyRef.current;
-            if (!key) {
-                return;
-            }
-            if (data?.roomKey != null && data.roomKey !== key) {
-                return;
-            }
-            await dispatch(getMatchDataRedux(key));
-        });
+        const unsubBroadcastMatch = socketService.subscribeToBroadcastMatchUpdate(
+            async (data: { roomKey?: string } | undefined) => {
+                const key = roomKeyRef.current;
+                if (!key) {
+                    return;
+                }
+                if (data?.roomKey != null && data.roomKey !== key) {
+                    return;
+                }
+                await dispatch(getMatchDataRedux(key));
+            },
+        );
 
         const unsubRequestMatch = socketService.subscribeToRequestMatchUpdate(async () => {
             const key = roomKeyRef.current;
@@ -131,17 +133,19 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
 
         const unsubFilters = socketService.filtersUpdateBroadcast(handleFiltersUpdated);
 
-        const unsubBroadcastMovies = socketService.subscribeToBroadcastMovies(async (data: { roomKey?: string } | undefined) => {
-            const key = roomKeyRef.current;
-            if (!key) {
-                return;
-            }
-            if (data?.roomKey != null && data.roomKey !== key) {
-                return;
-            }
-            await queryClient.invalidateQueries({ queryKey: roomMoviesQueryKey(key) });
-            await refetchRoomMoviesToRedux(queryClient, dispatch, key);
-        });
+        const unsubBroadcastMovies = socketService.subscribeToBroadcastMovies(
+            async (data: { roomKey?: string } | undefined) => {
+                const key = roomKeyRef.current;
+                if (!key) {
+                    return;
+                }
+                if (data?.roomKey != null && data.roomKey !== key) {
+                    return;
+                }
+                await queryClient.invalidateQueries({ queryKey: roomMoviesQueryKey(key) });
+                await refetchRoomMoviesToRedux(queryClient, dispatch, key);
+            },
+        );
 
         return () => {
             unsubBroadcastMatch();

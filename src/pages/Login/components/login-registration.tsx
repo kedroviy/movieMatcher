@@ -62,10 +62,7 @@ export const LoginRegistration: FC = () => {
                 });
             } else if (authRegistrationUser.rejected.match(actionResult)) {
                 const payload = actionResult.payload as RegistrationRejectPayload | undefined;
-                Alert.alert(
-                    t('auth.errors.alert_title'),
-                    translateAuthError(t, payload?.errorCode, payload?.params),
-                );
+                Alert.alert(t('auth.errors.alert_title'), translateAuthError(t, payload?.errorCode, payload?.params));
             }
         } catch (error) {
             console.log(error);

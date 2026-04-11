@@ -69,7 +69,9 @@ export const useInAppUpdate = () => {
                         return;
                     }
 
-                    console.warn('[InAppUpdate] Store reports an update but neither immediate nor flexible is allowed.');
+                    console.warn(
+                        '[InAppUpdate] Store reports an update but neither immediate nor flexible is allowed.',
+                    );
                     return;
                 }
 

@@ -49,9 +49,12 @@ export const MatchResult: FC = () => {
         await queryClient.invalidateQueries({ queryKey: ['rooms', 'my-memberships'] });
         const rootNav = navigation.getParent();
         if (rootNav) {
-            rootNav.navigate(AppRoutes.TAB_NAVIGATOR as never, {
-                screen: AppRoutes.MATCH_SCREEN,
-            } as never);
+            rootNav.navigate(
+                AppRoutes.TAB_NAVIGATOR as never,
+                {
+                    screen: AppRoutes.MATCH_SCREEN,
+                } as never,
+            );
         }
     }, [navigation, queryClient]);
 

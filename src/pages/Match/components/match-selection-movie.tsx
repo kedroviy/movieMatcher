@@ -15,13 +15,7 @@ import { checkStatusRedux, updateUserStatusRedux } from 'redux/matchSlice';
 import { refetchRoomMoviesToRedux, useRoomMoviesSync, useRoomStateSync } from 'features/match/use-room-movies-sync';
 import { MatchStatusCard } from '../ui/match-status-card';
 import { MatchUserStatusEnum } from 'features/match/match.model';
-import {
-    NavigationProp,
-    ParamListBase,
-    RouteProp,
-    useNavigation,
-    useRoute,
-} from '@react-navigation/native';
+import { NavigationProp, ParamListBase, RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from 'app/constants';
 import { addNotification } from 'redux/appSlice';
 import { MovieLoader } from 'shared/ui/movie-loader';
@@ -209,10 +203,10 @@ export const MatchSelectionMovie: FC = () => {
                         typeof error === 'string'
                             ? error
                             : error instanceof Error
-                              ? error.message
-                              : typeof (error as { message?: string })?.message === 'string'
-                                ? (error as { message: string }).message
-                                : 'Unknown error';
+                            ? error.message
+                            : typeof (error as { message?: string })?.message === 'string'
+                            ? (error as { message: string }).message
+                            : 'Unknown error';
                     dispatch(
                         addNotification({
                             id: new Date().getTime(),

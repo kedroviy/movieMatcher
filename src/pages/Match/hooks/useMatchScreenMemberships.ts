@@ -13,11 +13,7 @@ type UseMatchScreenMembershipsOptions = {
     onMembershipsChanged?: () => void;
 };
 
-export function useMatchScreenMemberships({
-    userId,
-    enabled,
-    onMembershipsChanged,
-}: UseMatchScreenMembershipsOptions) {
+export function useMatchScreenMemberships({ userId, enabled, onMembershipsChanged }: UseMatchScreenMembershipsOptions) {
     const queryClient = useQueryClient();
 
     const query = useQuery({

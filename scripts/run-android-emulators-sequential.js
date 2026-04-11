@@ -64,8 +64,8 @@ async function main() {
               .map((s) => s.trim())
               .filter(Boolean)
         : useAll
-          ? adbAllDevices()
-          : adbEmulators();
+        ? adbAllDevices()
+        : adbEmulators();
 
     if (devices.length === 0) {
         console.error(

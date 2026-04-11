@@ -72,7 +72,12 @@ export const MatchSwipeCards: FC<SMSwipeCardType> = ({ card }) => {
                 <Text style={styles.headerText}>{`${card?.name}  (${card?.year})`}</Text>
                 <View style={styles.chipsRow}>
                     {card?.ageRating != null && Number(card.ageRating) > 0 ? (
-                        <SMMovieChips label={card.ageRating} color={Color.LIGHT_RED} labelColor={Color.WHITE} type="age" />
+                        <SMMovieChips
+                            label={card.ageRating}
+                            color={Color.LIGHT_RED}
+                            labelColor={Color.WHITE}
+                            type="age"
+                        />
                     ) : null}
                     {card?.movieLength != null && Number(card.movieLength) > 0 ? (
                         <SMMovieChips
