@@ -72,6 +72,15 @@ def enableProguardInReleaseBuilds = false
  */
 def jscFlavor = 'org.webkit:android-jsc:+'
 
+// Google Sign-In DEVELOPER_ERROR often shows up only on installs from Play Store: those APKs are signed
+// with Play App Signing (different SHA-1 than `gradlew signingReport` for your upload/local keystore).
+// Add *all* of these to the same Android OAuth client (package com.moviematcher) in Google Cloud Console:
+//   1) Play Console → (your app) → Release → Setup → App integrity → "App signing key certificate" SHA-1
+//      (copy this *before* or right after the first release — you do not need to wait for users to hit the error).
+//   2) Optional: "Upload key certificate" SHA-1 if Google shows it separately (internal testing uses Play signing).
+//   3) Local debug: `cd android` then `.\gradlew.bat signingReport` (Windows) / `./gradlew signingReport` — Variant debug.
+//   4) Local release keystore: same command, Variant release (when MYAPP_UPLOAD_* or env keystore is set).
+// To catch issues early: upload an AAB to Internal testing, install from Play, test Sign-In there (same cert as prod).
 android {
     ndkVersion rootProject.ext.ndkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
