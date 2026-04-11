@@ -8,10 +8,14 @@ type SMControlBarType = {
     onHandleDislike: () => void;
 };
 
+const hitSlop = { top: 12, bottom: 12, left: 12, right: 12 };
+
 export const SMControlBar: FC<SMControlBarType> = ({ onHandleLike, onHandleDislike }) => {
     return (
         <>
             <TouchableOpacity
+                activeOpacity={0.75}
+                hitSlop={hitSlop}
                 style={{
                     width: 70,
                     height: 70,
@@ -20,12 +24,16 @@ export const SMControlBar: FC<SMControlBarType> = ({ onHandleLike, onHandleDisli
                     justifyContent: 'center',
                     borderRadius: 35,
                     marginVertical: 8,
+                    borderWidth: 1,
+                    borderColor: 'rgba(255,255,255,0.12)',
                 }}
                 onPress={onHandleDislike}
             >
                 <CloseSvgIcon stroke={Color.WHITE} width={32} height={32} />
             </TouchableOpacity>
             <TouchableOpacity
+                activeOpacity={0.75}
+                hitSlop={hitSlop}
                 style={{
                     width: 70,
                     height: 70,
@@ -34,6 +42,8 @@ export const SMControlBar: FC<SMControlBarType> = ({ onHandleLike, onHandleDisli
                     justifyContent: 'center',
                     borderRadius: 35,
                     marginVertical: 8,
+                    borderWidth: 1,
+                    borderColor: 'rgba(255,255,255,0.2)',
                 }}
                 onPress={onHandleLike}
             >

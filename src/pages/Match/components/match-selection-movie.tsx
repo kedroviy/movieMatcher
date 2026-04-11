@@ -283,12 +283,7 @@ export const MatchSelectionMovie: FC = () => {
         <View style={styles.container}>
             {!isWaitStatus ? (
                 <>
-                    <View
-                        style={{
-                            width: width,
-                            flex: 1,
-                        }}
-                    >
+                    <View style={styles.swiperClip}>
                         <Swiper
                             ref={useSwiper}
                             animateCardOpacity
@@ -309,15 +304,7 @@ export const MatchSelectionMovie: FC = () => {
                             overlayLabels={overlayLabels}
                         />
                     </View>
-                    <View
-                        style={{
-                            flex: 0.2,
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            justifyContent: 'space-evenly',
-                            width: width / 2.2,
-                        }}
-                    >
+                    <View style={styles.controlsBar}>
                         <SMControlBar
                             onHandleLike={() => useSwiper.current?.swipeRight()}
                             onHandleDislike={() => useSwiper.current?.swipeLeft()}
@@ -347,8 +334,24 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
     },
+    swiperClip: {
+        width,
+        flex: 1,
+        overflow: 'hidden',
+    },
     swiperContainer: {
-        flex: 0.8,
+        flex: 1,
+    },
+    controlsBar: {
+        flexShrink: 0,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-evenly',
+        width: width / 2.2,
+        paddingVertical: 8,
+        paddingBottom: 12,
+        zIndex: 20,
+        elevation: 20,
     },
     buttonsContainer: {
         justifyContent: 'space-between',

@@ -106,6 +106,9 @@ const resources = {
                     confirm_leave_participant_body: 'You will leave this lobby.',
                     confirm_leave_author_body: 'You are the host: the whole room will be closed for all participants.',
                     cancel: 'Cancel',
+                    join_lobby_code_label: '6-digit lobby code',
+                    join_lobby_submit: 'Enter lobby',
+                    join_lobby_code_incomplete: 'Enter all 6 digits.',
                 },
                 lobby: {
                     lobby_members: 'Lobby members',
@@ -299,6 +302,9 @@ const resources = {
                     confirm_leave_participant_body: 'Вы выйдете из этого лобби.',
                     confirm_leave_author_body: 'Вы ведущий: комната будет удалена для всех участников.',
                     cancel: 'Отмена',
+                    join_lobby_code_label: 'Код лобби из 6 цифр',
+                    join_lobby_submit: 'Войти в лобби',
+                    join_lobby_code_incomplete: 'Введите все 6 цифр.',
                 },
                 lobby: {
                     lobby_members: 'Участники лобби',

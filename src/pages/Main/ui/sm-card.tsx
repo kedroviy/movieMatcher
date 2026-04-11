@@ -102,14 +102,17 @@ export const SMCard: FC<MovieCardItemProps> = ({ movie }) => {
 const styles = StyleSheet.create({
     footer: {
         flexDirection: 'row',
+        flexWrap: 'wrap',
         justifyContent: 'flex-start',
         alignItems: 'center',
-        width: '70%',
-        height: '30%',
-        paddingBottom: 24,
+        alignContent: 'flex-start',
+        paddingTop: 4,
+        paddingBottom: 8,
+        paddingRight: 4,
     },
     poster: {
-        height: '100%',
+        alignSelf: 'stretch',
+        width: 99,
         borderRadius: radius.sm,
     },
     text: {
@@ -117,17 +120,23 @@ const styles = StyleSheet.create({
     },
     movieItem: {
         width: contentWidth,
+        flex: 1,
         flexDirection: 'row',
+        alignItems: 'stretch',
+        minHeight: 0,
     },
     movieDescription: {
-        width: '90%',
-        height: '90%',
+        flex: 1,
+        minWidth: 0,
         paddingHorizontal: 12,
+        flexDirection: 'column',
+        justifyContent: 'space-between',
     },
     movieDescriptionText: {
-        width: '78%',
-        height: '80%',
-        paddingVertical: 12,
+        flex: 1,
+        minHeight: 0,
+        paddingVertical: 10,
+        paddingRight: 4,
         overflow: 'hidden',
     },
     image: {

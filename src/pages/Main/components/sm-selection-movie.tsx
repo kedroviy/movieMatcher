@@ -15,17 +15,26 @@ import { SimpleButton } from 'shared';
 import { t } from 'i18next';
 import { MovieLoader } from 'shared/ui/movie-loader';
 import { AppRoutes } from 'app/constants';
+import { Movie, SMApiResponse } from 'features';
 
 const { width } = Dimensions.get('window');
+
+function getDeckDocs(data: SMApiResponse | []): Movie[] {
+    if (!data || Array.isArray(data) || !Array.isArray(data.docs)) {
+        return [];
+    }
+    return data.docs;
+}
 
 export const SMSelectionMovie: FC = () => {
     const navigation = useNavigation<NavigationProp<ParamListBase>>();
     const { loading, data, currentSessionLabel, currentPage, currentFormData } = useSelector(
         (state: any) => state.moviesSlice,
     );
+    const deckDocs = getDeckDocs(data);
     const dispatch: AppDispatch = useDispatch();
     const [allCardsSwiped, setAllCardsSwiped] = useState(false);
-    const [currentIndex, setCurrentIndex] = useState(0);
+    const [currentCardIndex, setCurrentCardIndex] = useState(0);
     const useSwiper = useRef<Swiper<any>>(null);
 
     useEffect(() => {}, [loading, data]);
@@ -34,8 +43,11 @@ export const SMSelectionMovie: FC = () => {
         console.log(`Свайп влево на карточке с индексом ${cardIndex}`);
     };
 
-    const handleOnSwipedRight = async (cardIndex: any) => {
-        const likedMovie = data.docs[cardIndex];
+    const handleOnSwipedRight = async (cardIndex: number) => {
+        const likedMovie = deckDocs[cardIndex];
+        if (!likedMovie) {
+            return;
+        }
         const storageDataJSON = await AsyncStorage.getItem('@mymovies');
         const storageData = storageDataJSON ? JSON.parse(storageDataJSON) : {};
 
@@ -53,12 +65,14 @@ export const SMSelectionMovie: FC = () => {
     };
 
     const handleOnSwiped = () => {
-        const nextIndex = currentIndex + 1;
-        if (nextIndex >= data.docs.length) {
-            setAllCardsSwiped(true);
-        } else {
-            setCurrentIndex(nextIndex);
-        }
+        setCurrentCardIndex((prev) => {
+            const nextIndex = prev + 1;
+            if (nextIndex >= deckDocs.length) {
+                setAllCardsSwiped(true);
+                return prev;
+            }
+            return nextIndex;
+        });
     };
 
     const handleLoadMore = useCallback(async () => {
@@ -78,8 +92,8 @@ export const SMSelectionMovie: FC = () => {
         }
 
         setAllCardsSwiped(false);
-        setCurrentIndex(0);
-    }, [currentPage, currentFormData, currentSessionLabel, dispatch, setAllCardsSwiped, setCurrentIndex]);
+        setCurrentCardIndex(0);
+    }, [currentPage, currentFormData, currentSessionLabel, dispatch]);
 
     const handleFinishSolo = useCallback(() => {
         navigation.navigate(AppRoutes.TAB_NAVIGATOR);
@@ -126,19 +140,15 @@ export const SMSelectionMovie: FC = () => {
                 <>
                     {!loading ? (
                         <>
-                            <View
-                                style={{
-                                    width: width,
-                                    flex: 1,
-                                }}
-                            >
+                            <View style={styles.swiperClip}>
                                 <Swiper
+                                    key={`solo-deck-${currentSessionLabel ?? 'none'}-${currentPage}`}
                                     ref={useSwiper}
                                     animateCardOpacity
                                     containerStyle={styles.swiperContainer}
-                                    cards={data.docs}
+                                    cards={deckDocs}
                                     renderCard={(card) => <SMSwipeCards card={card} />}
-                                    cardIndex={0}
+                                    cardIndex={currentCardIndex}
                                     backgroundColor={Color.BACKGROUND_GREY}
                                     stackSize={2}
                                     stackSeparation={-20}
@@ -171,16 +181,7 @@ export const SMSelectionMovie: FC = () => {
                                     }}
                                 />
                             </View>
-                            <View
-                                style={{
-                                    flex: 0.17,
-                                    flexDirection: 'row',
-                                    alignItems: 'center',
-                                    justifyContent: 'space-evenly',
-                                    width: width / 2.2,
-                                    bottom: 5,
-                                }}
-                            >
+                            <View style={styles.controlsBar}>
                                 <SMControlBar
                                     onHandleLike={() => useSwiper.current?.swipeRight()}
                                     onHandleDislike={() => useSwiper.current?.swipeLeft()}
@@ -203,8 +204,24 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
     },
+    swiperClip: {
+        width,
+        flex: 1,
+        overflow: 'hidden',
+    },
     swiperContainer: {
-        flex: 0.8,
+        flex: 1,
+    },
+    controlsBar: {
+        flexShrink: 0,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-evenly',
+        width: width / 2.2,
+        paddingVertical: 8,
+        paddingBottom: 12,
+        zIndex: 20,
+        elevation: 20,
     },
     buttonsContainer: {
         justifyContent: 'space-between',

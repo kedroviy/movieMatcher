@@ -1,77 +1,86 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, useEffect, useMemo, useState } from 'react';
 import { Dimensions, StyleSheet, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { NavigationProp, ParamListBase, useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 
 import { AppRoutes } from 'app/constants';
 import { AppDispatch } from 'redux/configure-store';
 import { joinRoom } from 'redux/matchSlice';
-import { AppConstants, SimpleButton, SimpleInput } from 'shared';
+import { AppConstants, NumericOtpInput, SimpleButton } from 'shared';
 import { Color } from 'styles/colors';
 import useFetchUserProfile from 'shared/hooks/getUserProfile';
 import { MovieLoader } from 'shared/ui/movie-loader';
 
 const { width } = Dimensions.get('window');
 
+const LOBBY_KEY_LENGTH = 6;
+
+const isCompleteKey = (k: string) => k.length === LOBBY_KEY_LENGTH && /^\d+$/.test(k);
+
 export const MatchJoinLobby: FC = () => {
     const dispatch: AppDispatch = useDispatch();
     const navigation = useNavigation<NavigationProp<ParamListBase>>();
-    const { loading, error, room } = useSelector((state: any) => state.matchSlice);
+    const { t } = useTranslation();
+    const { loading, room } = useSelector((state: any) => state.matchSlice);
     const { user } = useFetchUserProfile();
     const [key, setKey] = useState<string>(AppConstants.EMPTY_VALUE);
-    const [isFormValidInput, setIsFormValidInput] = useState<boolean>(false);
+
+    const labels = useMemo(
+        () => ({
+            codeLabel: t('match_movie.main_match_screen.join_lobby_code_label'),
+            submit: t('match_movie.main_match_screen.join_lobby_submit'),
+            incomplete: t('match_movie.main_match_screen.join_lobby_code_incomplete'),
+        }),
+        [t],
+    );
 
     useEffect(() => {
-        if (room.roomKey && !loading) {
+        if (room?.roomKey && !loading) {
             navigation.navigate(AppRoutes.MATCH_NAVIGATOR, {
                 screen: AppRoutes.MATCH_LOBBY,
                 params: { lobbyName: room.roomKey },
             });
         }
-    }, [loading, error]);
+    }, [loading, navigation, room?.roomKey]);
 
-    const onChangeKey = (input: string) => {
-        if (!isNaN(Number(input))) {
-            setKey(input);
+    const onHandleSubmit = () => {
+        const userId = user?.id;
+        if (userId == null || !isCompleteKey(key)) {
+            return;
         }
-    };
-
-    const handleValidationInput = (isValid: boolean) => {
-        setIsFormValidInput(isValid);
-    };
-
-    const onHandleSubmit = (userId: number) => {
-        if (isFormValidInput) {
-            dispatch(joinRoom({ key: key, userId: userId }))
-                .unwrap()
-                .then(() => {
-                    navigation.navigate(AppRoutes.MATCH_NAVIGATOR, {
-                        screen: AppRoutes.MATCH_LOBBY,
-                        params: { lobbyName: key },
-                    });
-                })
-                .catch((errMsg) => {
-                    console.error('Error creating room:', errMsg);
+        dispatch(joinRoom({ key, userId }))
+            .unwrap()
+            .then(() => {
+                navigation.navigate(AppRoutes.MATCH_NAVIGATOR, {
+                    screen: AppRoutes.MATCH_LOBBY,
+                    params: { lobbyName: key },
                 });
-        }
+            })
+            .catch((errMsg) => {
+                console.error('Error joining room:', errMsg);
+            });
     };
+
+    const incompleteError = key.length > 0 && !isCompleteKey(key) ? labels.incomplete : undefined;
 
     return (
         <View style={styles.container}>
-            <SimpleInput
-                label="Lobby key"
-                onChangeText={onChangeKey}
-                onValidationChange={handleValidationInput}
+            <NumericOtpInput
+                length={LOBBY_KEY_LENGTH}
+                label={labels.codeLabel}
                 value={key}
-                placeholder="Enter lobby key"
-                textError={!isFormValidInput && key.length > 0 ? 'Key must be numeric and 6 chars long' : undefined}
+                onChangeText={setKey}
+                errorText={incompleteError}
+                disabled={loading}
             />
             <SimpleButton
-                title="Enter to lobby"
+                title={labels.submit}
                 color={Color.BUTTON_RED}
                 titleColor={Color.WHITE}
                 buttonWidth={width - 32}
-                onHandlePress={() => onHandleSubmit(user.id)}
+                onHandlePress={() => onHandleSubmit()}
+                disabled={loading || !isCompleteKey(key) || user?.id == null}
             />
             {loading ? <MovieLoader /> : null}
         </View>
@@ -85,8 +94,5 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         paddingVertical: 32,
-    },
-    text: {
-        color: Color.WHITE,
     },
 });
