@@ -18,3 +18,4 @@ Animations: Reanimated + React Native Gesture Handler
 Data Source: TMDB API
 State Management: Redux Toolkit / Context API
 Storage: AsyncStorage
+react-native version 0.78
