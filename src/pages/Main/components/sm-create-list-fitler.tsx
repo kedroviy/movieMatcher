@@ -12,8 +12,9 @@ import { FILTERS_DATA } from '../constants';
 import { useMovieFilterLabels } from '../hooks/use-movie-filter-labels';
 import { reducer, FilterOption, initialState, ISMFormData, SelectMovieType } from '../sm.model';
 import { mapFiltersStateToKpFormData } from '../utils/kp-filter-mapping';
+import { useKpGenresRu } from '../hooks/use-kp-genres-ru';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch } from 'redux/configure-store';
+import { AppDispatch, RootState } from 'redux/configure-store';
 import { clearError, clearResponse, loadMovies } from 'redux/moviesSlice';
 import { Slider } from '@miblanchard/react-native-slider';
 import { MovieLoader } from 'shared/ui/movie-loader';
@@ -24,8 +25,9 @@ export const SMCreateMovieListFilter: FC = () => {
     const [state, SMdispatch] = useReducer(reducer<FilterOption>, initialState);
     const dispatch: AppDispatch = useDispatch();
     const { t } = useTranslation();
-    const { countryOptions, genreOptions, localizeCountries, localizeGenres } = useMovieFilterLabels();
-    const { data, loading, error } = useSelector((state: any) => state.moviesSlice);
+    const { countryOptions, localizeCountries } = useMovieFilterLabels();
+    const { genreOptions } = useKpGenresRu();
+    const { data, loading, error } = useSelector((state: RootState) => state.moviesSlice);
     const navigation = useNavigation<NavigationProp<ParamListBase>>();
     const [isNotificationHide, setIsNotificationHide] = useState<boolean>(true);
     const [range, setRange] = useState<[number, number]>([0, 10]);
@@ -134,7 +136,7 @@ export const SMCreateMovieListFilter: FC = () => {
                 <SMMultiSelectInput
                     label={t('match_movie.filters_settings.genre')}
                     options={genreOptionsWithDisabled}
-                    selectedOptions={localizeGenres(state.selectedGenres)}
+                    selectedOptions={state.selectedGenres}
                     onSelectionChange={handleGenreSelectionChange}
                     placeholder={t('movie_filters.placeholder_genre')}
                 />
@@ -142,7 +144,7 @@ export const SMCreateMovieListFilter: FC = () => {
                 <SMMultiSelectInput
                     label={t('match_movie.filters_settings.exclude_genre')}
                     options={excludeGenreOptionsWithDisabled}
-                    selectedOptions={localizeGenres(state.excludeGenre)}
+                    selectedOptions={state.excludeGenre}
                     onSelectionChange={handleExcludeGenreChange}
                     placeholder={t('movie_filters.placeholder_genre')}
                 />

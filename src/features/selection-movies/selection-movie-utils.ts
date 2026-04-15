@@ -10,17 +10,25 @@ export const constructUrl = (baseURL: string, formData: ISMFormData, page: numbe
     });
 
     formData.selectedGenres.forEach((genre) => {
-        const name = KINOPOISK_GENRE_BY_ID[Number(genre.id)] ?? genre.label;
+        const numericId = typeof genre.id === 'number' ? genre.id : Number(genre.id);
+        const name =
+            genre.kpName ?? (Number.isFinite(numericId) ? KINOPOISK_GENRE_BY_ID[numericId] : undefined) ?? genre.label;
         params.append('genres.name', name.toLocaleLowerCase());
     });
 
     formData.excludeGenre.forEach((genre) => {
-        const name = KINOPOISK_GENRE_BY_ID[Number(genre.id)] ?? genre.label;
+        const numericId = typeof genre.id === 'number' ? genre.id : Number(genre.id);
+        const name =
+            genre.kpName ?? (Number.isFinite(numericId) ? KINOPOISK_GENRE_BY_ID[numericId] : undefined) ?? genre.label;
         params.append('genres.name', `!${name.toLocaleLowerCase()}`);
     });
 
     formData.selectedCountries.forEach((country) => {
-        const name = KINOPOISK_COUNTRY_BY_ID[Number(country.id)] ?? country.label;
+        const numericId = typeof country.id === 'number' ? country.id : Number(country.id);
+        const name =
+            country.kpName ??
+            (Number.isFinite(numericId) ? KINOPOISK_COUNTRY_BY_ID[numericId] : undefined) ??
+            country.label;
         params.append('countries.name', name);
     });
     if (formData.selectedRating && formData.selectedRating.length === 2) {

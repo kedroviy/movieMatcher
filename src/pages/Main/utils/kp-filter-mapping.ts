@@ -2,19 +2,23 @@ import { KINOPOISK_COUNTRY_BY_ID, KINOPOISK_GENRE_BY_ID } from '../sm-kinopoisk-
 import { FilterOption, ISMFormData, SelectMovieType } from '../sm.model';
 
 function kpGenreName(option: FilterOption): string | undefined {
-    return option.kpName ?? KINOPOISK_GENRE_BY_ID[Number(option.id)];
+    if (option.kpName) return option.kpName;
+    const numericId = typeof option.id === 'number' ? option.id : Number(option.id);
+    return Number.isFinite(numericId) ? KINOPOISK_GENRE_BY_ID[numericId] : undefined;
 }
 
 function kpCountryName(option: FilterOption): string | undefined {
-    return option.kpName ?? KINOPOISK_COUNTRY_BY_ID[Number(option.id)];
+    if (option.kpName) return option.kpName;
+    const numericId = typeof option.id === 'number' ? option.id : Number(option.id);
+    return Number.isFinite(numericId) ? KINOPOISK_COUNTRY_BY_ID[numericId] : undefined;
 }
 
-function toKpGenre(option: FilterOption) {
+function toKpGenre(option: FilterOption): FilterOption {
     const name = kpGenreName(option);
-    return { ...option, label: name ?? option.label, kpName: name ?? option.kpName, type: 'genre' as const };
+    return { ...option, label: name ?? option.label, kpName: name ?? option.kpName };
 }
 
-function toKpCountry(option: FilterOption) {
+function toKpCountry(option: FilterOption): FilterOption {
     const name = kpCountryName(option);
     return { ...option, label: name ?? option.label, kpName: name ?? option.kpName };
 }
@@ -31,7 +35,7 @@ export function mapFiltersStateToKpFormData(state: SelectMovieType<FilterOption>
         selectedGenres: state.selectedGenres.map(toKpGenre),
         selectedYears: state.selectedYears,
         selectedRating: state.selectedRating,
-    } as unknown as ISMFormData;
+    };
 }
 
 /**
@@ -41,9 +45,8 @@ export function mapFiltersPayloadToKpNames(payload: SelectMovieType<FilterOption
     return {
         ...payload,
         selectedCountries: payload.selectedCountries.map(toKpCountry),
-        selectedGenres: payload.selectedGenres.map((g) => ({ ...toKpGenre(g), type: undefined } as any)),
-        excludeGenre: payload.excludeGenre.map((g) => ({ ...toKpGenre(g), type: undefined } as any)),
-        genres: payload.genres?.map((g) => ({ ...toKpGenre(g), type: undefined } as any)),
+        selectedGenres: payload.selectedGenres.map(toKpGenre),
+        excludeGenre: payload.excludeGenre.map(toKpGenre),
+        genres: payload.genres?.map(toKpGenre),
     };
 }
-

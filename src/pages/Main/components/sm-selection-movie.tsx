@@ -55,7 +55,7 @@ export const SMSelectionMovie: FC = () => {
             storageData[currentSessionLabel] = {
                 id: currentSessionLabel,
                 label: currentSessionLabel,
-                link: 'https://api.kinopoisk.dev/v1.4/movie',
+                link: 'https://api.poiskkino.dev/v1.4/movie',
                 movies: [],
             };
         }
