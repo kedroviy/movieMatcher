@@ -2,6 +2,7 @@ import { Slider } from '@miblanchard/react-native-slider';
 import { FILTERS_DATA } from 'pages/Main/constants';
 import { useMovieFilterLabels } from 'pages/Main/hooks/use-movie-filter-labels';
 import { FilterOption, initialState, reducer } from 'pages/Main/sm.model';
+import { mapFiltersPayloadToKpNames } from 'pages/Main/utils/kp-filter-mapping';
 import { SMMultiSelectInput } from 'pages/Main/ui/sm-multi-select-input';
 import { FC, useMemo, useReducer, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -65,7 +66,7 @@ export const MatchFilterModal: FC<MatchFilterModalType> = ({ modalVisible, setMo
     );
 
     const applyFilters = () => {
-        onFiltersChange(state);
+        onFiltersChange(mapFiltersPayloadToKpNames(state));
         setModalVisible(false);
     };
 

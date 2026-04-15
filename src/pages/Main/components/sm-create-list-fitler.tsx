@@ -10,7 +10,8 @@ import { Color } from 'styles/colors';
 import { SMMultiSelectInput } from '../ui/sm-multi-select-input';
 import { FILTERS_DATA } from '../constants';
 import { useMovieFilterLabels } from '../hooks/use-movie-filter-labels';
-import { reducer, FilterOption, initialState, ISMFormData, SelectMovieType, Country, Year } from '../sm.model';
+import { reducer, FilterOption, initialState, ISMFormData, SelectMovieType } from '../sm.model';
+import { mapFiltersStateToKpFormData } from '../utils/kp-filter-mapping';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from 'redux/configure-store';
 import { clearError, clearResponse, loadMovies } from 'redux/moviesSlice';
@@ -69,16 +70,8 @@ export const SMCreateMovieListFilter: FC = () => {
     };
 
     function transformToISMFormData(state: SelectMovieType<FilterOption>): ISMFormData {
-        const transformedState: ISMFormData = {
-            excludeGenre: state.excludeGenre.map((genre) => ({ ...genre, type: 'genre' })),
-            genres: state.genres?.map((genre) => ({ ...genre, type: 'genre' })),
-            selectedCountries: state.selectedCountries as Country[],
-            selectedGenres: state.selectedGenres.map((genre) => ({ ...genre, type: 'genre' })),
-            selectedYears: state.selectedYears as Year[],
-            selectedRating: state.selectedRating,
-        };
-
-        return transformedState;
+        // Map to stable Kinopoisk names for sending / URL construction.
+        return mapFiltersStateToKpFormData(state) as unknown as ISMFormData;
     }
 
     const handleCountrySelectionChange = (selectedCountries: any[]) => {

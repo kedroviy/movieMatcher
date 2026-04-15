@@ -1,4 +1,4 @@
-export type FilterOption = { id: number; name?: string; label: string };
+export type FilterOption = { id: number; name?: string; label: string; kpName?: string };
 
 export interface SMFormItem<T> {
     id: T;

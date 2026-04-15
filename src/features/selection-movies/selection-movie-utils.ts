@@ -16,7 +16,7 @@ export const constructUrl = (baseURL: string, formData: ISMFormData, page: numbe
 
     formData.excludeGenre.forEach((genre) => {
         const name = KINOPOISK_GENRE_BY_ID[Number(genre.id)] ?? genre.label;
-        params.append('genres.name', `%21${name.toLocaleLowerCase()}`);
+        params.append('genres.name', `!${name.toLocaleLowerCase()}`);
     });
 
     formData.selectedCountries.forEach((country) => {
