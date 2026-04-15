@@ -91,7 +91,7 @@ android {
         applicationId "com.moviematcher"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 69
+        versionCode 70
         versionName "0.10.0"
     }
     signingConfigs {

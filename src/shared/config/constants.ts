@@ -4,7 +4,7 @@ const API = {
     // 'https://beneficial-adaptation-prod.up.railway.app',
     // 'https://movie-match-x5ue.onrender.com',
     // 'http://192.168.100.71:6001' ,
-    KINOPOISK_URL: 'https://api.kinopoisk.dev/v1.4',
+    KINOPOISK_URL: 'https://api.poiskkino.dev/v1.4',
     LOGIN: '/auth/login',
     REGISTRATION: '/auth/register',
     EMAIL_TO_CHECK: '/auth/send-code-to-email',

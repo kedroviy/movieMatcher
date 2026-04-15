@@ -9,7 +9,7 @@ export const fetchMovies = async (
     sessionLabel: string,
     page: number,
 ): Promise<SMApiResponse> => {
-    const url = constructUrl('https://api.kinopoisk.dev/v1.4/movie?limit=10', formData, page);
+    const url = constructUrl('https://api.poiskkino.dev/v1.4/movie?limit=10', formData, page);
     try {
         const data = await fetchMoviesApi(url);
         await updateStorageWithSession(sessionLabel, url);

@@ -1,7 +1,7 @@
 import { create } from 'apisauce';
 import { SMApiResponse } from './selection-movies.model';
 
-const BASE_URL = 'https://api.kinopoisk.dev/v1.4/movie';
+const BASE_URL = 'https://api.poiskkino.dev/v1.4/movie';
 const API_KEY = 'Z6ZNZN2-1A24591-H2Q6R76-KJ9C676';
 
 const api = create({
