@@ -2,7 +2,7 @@ const API = {
     BASE_URL: 'https://movie-api.moviematch.space',
     // 'absent-mildrid-kedroviy-651932b4.koyeb.app',
     // 'https://beneficial-adaptation-prod.up.railway.app',
-    // 'https://movie-match-x5ue.onrender.com',
+    // 'https://movie-api.moviematch.space',
     // 'http://192.168.100.71:6001' ,
     KINOPOISK_URL: 'https://api.poiskkino.dev/v1.4',
     LOGIN: '/auth/login',
