@@ -10,7 +10,7 @@ jest.mock('apisauce', () => {
     };
 });
 
-const mockPost = create({ baseURL: 'https://movie-match-x5ue.onrender.com' }).post as jest.MockedFunction<
+const mockPost = create({ baseURL: 'https://movie-api.moviematch.space' }).post as jest.MockedFunction<
     typeof create
 >['prototype']['post'];
 
