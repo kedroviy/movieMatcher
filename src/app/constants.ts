@@ -22,6 +22,7 @@ export enum AppRoutes {
     USER_PROFILE_LANGUAGE = 'UPLanguage',
     USER_PROFILE_ACC_SETTINGS = 'UPAccountSettings',
     USER_PROFILE_CHANGENAME = 'UPChangeName',
+    USER_PROFILE_FEEDBACK = 'UserProfileFeedback',
     PROFILE_RESULT = 'ProfileResult',
     SELF_SELECT_NAVIGATOR = 'SelfSelectNavigator',
     SM_CREATE_MOVIE_LIST_SCREEN = 'SMCreateMovieListFilter',
@@ -139,6 +140,7 @@ export type RootStackParamList = {
         buttonColor: string;
         onHandlePress: () => void;
     };
+    UserProfileFeedback: undefined;
     SMCreateMovieListFilter: undefined;
     SMSelectionMovie: undefined;
     SMMovieFullList: { headerText: string };

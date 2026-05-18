@@ -15,6 +15,7 @@ export const aboutAppItems = [
             </Svg>
         ),
         name: 'Обратная связь',
+        navigateScreen: 'UserProfileFeedback',
     },
     {
         id: 1,

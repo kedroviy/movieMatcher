@@ -5,6 +5,7 @@ import appSliceReducer from './appSlice';
 import userSliceReducer from './userSlice';
 import moviesSliceReducer from './moviesSlice';
 import matchSliceReducer from './matchSlice';
+import feedbackSliceReducer from './feedbackSlice';
 
 export const store = configureStore({
     reducer: {
@@ -14,6 +15,7 @@ export const store = configureStore({
         userSlice: userSliceReducer,
         moviesSlice: moviesSliceReducer,
         matchSlice: matchSliceReducer,
+        feedbackSlice: feedbackSliceReducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({

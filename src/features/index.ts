@@ -3,3 +3,4 @@ export * from './auth/authAPI';
 export * from './user';
 export * from './selection-movies';
 export * from './match';
+export * from './feedback';

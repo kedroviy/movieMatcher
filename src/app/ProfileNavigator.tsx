@@ -3,7 +3,14 @@ import { CardStyleInterpolators, createStackNavigator } from '@react-navigation/
 import { useTranslation } from 'react-i18next';
 
 import { AppRoutes, RootStackParamList, animationOptions, defaultScreenOptions, withoutHeader } from './constants';
-import { UPAboutApplication, UPAccountSettings, UPChangeName, UPLanguage, UserProfileResult } from 'pages';
+import {
+    UPAboutApplication,
+    UPAccountSettings,
+    UPChangeName,
+    UPLanguage,
+    UserProfileFeedback,
+    UserProfileResult,
+} from 'pages';
 import { Color } from 'styles/colors';
 
 const ProfileStack = createStackNavigator<RootStackParamList>();
@@ -95,6 +102,25 @@ export const ProfileNavigator: FC = () => {
                     ...animationOptions,
                 }}
                 key={AppRoutes.USER_PROFILE_CHANGENAME}
+            />
+
+            <ProfileStack.Screen
+                name={AppRoutes.USER_PROFILE_FEEDBACK}
+                component={UserProfileFeedback}
+                options={{
+                    headerTitle: t('acc_settings.feedback_form.title'),
+                    headerTitleStyle: {
+                        marginTop: 24,
+                    },
+                    headerTintColor: Color.WHITE,
+                    headerLeftContainerStyle: {
+                        marginLeft: -3,
+                        marginTop: 24,
+                    },
+                    cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+                    ...animationOptions,
+                }}
+                key={AppRoutes.USER_PROFILE_FEEDBACK}
             />
 
             <ProfileStack.Screen
