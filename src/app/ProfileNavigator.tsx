@@ -3,7 +3,14 @@ import { CardStyleInterpolators, createStackNavigator } from '@react-navigation/
 import { useTranslation } from 'react-i18next';
 
 import { AppRoutes, RootStackParamList, animationOptions, defaultScreenOptions, withoutHeader } from './constants';
-import { UPAboutApplication, UPAccountSettings, UPChangeName, UPLanguage, UserProfileFeedback, UserProfileResult } from 'pages';
+import {
+    UPAboutApplication,
+    UPAccountSettings,
+    UPChangeName,
+    UPLanguage,
+    UserProfileFeedback,
+    UserProfileResult,
+} from 'pages';
 import { Color } from 'styles/colors';
 
 const ProfileStack = createStackNavigator<RootStackParamList>();

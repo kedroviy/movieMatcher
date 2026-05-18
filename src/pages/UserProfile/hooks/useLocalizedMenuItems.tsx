@@ -144,7 +144,7 @@ export const useLocalizedMenuItems = () => {
                     </Svg>
                 ),
                 name: t('about_app.feedback'),
-                navigateScreen: 'UserProfileFeedback'
+                navigateScreen: 'UserProfileFeedback',
             },
             {
                 id: 1,

@@ -2,21 +2,13 @@ import { createAuthenticatedApi } from '../../shared/api/create-authenticated-ap
 import { API, FeedbackMessage } from '../../shared';
 
 export class FeedbackApiError extends Error {
-    constructor(
-        message: string,
-        readonly status?: number,
-        readonly code?: 'UNAUTHORIZED' | 'UNKNOWN',
-    ) {
+    constructor(message: string, readonly status?: number, readonly code?: 'UNAUTHORIZED' | 'UNKNOWN') {
         super(message);
         this.name = 'FeedbackApiError';
     }
 }
 
-const parseFeedbackError = (response: {
-    status?: number | null;
-    data?: unknown;
-    problem?: string | null;
-}): never => {
+const parseFeedbackError = (response: { status?: number | null; data?: unknown; problem?: string | null }): never => {
     if (response.status === 401) {
         throw new FeedbackApiError('Session expired. Please sign in again.', 401, 'UNAUTHORIZED');
     }
