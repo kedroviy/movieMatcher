@@ -11,6 +11,8 @@ const API = {
     VERIFY_CHANGE_PASSWORD_CODE: '/auth/verify-code',
     NEW_PASSWORD: '/auth/change-password',
     GET_USER_PROFILE_INFO: '/user/me',
+    FEEDBACK: '/feedback',
+    FEEDBACK_MY: '/feedback/my',
 };
 
 const AppConstants = {
