@@ -40,7 +40,6 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
     const dataFromSocket = useWebSocket();
     const { visible: lobbyOnboardingVisible, dismiss: dismissLobbyOnboarding } = useLobbyOnboarding();
 
-    /** Screen is opened for this key (from table «Open» or stack params); do not rely only on `currentUserMatch`. */
     const lobbyRoomKey = useMemo(() => {
         const fromRoute = route.params?.lobbyName;
         if (fromRoute) {

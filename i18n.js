@@ -448,7 +448,7 @@ const resources = {
                     onboarding: {
                         title: 'Benvenuto nella lobby',
                         description:
-                            'Invita gli amici con il codice della stanza, imposta i filtri se sei l\'host e avvia la partita quando tutti sono pronti.\n\nIl gioco si svolge in 2 fasi: Fase 1 — metti mi piace ai film finché non raggiungete 8 corrispondenze. Fase 2 — eliminazione: ogni film che non ti piace viene rimosso.',
+                            "Invita gli amici con il codice della stanza, imposta i filtri se sei l'host e avvia la partita quando tutti sono pronti.\n\nIl gioco si svolge in 2 fasi: Fase 1 — metti mi piace ai film finché non raggiungete 8 corrispondenze. Fase 2 — eliminazione: ogni film che non ti piace viene rimosso.",
                         close: 'Capito',
                     },
                 },

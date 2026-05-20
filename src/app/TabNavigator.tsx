@@ -4,7 +4,6 @@ import { SoloMatchScreen, UserProfileScreen, MatchScreen } from 'pages';
 
 import { AnimatedTabBar } from './AnimatedTabBar';
 import { AppRoutes, animationOptions, defaultOptions } from './constants';
-import { Color } from 'styles/colors';
 import { MatchSvgIcon, PlaySvgIcon, ProfileSvgIcon } from 'shared';
 import { useTranslation } from 'react-i18next';
 
@@ -22,7 +21,7 @@ export const TabNavigator = () => {
     const { t } = useTranslation();
 
     return (
-        <Tabs.Navigator screenOptions={screenOptions} tabBar={props => <AnimatedTabBar {...props} />}>
+        <Tabs.Navigator screenOptions={screenOptions} tabBar={(props) => <AnimatedTabBar {...props} />}>
             <Tabs.Screen
                 name={AppRoutes.SOLO_MATCH_SCREEN}
                 component={SoloMatchScreen}

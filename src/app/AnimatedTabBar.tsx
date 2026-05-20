@@ -74,9 +74,7 @@ export const AnimatedTabBar = ({ state, descriptors, navigation }: BottomTabBarP
                     const { options } = descriptors[route.key];
                     const isFocused = state.index === index;
                     const label =
-                        typeof options.tabBarLabel === 'string'
-                            ? options.tabBarLabel
-                            : (options.title ?? route.name);
+                        typeof options.tabBarLabel === 'string' ? options.tabBarLabel : options.title ?? route.name;
                     const color = isFocused ? Color.BUTTON_RED : Color.GREY;
 
                     const onPress = () => {
