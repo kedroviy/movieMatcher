@@ -2,26 +2,19 @@ import { CardStyleInterpolators } from '@react-navigation/stack';
 import { BottomTabNavigationOptions, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { SoloMatchScreen, UserProfileScreen, MatchScreen } from 'pages';
 
+import { AnimatedTabBar } from './AnimatedTabBar';
 import { AppRoutes, animationOptions, defaultOptions } from './constants';
 import { Color } from 'styles/colors';
-import { borderSubtle } from 'styles/theme';
 import { MatchSvgIcon, PlaySvgIcon, ProfileSvgIcon } from 'shared';
 import { useTranslation } from 'react-i18next';
 
 const Tabs = createBottomTabNavigator();
 
+const ACTIVE_STROKE = 2.5;
+const INACTIVE_STROKE = 1.75;
+
 const screenOptions: BottomTabNavigationOptions = {
-    tabBarInactiveTintColor: Color.GREY,
-    tabBarActiveTintColor: Color.WHITE,
-    tabBarStyle: {
-        borderTopWidth: 1,
-        borderTopColor: borderSubtle,
-        elevation: 0,
-        backgroundColor: Color.EXTRA_DARK_GRAY,
-        height: 68,
-        paddingTop: 8,
-        paddingBottom: 10,
-    },
+    tabBarShowLabel: false,
     headerShown: false,
 };
 
@@ -29,12 +22,19 @@ export const TabNavigator = () => {
     const { t } = useTranslation();
 
     return (
-        <Tabs.Navigator screenOptions={screenOptions}>
+        <Tabs.Navigator screenOptions={screenOptions} tabBar={props => <AnimatedTabBar {...props} />}>
             <Tabs.Screen
                 name={AppRoutes.SOLO_MATCH_SCREEN}
                 component={SoloMatchScreen}
                 options={{
-                    tabBarIcon: ({ color, size }) => <MatchSvgIcon width={size} height={size} stroke={color} />,
+                    tabBarIcon: ({ color, size, focused }) => (
+                        <MatchSvgIcon
+                            width={size}
+                            height={size}
+                            stroke={color}
+                            strokeWidth={focused ? ACTIVE_STROKE : INACTIVE_STROKE}
+                        />
+                    ),
                     tabBarLabel: t('tabs.selection'),
                     ...defaultOptions,
                     unmountOnBlur: true,
@@ -47,7 +47,14 @@ export const TabNavigator = () => {
                 name={AppRoutes.MATCH_SCREEN}
                 component={MatchScreen}
                 options={{
-                    tabBarIcon: ({ color, size }) => <PlaySvgIcon width={size} height={size} stroke={color} />,
+                    tabBarIcon: ({ color, size, focused }) => (
+                        <PlaySvgIcon
+                            width={size}
+                            height={size}
+                            stroke={color}
+                            strokeWidth={focused ? ACTIVE_STROKE : INACTIVE_STROKE}
+                        />
+                    ),
                     tabBarLabel: t('tabs.match'),
                     ...defaultOptions,
                     unmountOnBlur: true,
@@ -60,7 +67,14 @@ export const TabNavigator = () => {
                 name={AppRoutes.USER_PROFILE_SCREEN}
                 component={UserProfileScreen}
                 options={{
-                    tabBarIcon: ({ color, size }) => <ProfileSvgIcon width={size} height={size} stroke={color} />,
+                    tabBarIcon: ({ color, size, focused }) => (
+                        <ProfileSvgIcon
+                            width={size}
+                            height={size}
+                            stroke={color}
+                            strokeWidth={focused ? ACTIVE_STROKE : INACTIVE_STROKE}
+                        />
+                    ),
                     tabBarLabel: t('tabs.profile'),
                     ...defaultOptions,
                     unmountOnBlur: true,

@@ -3,105 +3,115 @@ import Svg, { ClipPath, Defs, G, Path, Polygon, Rect } from 'react-native-svg';
 
 type SVGIconType = {
     stroke?: string;
+    strokeWidth?: number;
     width?: number;
     height?: number;
     fill?: string;
 };
-export const MatchSvgIcon: FC<SVGIconType> = ({ stroke, width, height }) => (
+
+const iconStroke = (strokeWidth?: number) => strokeWidth ?? 2;
+
+export const MatchSvgIcon: FC<SVGIconType> = ({ stroke, strokeWidth, width, height }) => (
     <Svg width={width} height={height} viewBox="0 0 24 24" fill="none">
         <Path
             id="Vector"
             d="M19.82 2H4.18C2.97602 2 2 2.97602 2 4.18V19.82C2 21.024 2.97602 22 4.18 22H19.82C21.024 22 22 21.024 22 19.82V4.18C22 2.97602 21.024 2 19.82 2Z"
             stroke={stroke}
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            strokeWidth={iconStroke(strokeWidth)}
+            strokeLinecap="round"
+            strokeLinejoin="round"
         />
         <Path
             id="Vector_2"
             d="M7 2V22"
             stroke={stroke}
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            strokeWidth={iconStroke(strokeWidth)}
+            strokeLinecap="round"
+            strokeLinejoin="round"
         />
         <Path
             id="Vector_3"
             d="M17 2V22"
             stroke={stroke}
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            strokeWidth={iconStroke(strokeWidth)}
+            strokeLinecap="round"
+            strokeLinejoin="round"
         />
         <Path
             id="Vector_4"
             d="M2 12H22"
             stroke={stroke}
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            strokeWidth={iconStroke(strokeWidth)}
+            strokeLinecap="round"
+            strokeLinejoin="round"
         />
         <Path
             id="Vector_5"
             d="M2 7H7"
             stroke={stroke}
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            strokeWidth={iconStroke(strokeWidth)}
+            strokeLinecap="round"
+            strokeLinejoin="round"
         />
         <Path
             id="Vector_6"
             d="M2 17H7"
             stroke={stroke}
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            strokeWidth={iconStroke(strokeWidth)}
+            strokeLinecap="round"
+            strokeLinejoin="round"
         />
         <Path
             id="Vector_7"
             d="M17 17H22"
             stroke={stroke}
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            strokeWidth={iconStroke(strokeWidth)}
+            strokeLinecap="round"
+            strokeLinejoin="round"
         />
         <Path
             id="Vector_8"
             d="M17 7H22"
             stroke={stroke}
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            strokeWidth={iconStroke(strokeWidth)}
+            strokeLinecap="round"
+            strokeLinejoin="round"
         />
     </Svg>
 );
 
-export const ProfileSvgIcon: FC<SVGIconType> = ({ stroke, width, height }) => {
+export const ProfileSvgIcon: FC<SVGIconType> = ({ stroke, strokeWidth, width, height }) => {
     return (
         <Svg width={width} height={height} viewBox="0 0 24 24" fill="none">
             <Path
                 id="Vector"
                 d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21"
                 stroke={stroke}
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth={iconStroke(strokeWidth)}
+                strokeLinecap="round"
+                strokeLinejoin="round"
             />
             <Path
                 id="Vector_2"
                 d="M12 11C14.2091 11 16 9.20914 16 7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7C8 9.20914 9.79086 11 12 11Z"
                 stroke={stroke}
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth={iconStroke(strokeWidth)}
+                strokeLinecap="round"
+                strokeLinejoin="round"
             />
         </Svg>
     );
 };
 
-export const PlaySvgIcon: FC<SVGIconType> = ({ stroke, width, height }) => (
+export const PlaySvgIcon: FC<SVGIconType> = ({ stroke, strokeWidth, width, height }) => (
     <Svg width={width} height={height} viewBox="0 0 24 24" fill="none">
-        <Path d="M5 3L19 12L5 21V3Z" stroke={stroke} stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        <Path
+            d="M5 3L19 12L5 21V3Z"
+            stroke={stroke}
+            strokeWidth={iconStroke(strokeWidth)}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        />
     </Svg>
 );
 
