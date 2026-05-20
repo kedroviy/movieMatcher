@@ -1,7 +1,7 @@
 import type { Insets } from 'react-native';
 
 /** Default auto-dismiss duration when `autoDismissMs` is omitted on `TimedModal`. */
-export const TIMED_MODAL_DEFAULT_DISMISS_MS = 8000;
+export const TIMED_MODAL_DEFAULT_DISMISS_MS = 15000;
 
 export const TIMED_MODAL_CARD_WIDTH = 328;
 

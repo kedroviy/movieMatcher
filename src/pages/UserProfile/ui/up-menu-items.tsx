@@ -19,7 +19,7 @@ export const UPMenuItems: FC<UPMenuItemsTYpe> = ({ iconComponent, name, navigate
     const onNavigate = (screen: string) =>
         navigation.navigate(AppRoutes.PROFILE_NAVIGATOR, {
             screen: screen,
-        });
+    });
 
     return (
         <View
