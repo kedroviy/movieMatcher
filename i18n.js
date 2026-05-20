@@ -123,6 +123,12 @@ const resources = {
                 },
                 lobby: {
                     lobby_members: 'Lobby members',
+                    onboarding: {
+                        title: 'Welcome to the lobby',
+                        description:
+                            'Invite friends with the room code, set filters as host, and start the match when everyone is ready.\n\nThe game has 2 stages: Stage 1 — like movies until you collect 8 matches. Stage 2 — elimination: every movie you do not like is removed.',
+                        close: 'Got it',
+                    },
                 },
                 filters_settings: {
                     settings: 'Settings',
@@ -330,6 +336,12 @@ const resources = {
                 },
                 lobby: {
                     lobby_members: 'Участники лобби',
+                    onboarding: {
+                        title: 'Добро пожаловать в лобби',
+                        description:
+                            'Пригласите друзей по коду комнаты, настройте фильтры (если вы ведущий) и запустите матч, когда все готовы.\n\nИгра идёт в 2 этапа: 1 этап — вы лайкаете фильмы, пока не наберётся 8 совпадений. 2 этап — игра на исключение: каждый нелайкнутый фильм удаляется.',
+                        close: 'Понятно',
+                    },
                 },
                 filters_settings: {
                     settings: 'Настройки',
@@ -431,6 +443,16 @@ const resources = {
                 language: 'Язык',
                 about_application: 'О приложении',
             },
+            match_movie: {
+                lobby: {
+                    onboarding: {
+                        title: 'Benvenuto nella lobby',
+                        description:
+                            "Invita gli amici con il codice della stanza, imposta i filtri se sei l'host e avvia la partita quando tutti sono pronti.\n\nIl gioco si svolge in 2 fasi: Fase 1 — metti mi piace ai film finché non raggiungete 8 corrispondenze. Fase 2 — eliminazione: ogni film che non ti piace viene rimosso.",
+                        close: 'Capito',
+                    },
+                },
+            },
         },
     },
     pl: {
@@ -441,6 +463,16 @@ const resources = {
                 selection: 'Wybór',
                 match: 'Mecz',
                 profile: 'Profil',
+            },
+            match_movie: {
+                lobby: {
+                    onboarding: {
+                        title: 'Witamy w lobby',
+                        description:
+                            'Zaproś znajomych kodem pokoju, ustaw filtry jako gospodarz i rozpocznij mecz, gdy wszyscy są gotowi.\n\nGra ma 2 etapy: Etap 1 — polubiajcie filmy, aż zbierzecie 8 dopasowań. Etap 2 — eliminacja: każdy niepolubiony film zostaje usunięty.',
+                        close: 'Rozumiem',
+                    },
+                },
             },
         },
     },

@@ -17,6 +17,7 @@ import { useWebSocket } from '../hooks';
 import { Role } from 'features/match/match.model';
 import { roomMoviesQueryKey } from 'features/match/query-client';
 import { refetchRoomMoviesToRedux, useRoomMoviesSync, useRoomStateSync } from 'features/match/use-room-movies-sync';
+import { LobbyOnboardingModal, useLobbyOnboarding } from 'features/lobby-onboarding';
 
 type MatchLobbyProps = {
     route: RouteProp<RootStackParamList, 'MatchLobby'>;
@@ -37,8 +38,8 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
     const [modalVisible, setModalVisible] = useState(false);
     const [, setFilters] = useState<any>({});
     const dataFromSocket = useWebSocket();
+    const { visible: lobbyOnboardingVisible, dismiss: dismissLobbyOnboarding } = useLobbyOnboarding();
 
-    /** Screen is opened for this key (from table «Open» or stack params); do not rely only on `currentUserMatch`. */
     const lobbyRoomKey = useMemo(() => {
         const fromRoute = route.params?.lobbyName;
         if (fromRoute) {
@@ -46,6 +47,8 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
         }
         return currentUserMatch?.roomKey ?? (Array.isArray(room) ? room[0]?.roomKey : undefined);
     }, [route.params?.lobbyName, currentUserMatch?.roomKey, room]);
+
+    const showLobbyOnboarding = lobbyOnboardingVisible && Boolean(lobbyRoomKey) && !loading;
 
     const myRoleInLobby = useMemo(() => {
         if (!user?.id || !Array.isArray(room) || room.length === 0) {
@@ -198,6 +201,7 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
 
     return (
         <View style={styles.container}>
+            <LobbyOnboardingModal visible={showLobbyOnboarding} onClose={() => void dismissLobbyOnboarding()} />
             {loading && (
                 <View style={styles.loaderContainer}>
                     <MovieLoader />
