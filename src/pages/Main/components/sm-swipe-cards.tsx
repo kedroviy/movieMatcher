@@ -1,6 +1,7 @@
 import React, { FC, useState } from 'react';
 import { Text, StyleSheet, View, Image, Dimensions, TouchableOpacity } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import { useTranslation } from 'react-i18next';
 
 import { Color } from '../../../styles/colors';
 import { getRatingColor, roundDownToOneTenth } from '../utils';
@@ -13,6 +14,7 @@ type SMSwipeCardType = {
 const { width } = Dimensions.get('window');
 
 export const SMSwipeCards: FC<SMSwipeCardType> = ({ card }) => {
+    const { t } = useTranslation();
     const [isExpanded, setIsExpanded] = useState<boolean>(false);
     const descriptionHeight = useSharedValue(80);
 
@@ -30,7 +32,21 @@ export const SMSwipeCards: FC<SMSwipeCardType> = ({ card }) => {
     };
 
     if (!card || typeof card !== 'object') {
-        return null;
+        return (
+            <View style={styles.card}>
+                <View style={[styles.placeholder, styles.placeholderUnavailable]}>
+                    <Text style={styles.unavailableTitle}>
+                        {t('match_movie.swipe.unavailable_title')}
+                    </Text>
+                </View>
+                <View style={styles.movieDescriptionContainer}>
+                    <Text style={styles.headerText}>{t('match_movie.swipe.unavailable_title')}</Text>
+                    <Text style={[styles.text, { fontSize: 16 }]}>
+                        {t('match_movie.swipe.unavailable_description')}
+                    </Text>
+                </View>
+            </View>
+        );
     }
 
     return (
@@ -136,6 +152,17 @@ const styles = StyleSheet.create({
         flex: 1,
         width: '100%',
         backgroundColor: Color.NEW_BLACK,
+    },
+    placeholderUnavailable: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingHorizontal: 16,
+    },
+    unavailableTitle: {
+        color: Color.WHITE,
+        fontSize: 16,
+        fontWeight: '600',
+        textAlign: 'center',
     },
     chipsRow: {
         flexDirection: 'row',

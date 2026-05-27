@@ -141,6 +141,14 @@ const resources = {
                 },
                 match_result: 'Result of match',
                 exit_to_match_screen: 'Back to Match',
+                swipe: {
+                    unavailable_title: 'Movie unavailable',
+                    unavailable_description:
+                        'We could not load details for this title. Swipe left or right to continue.',
+                    loading_deck: 'Loading movies…',
+                    waiting_title: 'Waiting for others',
+                    waiting_description: 'Finish your picks or wait until everyone is ready for the next round.',
+                },
             },
             movie_filters: {
                 placeholder_country: 'Select countries',
@@ -356,6 +364,15 @@ const resources = {
                 },
                 match_result: 'Результат',
                 exit_to_match_screen: 'К экрану Матч',
+                swipe: {
+                    unavailable_title: 'Фильм недоступен',
+                    unavailable_description:
+                        'Не удалось загрузить данные о фильме. Свайпните влево или вправо, чтобы продолжить.',
+                    loading_deck: 'Загружаем фильмы…',
+                    waiting_title: 'Ожидаем остальных',
+                    waiting_description:
+                        'Завершите выбор или подождите, пока все участники будут готовы к следующему раунду.',
+                },
             },
             movie_filters: {
                 placeholder_country: 'Выберите страну',

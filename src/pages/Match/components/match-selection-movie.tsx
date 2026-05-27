@@ -2,6 +2,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Dimensions, StyleSheet, View } from 'react-native';
 import { useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import Swiper from 'react-native-deck-swiper';
 import socketService from 'features/match/match-socketService';
 import { OverlayLabel } from 'pages/Main/ui/overlay-label';
@@ -19,6 +20,7 @@ import { NavigationProp, ParamListBase, RouteProp, useNavigation, useRoute } fro
 import { RootStackParamList } from 'app/constants';
 import { addNotification } from 'redux/appSlice';
 import { MovieLoader } from 'shared/ui/movie-loader';
+import { getMatchDeckDocs, getMatchDeckSignature } from '../utils/match-deck';
 
 const { width } = Dimensions.get('window');
 
@@ -27,14 +29,16 @@ export const MatchSelectionMovie: FC = () => {
     const queryClient = useQueryClient();
     const navigation = useNavigation<NavigationProp<ParamListBase>>();
     const route = useRoute<RouteProp<RootStackParamList, 'MatchSelectionMovie'>>();
+    const { t } = useTranslation();
     const { currentUserMatch, movies, room } = useSelector((state: any) => state.matchSlice);
     const { user } = useSelector((state: any) => state.userSlice);
     const { likeMovie, waitForPendingLikes } = useLikeMovieQueue();
-    // const { userStatus } = useGetUserStatusByUserId(user?.id);
     const [currentCardIndex, setCurrentCardIndex] = useState<number>(0);
     const [isInitialLoading, setIsInitialLoading] = useState<boolean>(true);
     const [isWaitStatus, setIsWaitStatus] = useState<boolean>(false);
-    const isLastCard = useIsLastCard(currentCardIndex, movies.data?.docs.length || 0);
+    const deckDocs = useMemo(() => getMatchDeckDocs(movies), [movies]);
+    const deckSignature = useMemo(() => getMatchDeckSignature(deckDocs), [deckDocs]);
+    const isLastCard = useIsLastCard(currentCardIndex, deckDocs.length);
     const useSwiper = useRef<Swiper<any>>(null);
     const selectionRoomKey = useMemo(() => {
         const fromRoute = route.params?.roomKey;
@@ -61,10 +65,33 @@ export const MatchSelectionMovie: FC = () => {
     }, [selectionRoomKey, user?.id]);
 
     useEffect(() => {
-        if (movies.data?.docs.length) {
+        if (deckDocs.length) {
             setIsInitialLoading(false);
         }
-    }, [movies.data?.docs.length]);
+    }, [deckDocs.length]);
+
+    /** Keep index in range when the deck shrinks after a refetch (without treating it as "deck finished"). */
+    useEffect(() => {
+        if (!deckDocs.length) {
+            return;
+        }
+        setCurrentCardIndex((prev) => {
+            if (prev > deckDocs.length) {
+                return deckDocs.length - 1;
+            }
+            return prev;
+        });
+    }, [deckSignature, deckDocs.length]);
+
+    useEffect(() => {
+        if (isInitialLoading || !selectionRoomKey || deckDocs.length) {
+            return;
+        }
+        void refetchRoomMoviesToRedux(queryClient, dispatch, selectionRoomKey).catch(() => undefined);
+    }, [deckDocs.length, dispatch, isInitialLoading, queryClient, selectionRoomKey]);
+
+    const isDeckExhaustedForUi = deckDocs.length > 0 && currentCardIndex >= deckDocs.length;
+    const canShowSwiper = !isWaitStatus && deckDocs.length > 0 && currentCardIndex < deckDocs.length;
 
     /** Stable subscription: room key from ref so we do not detach `broadcastMovies` on roomKey churn. */
     useEffect(() => {
@@ -122,27 +149,23 @@ export const MatchSelectionMovie: FC = () => {
         if (!baseline) {
             return;
         }
-        const docs = movies.data?.docs;
-        if (!docs?.length) {
+        if (!deckDocs.length) {
             return;
         }
-        const snap = `${docs.length}:${docs[0]?.id}:${docs[docs.length - 1]?.id}`;
+        const snap = getMatchDeckSignature(deckDocs);
         if (snap !== baseline) {
             deckSnapshotAtWaitRef.current = null;
             setCurrentCardIndex(0);
             setIsWaitStatus(false);
         }
-    }, [movies.data?.docs, isWaitStatus]);
+    }, [deckDocs, isWaitStatus]);
 
     useEffect(() => {
         if (isLastCard) {
             if (!selectionRoomKey || user?.id == null) {
                 return;
             }
-            const docs = movies.data?.docs;
-            deckSnapshotAtWaitRef.current = docs?.length
-                ? `${docs.length}:${docs[0]?.id}:${docs[docs.length - 1]?.id}`
-                : null;
+            deckSnapshotAtWaitRef.current = deckDocs.length ? getMatchDeckSignature(deckDocs) : null;
             setIsWaitStatus(true);
             const checkUserStatus = async () => {
                 try {
@@ -219,16 +242,22 @@ export const MatchSelectionMovie: FC = () => {
 
             checkUserStatus();
         }
-    }, [selectionRoomKey, user?.id, isLastCard, dispatch, queryClient, waitForPendingLikes]);
+    }, [deckDocs, selectionRoomKey, user?.id, isLastCard, dispatch, queryClient, waitForPendingLikes]);
 
     const handleOnSwiped = useCallback(() => {
-        setCurrentCardIndex((prevIndex) => prevIndex + 1);
-    }, []);
+        setCurrentCardIndex((prevIndex) => {
+            const nextIndex = prevIndex + 1;
+            if (nextIndex > deckDocs.length) {
+                return deckDocs.length;
+            }
+            return nextIndex;
+        });
+    }, [deckDocs.length]);
 
     const handleLike = useCallback(
         (_cardIndex: number, card?: { id?: number }) => {
             const roomKey = selectionRoomKey;
-            const movieId = card?.id ?? movies.data?.docs[currentCardIndex]?.id;
+            const movieId = card?.id ?? (deckDocs[currentCardIndex] as { id?: number } | undefined)?.id;
             if (movieId == null || !roomKey || user?.id == null) {
                 return;
             }
@@ -238,7 +267,7 @@ export const MatchSelectionMovie: FC = () => {
                 movieId: Number(movieId),
             });
         },
-        [currentCardIndex, likeMovie, movies.data?.docs, selectionRoomKey, user?.id],
+        [currentCardIndex, deckDocs, likeMovie, selectionRoomKey, user?.id],
     );
 
     const overlayLabels = useMemo(
@@ -265,6 +294,8 @@ export const MatchSelectionMovie: FC = () => {
         [],
     );
 
+    const showWaitUi = isWaitStatus || isDeckExhaustedForUi;
+
     if (isInitialLoading) {
         return (
             <View style={styles.loaderScreen}>
@@ -273,16 +304,37 @@ export const MatchSelectionMovie: FC = () => {
         );
     }
 
+    if (!deckDocs.length && !showWaitUi) {
+        return (
+            <View style={styles.loaderScreen}>
+                <MovieLoader />
+                <MatchStatusCard
+                    containerStyle={styles.loadingDeckHint}
+                    imageSource={<WaitingSvgIcon />}
+                    title={t('match_movie.swipe.loading_deck')}
+                    description={t('match_movie.swipe.loading_deck')}
+                />
+            </View>
+        );
+    }
+
     return (
         <View style={styles.container}>
-            {!isWaitStatus ? (
+            {showWaitUi ? (
+                <MatchStatusCard
+                    imageSource={<WaitingSvgIcon />}
+                    title={t('match_movie.swipe.waiting_title')}
+                    description={t('match_movie.swipe.waiting_description')}
+                />
+            ) : canShowSwiper ? (
                 <>
                     <View style={styles.swiperClip}>
                         <Swiper
+                            key={`match-deck-${selectionRoomKey ?? 'none'}-${deckSignature}`}
                             ref={useSwiper}
                             animateCardOpacity
                             containerStyle={styles.swiperContainer}
-                            cards={movies.data?.docs}
+                            cards={deckDocs}
                             renderCard={(card) => <SMSwipeCards card={card} />}
                             cardIndex={currentCardIndex}
                             backgroundColor={Color.BACKGROUND_GREY}
@@ -306,11 +358,9 @@ export const MatchSelectionMovie: FC = () => {
                     </View>
                 </>
             ) : (
-                <MatchStatusCard
-                    imageSource={<WaitingSvgIcon />}
-                    title="Wait until others make their choice"
-                    description="Wait until others make their choice"
-                />
+                <View style={styles.loaderScreen}>
+                    <MovieLoader />
+                </View>
             )}
         </View>
     );
@@ -321,6 +371,11 @@ const styles = StyleSheet.create({
         flex: 1,
         alignSelf: 'stretch',
         backgroundColor: Color.BACKGROUND_GREY,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    loadingDeckHint: {
+        marginTop: 24,
     },
     container: {
         backgroundColor: Color.BACKGROUND_GREY,
