@@ -30,3 +30,15 @@ export function getMatchDeckSignature(docs: ReadonlyArray<{ id?: unknown }>): st
     }
     return `${docs.length}:${String(docs[0]?.id)}:${String(docs[docs.length - 1]?.id)}`;
 }
+
+export function getMatchPhaseFromMoviesPayload(movies: unknown): string | undefined {
+    if (movies == null || typeof movies !== 'object') {
+        return undefined;
+    }
+    const data = 'data' in movies ? (movies as { data?: unknown }).data : movies;
+    if (data == null || typeof data !== 'object') {
+        return undefined;
+    }
+    const room = '_room' in data ? (data as { _room?: { matchPhase?: string } })._room : undefined;
+    return room?.matchPhase;
+}

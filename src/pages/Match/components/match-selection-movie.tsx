@@ -20,7 +20,11 @@ import { NavigationProp, ParamListBase, RouteProp, useNavigation, useRoute } fro
 import { RootStackParamList } from 'app/constants';
 import { addNotification } from 'redux/appSlice';
 import { MovieLoader } from 'shared/ui/movie-loader';
-import { getMatchDeckDocs, getMatchDeckSignature } from '../utils/match-deck';
+import {
+    getMatchDeckDocs,
+    getMatchDeckSignature,
+    getMatchPhaseFromMoviesPayload,
+} from '../utils/match-deck';
 
 const { width } = Dimensions.get('window');
 
@@ -57,6 +61,8 @@ export const MatchSelectionMovie: FC = () => {
 
     /** Deck finished when entering wait; if Redux gets a new list (e.g. lobby refreshed movies), leave wait. */
     const deckSnapshotAtWaitRef = useRef<string | null>(null);
+    const waitingCheckSubmittedRef = useRef(false);
+    const lastProcessedBroadcastVersionRef = useRef<number | null>(null);
 
     useEffect(() => {
         if (selectionRoomKey && user?.id != null) {
@@ -76,8 +82,8 @@ export const MatchSelectionMovie: FC = () => {
             return;
         }
         setCurrentCardIndex((prev) => {
-            if (prev > deckDocs.length) {
-                return deckDocs.length - 1;
+            if (prev >= deckDocs.length) {
+                return Math.max(0, deckDocs.length - 1);
             }
             return prev;
         });
@@ -100,9 +106,34 @@ export const MatchSelectionMovie: FC = () => {
             if (!roomKey) {
                 return;
             }
-            console.log('subscr movies: ', data);
+
+            const incomingVersion =
+                typeof data?.aggregateVersion === 'number' ? data.aggregateVersion : undefined;
+            if (
+                incomingVersion != null &&
+                lastProcessedBroadcastVersionRef.current === incomingVersion &&
+                data?.messageForClient !== 'Final movie selected'
+            ) {
+                return;
+            }
+
+            const signatureBefore = getMatchDeckSignature(
+                getMatchDeckDocs((store.getState() as { matchSlice: { movies: unknown } }).matchSlice.movies),
+            );
+
             refetchRoomMoviesToRedux(queryClient, dispatch, roomKey)
                 .then(() => {
+                    if (incomingVersion != null) {
+                        lastProcessedBroadcastVersionRef.current = incomingVersion;
+                    }
+
+                    const moviesAfter = (store.getState() as { matchSlice: { movies: unknown } }).matchSlice.movies;
+                    const signatureAfter = getMatchDeckSignature(getMatchDeckDocs(moviesAfter));
+                    const phaseAfter =
+                        data?.matchPhase ?? getMatchPhaseFromMoviesPayload(moviesAfter) ?? undefined;
+                    const isFinal =
+                        data?.messageForClient === 'Final movie selected' || phaseAfter === 'FINAL_PICK';
+
                     dispatch(
                         addNotification({
                             id: new Date().getTime(),
@@ -111,12 +142,18 @@ export const MatchSelectionMovie: FC = () => {
                         }),
                     );
 
-                    if (data.messageForClient === 'Final movie selected') {
+                    if (isFinal) {
+                        waitingCheckSubmittedRef.current = false;
                         navigation.navigate('MatchResult');
+                        return;
                     }
-                    setCurrentCardIndex(0);
-                    setIsWaitStatus(false);
-                    deckSnapshotAtWaitRef.current = null;
+
+                    if (signatureAfter !== signatureBefore) {
+                        setCurrentCardIndex(0);
+                        setIsWaitStatus(false);
+                        deckSnapshotAtWaitRef.current = null;
+                        waitingCheckSubmittedRef.current = false;
+                    }
                 })
                 .catch((error: Error) => {
                     dispatch(
@@ -161,88 +198,95 @@ export const MatchSelectionMovie: FC = () => {
     }, [deckDocs, isWaitStatus]);
 
     useEffect(() => {
-        if (isLastCard) {
-            if (!selectionRoomKey || user?.id == null) {
-                return;
-            }
-            deckSnapshotAtWaitRef.current = deckDocs.length ? getMatchDeckSignature(deckDocs) : null;
-            setIsWaitStatus(true);
-            const checkUserStatus = async () => {
-                try {
-                    await waitForPendingLikes();
-                    await dispatch(
-                        updateUserStatusRedux({
-                            roomKey: selectionRoomKey,
-                            userId: user.id,
-                            userStatus: MatchUserStatusEnum.WAITING,
-                        }),
-                    );
-                    const idempotencyKey = `${user.id}-${selectionRoomKey}-${Date.now()}-${Math.random()
-                        .toString(36)
-                        .slice(2, 11)}`;
-                    await dispatch(
-                        checkStatusRedux({
-                            roomKey: selectionRoomKey,
-                            userId: user.id,
-                            idempotencyKey,
-                        }),
-                    ).unwrap();
+        if (!isLastCard) {
+            waitingCheckSubmittedRef.current = false;
+            return;
+        }
+        if (waitingCheckSubmittedRef.current) {
+            return;
+        }
+        if (!selectionRoomKey || user?.id == null) {
+            return;
+        }
+        waitingCheckSubmittedRef.current = true;
+        deckSnapshotAtWaitRef.current = deckDocs.length ? getMatchDeckSignature(deckDocs) : null;
+        setIsWaitStatus(true);
+        const checkUserStatus = async () => {
+            try {
+                await waitForPendingLikes();
+                await dispatch(
+                    updateUserStatusRedux({
+                        roomKey: selectionRoomKey,
+                        userId: user.id,
+                        userStatus: MatchUserStatusEnum.WAITING,
+                    }),
+                );
+                const idempotencyKey = `${user.id}-${selectionRoomKey}-${Date.now()}-${Math.random()
+                    .toString(36)
+                    .slice(2, 11)}`;
+                await dispatch(
+                    checkStatusRedux({
+                        roomKey: selectionRoomKey,
+                        userId: user.id,
+                        idempotencyKey,
+                    }),
+                ).unwrap();
 
-                    if (selectionRoomKey) {
-                        try {
-                            const moviesState = store.getState().matchSlice.movies as {
-                                data?: { docs?: { id: number }[] };
-                            };
-                            const beforeDocs = moviesState?.data?.docs;
-                            const beforeKey =
-                                beforeDocs?.length &&
-                                `${beforeDocs.length}:${beforeDocs[0]!.id}:${beforeDocs[beforeDocs.length - 1]!.id}`;
-                            await refetchRoomMoviesToRedux(queryClient, dispatch, selectionRoomKey);
-                            const afterDocs = (store.getState().matchSlice.movies as typeof moviesState)?.data?.docs;
-                            const afterKey =
-                                afterDocs?.length &&
-                                `${afterDocs.length}:${afterDocs[0]!.id}:${afterDocs[afterDocs.length - 1]!.id}`;
-                            if (afterKey && afterKey !== beforeKey) {
-                                setCurrentCardIndex(0);
-                                setIsWaitStatus(false);
-                            }
-                        } catch {
-                            // Room list may still be unchanged while waiting for partner; WS will refresh when ready.
+                if (selectionRoomKey) {
+                    try {
+                        const signatureBefore = getMatchDeckSignature(
+                            getMatchDeckDocs(
+                                (store.getState() as { matchSlice: { movies: unknown } }).matchSlice.movies,
+                            ),
+                        );
+                        await refetchRoomMoviesToRedux(queryClient, dispatch, selectionRoomKey);
+                        const signatureAfter = getMatchDeckSignature(
+                            getMatchDeckDocs(
+                                (store.getState() as { matchSlice: { movies: unknown } }).matchSlice.movies,
+                            ),
+                        );
+                        if (signatureAfter !== signatureBefore) {
+                            setCurrentCardIndex(0);
+                            setIsWaitStatus(false);
+                            waitingCheckSubmittedRef.current = false;
                         }
+                    } catch {
+                        // Room list may still be unchanged while waiting for partner; WS will refresh when ready.
                     }
+                }
 
-                    dispatch(
-                        addNotification({
-                            id: new Date().getTime(),
-                            message: 'User status updated successfully!',
-                            type: 'success' as NotificationType,
-                        }),
-                    );
-                } catch (error) {
-                    console.error('Ошибка при обновлении статуса:', error);
-                    setIsWaitStatus(false);
+                dispatch(
+                    addNotification({
+                        id: new Date().getTime(),
+                        message: 'User status updated successfully!',
+                        type: 'success' as NotificationType,
+                    }),
+                );
+            } catch (error) {
+                console.error('Ошибка при обновлении статуса:', error);
+                waitingCheckSubmittedRef.current = false;
+                setIsWaitStatus(false);
 
-                    const errText =
-                        typeof error === 'string'
-                            ? error
-                            : error instanceof Error
-                            ? error.message
-                            : typeof (error as { message?: string })?.message === 'string'
+                const errText =
+                    typeof error === 'string'
+                        ? error
+                        : error instanceof Error
+                          ? error.message
+                          : typeof (error as { message?: string })?.message === 'string'
                             ? (error as { message: string }).message
                             : 'Unknown error';
-                    dispatch(
-                        addNotification({
-                            id: new Date().getTime(),
-                            message: `Error updating user status: ${errText}`,
-                            type: 'error' as NotificationType,
-                        }),
-                    );
-                }
-            };
+                dispatch(
+                    addNotification({
+                        id: new Date().getTime(),
+                        message: `Error updating user status: ${errText}`,
+                        type: 'error' as NotificationType,
+                    }),
+                );
+            }
+        };
 
-            checkUserStatus();
-        }
-    }, [deckDocs, selectionRoomKey, user?.id, isLastCard, dispatch, queryClient, waitForPendingLikes]);
+        checkUserStatus();
+    }, [deckDocs.length, selectionRoomKey, user?.id, isLastCard, dispatch, queryClient, waitForPendingLikes]);
 
     const handleOnSwiped = useCallback(() => {
         setCurrentCardIndex((prevIndex) => {
@@ -344,7 +388,7 @@ export const MatchSelectionMovie: FC = () => {
                             verticalSwipe={false}
                             showSecondCard
                             animateOverlayLabelsOpacity
-                            onSwipedLeft={() => console.log('dislike')}
+                            onSwipedLeft={() => undefined}
                             onSwipedRight={handleLike}
                             onSwiped={handleOnSwiped}
                             overlayLabels={overlayLabels}

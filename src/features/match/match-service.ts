@@ -124,11 +124,10 @@ export const getMovieData = async (roomKey: string): Promise<any> => {
 export const postLikeMovie = async (like: MatchLikeFields): Promise<any> => {
     const api = await createApi();
     const response = await api.post<any>(`/match/like`, like);
-    if (response.status === 201) {
+    if (response.ok) {
         return response;
-    } else {
-        throw new Error('Failed to like movie');
     }
+    throw new Error('Failed to like movie');
 };
 
 export const updateUserStatus = async (userStatus: MatchUserStatus): Promise<any> => {
