@@ -24,7 +24,6 @@ export const SoloMatchScreen: FC = () => {
 
     const renderItem = ({ item }: { item: MoviesSavedType }) => (
         <MovieCard
-            key={item.id}
             id={item.id}
             movies={item.movies}
             label={item.label}
@@ -57,7 +56,7 @@ export const SoloMatchScreen: FC = () => {
                     <FlatList<MoviesSavedType>
                         data={moviesList}
                         renderItem={renderItem}
-                        keyExtractor={(item: any) => item.id}
+                        keyExtractor={(item, index) => `${item.id}-${index}`}
                         ListEmptyComponent={EmptyListComponent}
                         contentContainerStyle={styles.listContent}
                         initialNumToRender={4}

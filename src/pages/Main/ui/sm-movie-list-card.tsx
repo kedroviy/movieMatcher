@@ -72,8 +72,8 @@ export const MovieCard: React.FC<MovieCardProps> = ({ id, label, movies = [], mo
                         disableIntervalMomentum
                         contentContainerStyle={styles.scrollContent}
                     >
-                        {preview.map((movie) => (
-                            <View key={`${id}-${movie.id}`} style={[styles.page, { width: pageWidth }]}>
+                        {preview.map((movie, index) => (
+                            <View key={`${id}-${movie.id}-${index}`} style={[styles.page, { width: pageWidth }]}>
                                 <SMCard movie={movie} />
                             </View>
                         ))}

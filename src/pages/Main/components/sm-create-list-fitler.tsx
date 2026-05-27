@@ -61,7 +61,7 @@ export const SMCreateMovieListFilter: FC = () => {
     };
 
     function formatDate(): string {
-        return format(new Date(), 'dd-MM-yyyy HH:mm');
+        return format(new Date(), 'dd-MM-yyyy HH:mm:ss.SSS');
     }
 
     const handleClearError = () => {

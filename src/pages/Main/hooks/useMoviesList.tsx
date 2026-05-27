@@ -6,6 +6,17 @@ import { MoviesSavedType } from 'features/selection-movies/selection-movies.mode
 
 type MovieListType = MoviesSavedType[];
 
+function dedupeMoviesById<T extends { id: number }>(movies: T[]): T[] {
+    const seen = new Set<number>();
+    return movies.filter((movie) => {
+        if (seen.has(movie.id)) {
+            return false;
+        }
+        seen.add(movie.id);
+        return true;
+    });
+}
+
 export const useMoviesList = (): {
     moviesList: MovieListType;
     isLoading: boolean;
@@ -27,8 +38,12 @@ export const useMoviesList = (): {
             let isModified = false;
             const updatedListObj = Object.entries(listObj).reduce<Record<string, MoviesSavedType>>(
                 (acc, [key, session]) => {
-                    if (session.movies.length > 0) {
-                        acc[key] = session;
+                    const movies = dedupeMoviesById(session.movies);
+                    if (movies.length > 0) {
+                        if (movies.length !== session.movies.length) {
+                            isModified = true;
+                        }
+                        acc[key] = { ...session, movies };
                     } else {
                         isModified = true;
                     }

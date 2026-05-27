@@ -60,8 +60,11 @@ export const SMSelectionMovie: FC = () => {
             };
         }
 
-        storageData[currentSessionLabel].movies.push(likedMovie);
-        await AsyncStorage.setItem('@mymovies', JSON.stringify(storageData));
+        const alreadySaved = storageData[currentSessionLabel].movies.some((m) => m.id === likedMovie.id);
+        if (!alreadySaved) {
+            storageData[currentSessionLabel].movies.push(likedMovie);
+            await AsyncStorage.setItem('@mymovies', JSON.stringify(storageData));
+        }
     };
 
     const handleOnSwiped = () => {

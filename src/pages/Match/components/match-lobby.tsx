@@ -175,11 +175,9 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
     };
 
     const handleModalClose = async (filters: any) => {
-        console.log('filters: ', filters);
         if (filters) {
             try {
                 setFilters(filters);
-                console.log(filters);
                 await dispatch(
                     updateRoomFiltersRedux({
                         userId: user.id,

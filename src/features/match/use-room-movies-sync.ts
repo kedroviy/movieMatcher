@@ -13,18 +13,23 @@ export async function refetchRoomMoviesToRedux(
     dispatch: AppDispatch,
     roomKey: string,
 ): Promise<void> {
-    await queryClient.refetchQueries({ queryKey: roomMoviesQueryKey(roomKey) });
-    const fresh = queryClient.getQueryData(roomMoviesQueryKey(roomKey));
-    if (fresh) {
-        dispatch(setMoviesPayload(fresh as any));
+    await queryClient.invalidateQueries({ queryKey: roomStateQueryKey(roomKey) });
+
+    const moviesResponse = await queryClient.fetchQuery({
+        queryKey: roomMoviesQueryKey(roomKey),
+        queryFn: () => getMovieData(roomKey),
+    });
+
+    if (moviesResponse) {
+        dispatch(setMoviesPayload(moviesResponse as any));
     }
+
     try {
-        await queryClient.fetchQuery({
+        const stateResponse = await queryClient.fetchQuery({
             queryKey: roomStateQueryKey(roomKey),
             queryFn: () => getRoomState(roomKey),
         });
-        const stateSnap = queryClient.getQueryData(roomStateQueryKey(roomKey));
-        logDeckVersionMismatch(fresh as any, stateSnap);
+        logDeckVersionMismatch(moviesResponse, stateResponse);
     } catch {
         // state is optional for diagnostics
     }
