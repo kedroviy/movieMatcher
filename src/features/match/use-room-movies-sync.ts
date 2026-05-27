@@ -2,13 +2,39 @@ import { type QueryClient, useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { getMovieData, getRoomState } from 'features/match/match-service';
-import { logDeckVersionMismatch } from './room-version-utils';
-import { AppDispatch } from 'redux/configure-store';
+import { logDeckVersionMismatch, readDeckAggregateVersion } from './room-version-utils';
+import { AppDispatch, store } from 'redux/configure-store';
 import { roomMoviesQueryKey, roomStateQueryKey } from './query-client';
 import { setMoviesPayload } from 'redux/matchSlice';
 
-/** Refetch deck from API and push the latest apisauce payload into Redux (after WS or manual refresh). */
-export async function refetchRoomMoviesToRedux(
+/** Per-room chain: parallel refetches were racing and the slower (stale) response could win in Redux. */
+const refetchChains = new Map<string, Promise<void>>();
+
+/** Skip applying an older deck snapshot when WS + check-status + TanStack fire refetches at once. */
+export function shouldApplyMoviesPayload(incoming: unknown, current?: unknown): boolean {
+    const nextVersion = readDeckAggregateVersion(incoming);
+    const currentVersion = readDeckAggregateVersion(current);
+    if (nextVersion != null && currentVersion != null && nextVersion < currentVersion) {
+        return false;
+    }
+    return true;
+}
+
+export function dispatchMoviesIfNewer(dispatch: AppDispatch, incoming: unknown): boolean {
+    const current = (store.getState() as { matchSlice: { movies: unknown } }).matchSlice.movies;
+    if (!shouldApplyMoviesPayload(incoming, current)) {
+        if (typeof __DEV__ !== 'undefined' && __DEV__) {
+            console.warn(
+                `[match] Ignored stale deck (incoming v${readDeckAggregateVersion(incoming)} < current v${readDeckAggregateVersion(current)})`,
+            );
+        }
+        return false;
+    }
+    dispatch(setMoviesPayload(incoming as any));
+    return true;
+}
+
+async function refetchRoomMoviesToReduxInner(
     queryClient: QueryClient,
     dispatch: AppDispatch,
     roomKey: string,
@@ -18,20 +44,40 @@ export async function refetchRoomMoviesToRedux(
     const moviesResponse = await queryClient.fetchQuery({
         queryKey: roomMoviesQueryKey(roomKey),
         queryFn: () => getMovieData(roomKey),
+        staleTime: 0,
     });
 
     if (moviesResponse) {
-        dispatch(setMoviesPayload(moviesResponse as any));
+        dispatchMoviesIfNewer(dispatch, moviesResponse);
     }
 
     try {
         const stateResponse = await queryClient.fetchQuery({
             queryKey: roomStateQueryKey(roomKey),
             queryFn: () => getRoomState(roomKey),
+            staleTime: 0,
         });
         logDeckVersionMismatch(moviesResponse, stateResponse);
     } catch {
         // state is optional for diagnostics
+    }
+}
+
+/** Refetch deck from API and push the latest apisauce payload into Redux (after WS or manual refresh). */
+export async function refetchRoomMoviesToRedux(
+    queryClient: QueryClient,
+    dispatch: AppDispatch,
+    roomKey: string,
+): Promise<void> {
+    const previous = refetchChains.get(roomKey) ?? Promise.resolve();
+    const current = previous.catch(() => undefined).then(() => refetchRoomMoviesToReduxInner(queryClient, dispatch, roomKey));
+    refetchChains.set(roomKey, current);
+    try {
+        await current;
+    } finally {
+        if (refetchChains.get(roomKey) === current) {
+            refetchChains.delete(roomKey);
+        }
     }
 }
 
@@ -52,7 +98,7 @@ export function useRoomMoviesSync(roomKey: string | undefined) {
 
     useEffect(() => {
         if (query.data) {
-            dispatch(setMoviesPayload(query.data));
+            dispatchMoviesIfNewer(dispatch, query.data);
         }
     }, [query.data, dispatch]);
 

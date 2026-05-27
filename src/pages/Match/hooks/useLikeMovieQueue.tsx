@@ -12,8 +12,16 @@ export const useLikeMovieQueue = () => {
     const dispatch: AppDispatch = useDispatch();
     const [isProcessing, setIsProcessing] = useState<boolean>(false);
     const tailRef = useRef<Promise<void>>(Promise.resolve());
+    const pendingFailuresRef = useRef(0);
 
-    const waitForPendingLikes = useCallback(() => tailRef.current, []);
+    const waitForPendingLikes = useCallback(async () => {
+        await tailRef.current;
+        const failures = pendingFailuresRef.current;
+        pendingFailuresRef.current = 0;
+        if (failures > 0) {
+            throw new Error(`${failures} like request(s) failed before check-status`);
+        }
+    }, []);
 
     const likeMovie = useCallback(
         (likeData: MatchLikeFields) => {
@@ -23,7 +31,9 @@ export const useLikeMovieQueue = () => {
                     try {
                         await dispatch(postLikeMovieRedux(likeData)).unwrap();
                     } catch (error) {
+                        pendingFailuresRef.current += 1;
                         console.error('Failed to like movie:', error);
+                        throw error;
                     } finally {
                         setIsProcessing(false);
                     }
