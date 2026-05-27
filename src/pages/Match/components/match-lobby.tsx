@@ -12,7 +12,13 @@ import { MatchUserCard } from './match-user-card';
 import { useTranslation } from 'react-i18next';
 import { AppDispatch } from 'redux/configure-store';
 import { MatchFilterModal } from '../ui';
-import { getMatchDataRedux, startMatchRedux, updateRoomFiltersRedux, updateRoomUsers } from 'redux/matchSlice';
+import {
+    getMatchDataRedux,
+    resetMovies,
+    startMatchRedux,
+    updateRoomFiltersRedux,
+    updateRoomUsers,
+} from 'redux/matchSlice';
 import { useWebSocket } from '../hooks';
 import { Role } from 'features/match/match.model';
 import { roomMoviesQueryKey } from 'features/match/query-client';
@@ -30,7 +36,7 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
     const dispatch: AppDispatch = useDispatch();
     const queryClient = useQueryClient();
     const { t } = useTranslation();
-    const { loading, room, role, currentUserMatch, currentMovie, movies } = useSelector(
+    const { loading, room, role, currentUserMatch, currentMovie, movies, matchStatus } = useSelector(
         (state: any) => state.matchSlice,
     );
     const { user } = useSelector((state: any) => state.userSlice);
@@ -40,13 +46,7 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
     const dataFromSocket = useWebSocket();
     const { visible: lobbyOnboardingVisible, dismiss: dismissLobbyOnboarding } = useLobbyOnboarding();
 
-    const lobbyRoomKey = useMemo(() => {
-        const fromRoute = route.params?.lobbyName;
-        if (fromRoute) {
-            return fromRoute;
-        }
-        return currentUserMatch?.roomKey ?? (Array.isArray(room) ? room[0]?.roomKey : undefined);
-    }, [route.params?.lobbyName, currentUserMatch?.roomKey, room]);
+    const lobbyRoomKey = route.params?.lobbyName;
 
     const showLobbyOnboarding = lobbyOnboardingVisible && Boolean(lobbyRoomKey) && !loading;
 
@@ -86,9 +86,11 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
     }, [lobbyRoomKey, dispatch, queryClient]);
 
     useEffect(() => {
-        if (lobbyRoomKey) {
-            dispatch(getMatchDataRedux(lobbyRoomKey));
+        if (!lobbyRoomKey) {
+            return;
         }
+        dispatch(resetMovies());
+        dispatch(getMatchDataRedux(lobbyRoomKey));
     }, [lobbyRoomKey, dispatch]);
 
     useEffect(() => {
@@ -104,10 +106,12 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
     }, [dataFromSocket, dispatch]);
 
     useEffect(() => {
-        if (movies.data?.docs.length && lobbyRoomKey) {
+        const hasDeck = Boolean(movies.data?.docs?.length);
+        const matchStarted = matchStatus === 'started' || matchStatus === 'already_started';
+        if (hasDeck && lobbyRoomKey && matchStarted) {
             navigation.navigate('MatchSelectionMovie', { movie: currentMovie, roomKey: lobbyRoomKey });
         }
-    }, [movies.data?.docs.length, navigation, currentMovie, lobbyRoomKey]);
+    }, [movies.data?.docs?.length, matchStatus, navigation, currentMovie, lobbyRoomKey]);
 
     useEffect(() => {
         const handleFiltersUpdated = (data: any) => {

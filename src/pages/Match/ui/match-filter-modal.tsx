@@ -7,7 +7,8 @@ import { mapFiltersPayloadToKpNames } from 'pages/Main/utils/kp-filter-mapping';
 import { SMMultiSelectInput } from 'pages/Main/ui/sm-multi-select-input';
 import { FC, useEffect, useMemo, useReducer, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Modal, View, StyleSheet, Dimensions, ScrollView, Text, TouchableOpacity } from 'react-native';
+import { Modal, View, StyleSheet, Dimensions, Text, TouchableOpacity } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 import { DeleteSvgIcon, SimpleButton } from 'shared';
 import { Color } from 'styles/colors';
 
@@ -17,17 +18,24 @@ type MatchFilterModalType = {
     onFiltersChange: (filters: any) => void;
 };
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 export const MatchFilterModal: FC<MatchFilterModalType> = ({ modalVisible, setModalVisible, onFiltersChange }) => {
     const { t, i18n } = useTranslation();
     const { genreOptions, countryOptions, loading: filtersLoading, localizeCountries } = useKpGenresRu();
     const [state, SMdispatch] = useReducer(reducer<FilterOption>, initialState);
     const [range, setRange] = useState<[number, number]>([0, 10]);
+    const [openFilterId, setOpenFilterId] = useState<string | null>(null);
+
+    const handleFilterOpenChange = (filterId: string) => (open: boolean) => {
+        setOpenFilterId(open ? filterId : null);
+    };
 
     useEffect(() => {
         if (modalVisible) {
             prefetchKpGenres(resolveFiltersLocale(i18n.language));
+        } else {
+            setOpenFilterId(null);
         }
     }, [modalVisible, i18n.language]);
 
@@ -73,6 +81,7 @@ export const MatchFilterModal: FC<MatchFilterModalType> = ({ modalVisible, setMo
     );
 
     const applyFilters = () => {
+        setOpenFilterId(null);
         onFiltersChange(mapFiltersPayloadToKpNames(state));
         setModalVisible(false);
     };
@@ -96,11 +105,11 @@ export const MatchFilterModal: FC<MatchFilterModalType> = ({ modalVisible, setMo
                 >
                     <Text style={styles.textStyle}>{t('match_movie.filters_settings.settings')}</Text>
                 </View>
-                <ScrollView>
-                    <View
-                        style={{
-                            height: height / 1.3,
-                        }}
+                <View style={styles.filtersScrollArea}>
+                    <ScrollView
+                        keyboardShouldPersistTaps="handled"
+                        nestedScrollEnabled
+                        contentContainerStyle={styles.filtersContent}
                     >
                         <SMMultiSelectInput
                             label={t('match_movie.filters_settings.country')}
@@ -110,6 +119,8 @@ export const MatchFilterModal: FC<MatchFilterModalType> = ({ modalVisible, setMo
                             placeholder={t('movie_filters.placeholder_country')}
                             loading={filtersLoading}
                             loadingLabel={t('movie_filters.loading_countries')}
+                            isOpen={openFilterId === 'country'}
+                            onOpenChange={handleFilterOpenChange('country')}
                         />
 
                         <SMMultiSelectInput
@@ -118,6 +129,8 @@ export const MatchFilterModal: FC<MatchFilterModalType> = ({ modalVisible, setMo
                             selectedOptions={state.selectedYears}
                             onSelectionChange={handleYearSelectionChange}
                             placeholder={t('movie_filters.placeholder_year')}
+                            isOpen={openFilterId === 'year'}
+                            onOpenChange={handleFilterOpenChange('year')}
                         />
 
                         <SMMultiSelectInput
@@ -128,6 +141,8 @@ export const MatchFilterModal: FC<MatchFilterModalType> = ({ modalVisible, setMo
                             placeholder={t('movie_filters.placeholder_genre')}
                             loading={filtersLoading}
                             loadingLabel={t('movie_filters.loading_genres')}
+                            isOpen={openFilterId === 'genre'}
+                            onOpenChange={handleFilterOpenChange('genre')}
                         />
 
                         <SMMultiSelectInput
@@ -138,6 +153,8 @@ export const MatchFilterModal: FC<MatchFilterModalType> = ({ modalVisible, setMo
                             placeholder={t('movie_filters.placeholder_genre')}
                             loading={filtersLoading}
                             loadingLabel={t('movie_filters.loading_genres')}
+                            isOpen={openFilterId === 'excludeGenre'}
+                            onOpenChange={handleFilterOpenChange('excludeGenre')}
                         />
                         <View style={styles.sliderContainer}>
                             <Text style={styles.sliderLabelText}>Rating</Text>
@@ -196,8 +213,8 @@ export const MatchFilterModal: FC<MatchFilterModalType> = ({ modalVisible, setMo
                                 </TouchableOpacity>
                             </View>
                         </View>
-                    </View>
-                </ScrollView>
+                    </ScrollView>
+                </View>
                 <SimpleButton
                     title={'Apply and close'}
                     color={Color.BUTTON_RED}
@@ -276,7 +293,6 @@ const styles = StyleSheet.create({
     },
     label: {
         fontSize: 16,
-        // marginVertical: 8,
         color: Color.WHITE,
     },
     range: {
@@ -284,5 +300,12 @@ const styles = StyleSheet.create({
     },
     rangeLabel: {
         fontSize: 16,
+    },
+    filtersScrollArea: {
+        flex: 1,
+        width: width - 32,
+    },
+    filtersContent: {
+        paddingBottom: 16,
     },
 });

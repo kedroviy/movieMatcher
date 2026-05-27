@@ -2,9 +2,10 @@ import { FC, useCallback, useMemo } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
 import { NavigationProp, ParamListBase, useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import { useQueryClient } from '@tanstack/react-query';
 import { useDispatch } from 'react-redux';
-import { AppRoutes } from 'app/constants';
 import { AppDispatch } from 'redux/configure-store';
+import { clearMatchSession, openMatchLobby } from 'features/match/match-session';
 import { doesUserHaveRoomRedux } from 'redux/matchSlice';
 import type { UserRoomMembership } from 'features/match/match-service';
 import { useMatchScreenMemberships } from '../hooks/useMatchScreenMemberships';
@@ -19,12 +20,17 @@ export const MatchMembershipsBlock: FC<MatchMembershipsBlockProps> = ({ userId, 
     const { t } = useTranslation();
     const navigation = useNavigation<NavigationProp<ParamListBase>>();
     const dispatch = useDispatch<AppDispatch>();
+    const queryClient = useQueryClient();
 
-    const onMembershipsChanged = useCallback(() => {
-        if (userId != null) {
-            dispatch(doesUserHaveRoomRedux(userId));
-        }
-    }, [dispatch, userId]);
+    const onMembershipsChanged = useCallback(
+        (leftRoomKey?: string) => {
+            clearMatchSession(dispatch, queryClient, { roomKey: leftRoomKey });
+            if (userId != null) {
+                dispatch(doesUserHaveRoomRedux(userId));
+            }
+        },
+        [dispatch, queryClient, userId],
+    );
 
     const { memberships, isLoading, leaveRoom, leavingRoomKey } = useMatchScreenMemberships({
         userId,
@@ -50,12 +56,9 @@ export const MatchMembershipsBlock: FC<MatchMembershipsBlockProps> = ({ userId, 
 
     const openLobby = useCallback(
         (roomKey: string) => {
-            navigation.navigate(AppRoutes.MATCH_NAVIGATOR, {
-                screen: AppRoutes.MATCH_LOBBY,
-                params: { lobbyName: roomKey },
-            });
+            openMatchLobby(navigation, dispatch, queryClient, roomKey);
         },
-        [navigation],
+        [dispatch, navigation, queryClient],
     );
 
     const runLeave = useCallback(

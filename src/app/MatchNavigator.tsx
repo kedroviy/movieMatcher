@@ -17,6 +17,7 @@ export const MatchNavigator: FC = () => {
             <MatchStack.Screen
                 name={AppRoutes.MATCH_LOBBY}
                 component={MatchLobby}
+                getId={({ params }) => params.lobbyName}
                 options={({ route }: { route: RouteProp<RootStackParamList, 'MatchLobby'> }) => ({
                     headerTitle: `Lobby #${route.params.lobbyName}`,
                     headerStyle: {
@@ -61,6 +62,7 @@ export const MatchNavigator: FC = () => {
             <MatchStack.Screen
                 name={AppRoutes.MATCH_SELECTION_MOVIE}
                 component={MatchSelectionMovie}
+                getId={({ params }) => params.roomKey ?? 'selection'}
                 options={{
                     headerTitle: t('selection_movie.movie_selection'),
                     headerStyle: {

@@ -1,5 +1,6 @@
 import React, { FC, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions, ActivityIndicator } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 import { Option } from '../sm.model';
 import { Checkbox, Chip } from 'react-native-ui-lib';
 import { Color } from 'styles/colors';
@@ -14,6 +15,8 @@ type MultiSelectInputProps = {
     placeholder: string;
     loading?: boolean;
     loadingLabel?: string;
+    isOpen?: boolean;
+    onOpenChange?: (open: boolean) => void;
 };
 
 const windowWidth = Dimensions.get('window').width;
@@ -27,9 +30,21 @@ export const SMMultiSelectInput: FC<MultiSelectInputProps> = ({
     placeholder,
     loading = false,
     loadingLabel,
+    isOpen: isOpenControlled,
+    onOpenChange,
 }) => {
-    const [isOpen, setIsOpen] = useState<boolean>(false);
+    const [isOpenInternal, setIsOpenInternal] = useState<boolean>(false);
     const [expandedIds, setExpandedIds] = useState<Array<string | number>>([]);
+
+    const isOpen = isOpenControlled ?? isOpenInternal;
+
+    const setIsOpen = (open: boolean) => {
+        if (onOpenChange) {
+            onOpenChange(open);
+        } else {
+            setIsOpenInternal(open);
+        }
+    };
 
     const toggleExpanded = (id: string | number) => {
         setExpandedIds(
@@ -108,7 +123,14 @@ export const SMMultiSelectInput: FC<MultiSelectInputProps> = ({
         }
 
         return (
-            <ScrollView style={styles.dropdown}>{options.map((option) => renderItemWithChildren(option))}</ScrollView>
+            <ScrollView
+                style={styles.dropdown}
+                nestedScrollEnabled
+                keyboardShouldPersistTaps="always"
+                showsVerticalScrollIndicator
+            >
+                {options.map((option) => renderItemWithChildren(option))}
+            </ScrollView>
         );
     };
 
@@ -157,15 +179,11 @@ export const SMMultiSelectInput: FC<MultiSelectInputProps> = ({
                     </TouchableOpacity>
                 </View>
             </View>
-            <View
-                style={{
-                    position: 'absolute',
-                    zIndex: 1000,
-                    top: 85,
-                }}
-            >
-                {renderDropdown()}
-            </View>
+            {isOpen ? (
+                <View style={styles.dropdownAnchor} pointerEvents="box-none">
+                    {renderDropdown()}
+                </View>
+            ) : null}
         </View>
     );
 };
@@ -208,6 +226,13 @@ const styles = StyleSheet.create({
         marginLeft: 10,
         paddingHorizontal: 10,
         paddingVertical: 5,
+        right: 0,
+    },
+    dropdownAnchor: {
+        position: 'absolute',
+        zIndex: 1000,
+        top: 85,
+        left: 0,
         right: 0,
     },
     dropdown: {

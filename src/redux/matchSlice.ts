@@ -251,6 +251,15 @@ const matchSlice = createSlice({
         resetMovies: (state) => {
             state.movies = [];
         },
+        resetMatchSession: (state) => {
+            state.room = [];
+            state.movies = [];
+            state.currentUserMatch = null;
+            state.currentMovie = null;
+            state.roomKey = null;
+            state.matchStatus = 'pending';
+            state.error = null;
+        },
         setRoomKey: (state, action) => {
             state.roomKey = action.payload;
         },
@@ -263,6 +272,10 @@ const matchSlice = createSlice({
         builder.addCase(createRoom.pending, (state) => {
             state.loading = true;
             state.error = null;
+            state.room = [];
+            state.movies = [];
+            state.currentMovie = null;
+            state.matchStatus = 'pending';
         });
         builder.addCase(createRoom.fulfilled, (state, action) => {
             state.room = [action.payload];
@@ -304,7 +317,15 @@ const matchSlice = createSlice({
         });
         builder.addCase(leaveFromMatch.fulfilled, (state, action) => {
             state.loading = false;
-            state.room = state.room.filter((room: any) => room.roomKey !== action.meta.arg.roomKey);
+            const leftKey = action.meta.arg.roomKey;
+            state.room = state.room.filter((room: any) => room.roomKey !== leftKey);
+            if (state.currentUserMatch?.roomKey === leftKey) {
+                state.currentUserMatch = null;
+                state.roomKey = null;
+            }
+            state.movies = [];
+            state.currentMovie = null;
+            state.matchStatus = 'pending';
         });
         builder.addCase(leaveFromMatch.rejected, (state, action) => {
             state.loading = false;
@@ -332,6 +353,10 @@ const matchSlice = createSlice({
                 state.currentUserMatch = null;
                 state.roomKey = null;
                 state.role = Role.PARTICIPANT;
+                state.room = [];
+                state.movies = [];
+                state.currentMovie = null;
+                state.matchStatus = 'pending';
             } else {
                 state.currentUserMatch = action.payload;
                 state.role = action.payload.role as Role;
@@ -428,6 +453,7 @@ export const {
     setMovie,
     setRequestStatus,
     resetMovies,
+    resetMatchSession,
     setRoomKey,
     setMoviesPayload,
 } = matchSlice.actions;

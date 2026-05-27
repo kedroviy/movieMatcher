@@ -10,7 +10,7 @@ export const matchMembershipsQueryKey = (userId: number | undefined) => ['rooms'
 type UseMatchScreenMembershipsOptions = {
     userId: number | undefined;
     enabled: boolean;
-    onMembershipsChanged?: () => void;
+    onMembershipsChanged?: (leftRoomKey?: string) => void;
 };
 
 export function useMatchScreenMemberships({ userId, enabled, onMembershipsChanged }: UseMatchScreenMembershipsOptions) {
@@ -24,9 +24,9 @@ export function useMatchScreenMemberships({ userId, enabled, onMembershipsChange
 
     const leaveMutation = useMutation({
         mutationFn: (roomKey: string) => leaveMyRoomMembershipService(roomKey),
-        onSuccess: async () => {
+        onSuccess: async (_data, roomKey) => {
             await queryClient.invalidateQueries({ queryKey: ['rooms', 'my-memberships'] });
-            onMembershipsChanged?.();
+            onMembershipsChanged?.(roomKey);
         },
     });
 

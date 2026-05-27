@@ -6,7 +6,8 @@ import { View, Text, StyleSheet, Image, Dimensions, Alert, ScrollView } from 're
 import { useQueryClient } from '@tanstack/react-query';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from 'redux/configure-store';
-import { createRoom, doesUserHaveRoomRedux, resetMovies } from 'redux/matchSlice';
+import { openMatchLobby } from 'features/match/match-session';
+import { createRoom, doesUserHaveRoomRedux, resetMatchSession } from 'redux/matchSlice';
 import useFetchUserProfile from 'shared/hooks/getUserProfile';
 import { Color } from 'styles/colors';
 import { MatchLobbyActionsSkeleton } from './components/match-lobby-actions-skeleton';
@@ -23,7 +24,7 @@ export const MatchScreen: FC = () => {
     const { user, loading: userLoading } = useFetchUserProfile();
 
     useEffect(() => {
-        dispatch(resetMovies());
+        dispatch(resetMatchSession());
     }, [dispatch]);
 
     const handleCreateRoom = async (userId: number | undefined) => {
@@ -36,10 +37,7 @@ export const MatchScreen: FC = () => {
             await queryClient.invalidateQueries({ queryKey: ['rooms', 'my-memberships'] });
             dispatch(doesUserHaveRoomRedux(userId));
 
-            navigation.navigate(AppRoutes.MATCH_NAVIGATOR, {
-                screen: AppRoutes.MATCH_LOBBY,
-                params: { lobbyName: newRoom.roomKey },
-            });
+            openMatchLobby(navigation, dispatch, queryClient, newRoom.roomKey, { clearRedux: false });
         } catch (errMsg) {
             const message = typeof errMsg === 'string' ? errMsg : String(errMsg);
             Alert.alert(t('match_movie.main_match_screen.create_lobby_btn'), message);

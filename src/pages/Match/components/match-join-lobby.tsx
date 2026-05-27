@@ -1,11 +1,12 @@
-import { FC, useEffect, useMemo, useState } from 'react';
+import { FC, useMemo, useState } from 'react';
 import { Dimensions, StyleSheet, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { NavigationProp, ParamListBase, useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import { useQueryClient } from '@tanstack/react-query';
 
-import { AppRoutes } from 'app/constants';
 import { AppDispatch } from 'redux/configure-store';
+import { openMatchLobby } from 'features/match/match-session';
 import { joinRoom } from 'redux/matchSlice';
 import { AppConstants, NumericOtpInput, SimpleButton } from 'shared';
 import { Color } from 'styles/colors';
@@ -20,9 +21,10 @@ const isCompleteKey = (k: string) => k.length === LOBBY_KEY_LENGTH && /^\d+$/.te
 
 export const MatchJoinLobby: FC = () => {
     const dispatch: AppDispatch = useDispatch();
+    const queryClient = useQueryClient();
     const navigation = useNavigation<NavigationProp<ParamListBase>>();
     const { t } = useTranslation();
-    const { loading, room } = useSelector((state: any) => state.matchSlice);
+    const { loading } = useSelector((state: any) => state.matchSlice);
     const { user } = useFetchUserProfile();
     const [key, setKey] = useState<string>(AppConstants.EMPTY_VALUE);
 
@@ -35,15 +37,6 @@ export const MatchJoinLobby: FC = () => {
         [t],
     );
 
-    useEffect(() => {
-        if (room?.roomKey && !loading) {
-            navigation.navigate(AppRoutes.MATCH_NAVIGATOR, {
-                screen: AppRoutes.MATCH_LOBBY,
-                params: { lobbyName: room.roomKey },
-            });
-        }
-    }, [loading, navigation, room?.roomKey]);
-
     const onHandleSubmit = () => {
         const userId = user?.id;
         if (userId == null || !isCompleteKey(key)) {
@@ -52,10 +45,7 @@ export const MatchJoinLobby: FC = () => {
         dispatch(joinRoom({ key, userId }))
             .unwrap()
             .then(() => {
-                navigation.navigate(AppRoutes.MATCH_NAVIGATOR, {
-                    screen: AppRoutes.MATCH_LOBBY,
-                    params: { lobbyName: key },
-                });
+                openMatchLobby(navigation, dispatch, queryClient, key, { clearRedux: false });
             })
             .catch((errMsg) => {
                 console.error('Error joining room:', errMsg);
