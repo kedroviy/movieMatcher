@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useEffect } from 'react';
 import { CardStyleInterpolators, createStackNavigator } from '@react-navigation/stack';
 import { useTranslation } from 'react-i18next';
 
@@ -7,11 +7,17 @@ import { SMCreateMovieListFilter, SMMovieDetails, SMMovieFullList } from 'pages'
 import { Color } from 'styles/colors';
 import { SMSelectionMovie } from 'pages/Main/components/sm-selection-movie';
 import { RouteProp } from '@react-navigation/native';
+import { prefetchKpGenres } from 'pages/Main/hooks/use-kp-genres-ru';
+import { resolveFiltersLocale } from 'features/filters/filters.model';
 
 const SelfSelectStack = createStackNavigator<RootStackParamList>();
 
 export const SelfSelectNavigator: FC = () => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
+
+    useEffect(() => {
+        prefetchKpGenres(resolveFiltersLocale(i18n.language));
+    }, [i18n.language]);
 
     return (
         <SelfSelectStack.Navigator screenOptions={defaultScreenOptions}>

@@ -146,6 +146,8 @@ const resources = {
                 placeholder_country: 'Select countries',
                 placeholder_year: 'Select year',
                 placeholder_genre: 'Select genres',
+                loading_genres: 'Loading genres...',
+                loading_countries: 'Loading countries...',
                 countries: {
                     1: 'Belarus',
                     2: 'USSR',
@@ -359,6 +361,8 @@ const resources = {
                 placeholder_country: 'Выберите страну',
                 placeholder_year: 'Выберите год',
                 placeholder_genre: 'Выберите жанр',
+                loading_genres: 'Загрузка жанров...',
+                loading_countries: 'Загрузка стран...',
                 countries: {
                     1: 'Беларусь',
                     2: 'СССР',

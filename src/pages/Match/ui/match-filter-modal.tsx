@@ -1,11 +1,11 @@
 import { Slider } from '@miblanchard/react-native-slider';
 import { FILTERS_DATA } from 'pages/Main/constants';
-import { useMovieFilterLabels } from 'pages/Main/hooks/use-movie-filter-labels';
-import { useKpGenresRu } from 'pages/Main/hooks/use-kp-genres-ru';
+import { useKpGenresRu, prefetchKpGenres } from 'pages/Main/hooks/use-kp-genres-ru';
+import { resolveFiltersLocale } from 'features/filters/filters.model';
 import { FilterOption, initialState, reducer } from 'pages/Main/sm.model';
 import { mapFiltersPayloadToKpNames } from 'pages/Main/utils/kp-filter-mapping';
 import { SMMultiSelectInput } from 'pages/Main/ui/sm-multi-select-input';
-import { FC, useMemo, useReducer, useState } from 'react';
+import { FC, useEffect, useMemo, useReducer, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Modal, View, StyleSheet, Dimensions, ScrollView, Text, TouchableOpacity } from 'react-native';
 import { DeleteSvgIcon, SimpleButton } from 'shared';
@@ -20,11 +20,16 @@ type MatchFilterModalType = {
 const { width, height } = Dimensions.get('window');
 
 export const MatchFilterModal: FC<MatchFilterModalType> = ({ modalVisible, setModalVisible, onFiltersChange }) => {
-    const { t } = useTranslation();
-    const { countryOptions, localizeCountries } = useMovieFilterLabels();
-    const { genreOptions } = useKpGenresRu();
+    const { t, i18n } = useTranslation();
+    const { genreOptions, countryOptions, loading: filtersLoading, localizeCountries } = useKpGenresRu();
     const [state, SMdispatch] = useReducer(reducer<FilterOption>, initialState);
     const [range, setRange] = useState<[number, number]>([0, 10]);
+
+    useEffect(() => {
+        if (modalVisible) {
+            prefetchKpGenres(resolveFiltersLocale(i18n.language));
+        }
+    }, [modalVisible, i18n.language]);
 
     const handleRangeChange = (values: number[]) => {
         if (values.length === 2) {
@@ -103,6 +108,8 @@ export const MatchFilterModal: FC<MatchFilterModalType> = ({ modalVisible, setMo
                             selectedOptions={localizeCountries(state.selectedCountries)}
                             onSelectionChange={handleCountrySelectionChange}
                             placeholder={t('movie_filters.placeholder_country')}
+                            loading={filtersLoading}
+                            loadingLabel={t('movie_filters.loading_countries')}
                         />
 
                         <SMMultiSelectInput
@@ -119,6 +126,8 @@ export const MatchFilterModal: FC<MatchFilterModalType> = ({ modalVisible, setMo
                             selectedOptions={state.selectedGenres}
                             onSelectionChange={handleGenreSelectionChange}
                             placeholder={t('movie_filters.placeholder_genre')}
+                            loading={filtersLoading}
+                            loadingLabel={t('movie_filters.loading_genres')}
                         />
 
                         <SMMultiSelectInput
@@ -127,6 +136,8 @@ export const MatchFilterModal: FC<MatchFilterModalType> = ({ modalVisible, setMo
                             selectedOptions={state.excludeGenre}
                             onSelectionChange={handleExcludeGenreChange}
                             placeholder={t('movie_filters.placeholder_genre')}
+                            loading={filtersLoading}
+                            loadingLabel={t('movie_filters.loading_genres')}
                         />
                         <View style={styles.sliderContainer}>
                             <Text style={styles.sliderLabelText}>Rating</Text>

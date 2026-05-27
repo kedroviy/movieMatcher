@@ -9,7 +9,6 @@ import { AlertCircleSvgIcon, SimpleButton, SimpleNotification } from 'shared';
 import { Color } from 'styles/colors';
 import { SMMultiSelectInput } from '../ui/sm-multi-select-input';
 import { FILTERS_DATA } from '../constants';
-import { useMovieFilterLabels } from '../hooks/use-movie-filter-labels';
 import { reducer, FilterOption, initialState, ISMFormData, SelectMovieType } from '../sm.model';
 import { mapFiltersStateToKpFormData } from '../utils/kp-filter-mapping';
 import { useKpGenresRu } from '../hooks/use-kp-genres-ru';
@@ -25,8 +24,7 @@ export const SMCreateMovieListFilter: FC = () => {
     const [state, SMdispatch] = useReducer(reducer<FilterOption>, initialState);
     const dispatch: AppDispatch = useDispatch();
     const { t } = useTranslation();
-    const { countryOptions, localizeCountries } = useMovieFilterLabels();
-    const { genreOptions } = useKpGenresRu();
+    const { genreOptions, countryOptions, loading: filtersLoading, localizeCountries } = useKpGenresRu();
     const { data, loading, error } = useSelector((state: RootState) => state.moviesSlice);
     const navigation = useNavigation<NavigationProp<ParamListBase>>();
     const [isNotificationHide, setIsNotificationHide] = useState<boolean>(true);
@@ -123,6 +121,8 @@ export const SMCreateMovieListFilter: FC = () => {
                     selectedOptions={localizeCountries(state.selectedCountries)}
                     onSelectionChange={handleCountrySelectionChange}
                     placeholder={t('movie_filters.placeholder_country')}
+                    loading={filtersLoading}
+                    loadingLabel={t('movie_filters.loading_countries')}
                 />
 
                 <SMMultiSelectInput
@@ -139,6 +139,8 @@ export const SMCreateMovieListFilter: FC = () => {
                     selectedOptions={state.selectedGenres}
                     onSelectionChange={handleGenreSelectionChange}
                     placeholder={t('movie_filters.placeholder_genre')}
+                    loading={filtersLoading}
+                    loadingLabel={t('movie_filters.loading_genres')}
                 />
 
                 <SMMultiSelectInput
@@ -147,6 +149,8 @@ export const SMCreateMovieListFilter: FC = () => {
                     selectedOptions={state.excludeGenre}
                     onSelectionChange={handleExcludeGenreChange}
                     placeholder={t('movie_filters.placeholder_genre')}
+                    loading={filtersLoading}
+                    loadingLabel={t('movie_filters.loading_genres')}
                 />
 
                 <View style={styles.sliderContainer}>

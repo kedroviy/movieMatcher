@@ -1,5 +1,5 @@
 import React, { FC, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions, ScrollView, ActivityIndicator } from 'react-native';
 import { Option } from '../sm.model';
 import { Checkbox, Chip } from 'react-native-ui-lib';
 import { Color } from 'styles/colors';
@@ -12,6 +12,8 @@ type MultiSelectInputProps = {
     onSelectionChange: (selected: Option[]) => void;
     maxChips?: number;
     placeholder: string;
+    loading?: boolean;
+    loadingLabel?: string;
 };
 
 const windowWidth = Dimensions.get('window').width;
@@ -23,6 +25,8 @@ export const SMMultiSelectInput: FC<MultiSelectInputProps> = ({
     onSelectionChange,
     maxChips = 2,
     placeholder,
+    loading = false,
+    loadingLabel,
 }) => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const [expandedIds, setExpandedIds] = useState<Array<string | number>>([]);
@@ -86,12 +90,33 @@ export const SMMultiSelectInput: FC<MultiSelectInputProps> = ({
     const renderDropdown = () => {
         if (!isOpen) return null;
 
+        if (loading) {
+            return (
+                <View style={[styles.dropdown, styles.dropdownLoading]}>
+                    <ActivityIndicator color={Color.BUTTON_RED} />
+                    {loadingLabel ? <Text style={styles.loadingText}>{loadingLabel}</Text> : null}
+                </View>
+            );
+        }
+
+        if (options.length === 0) {
+            return (
+                <View style={[styles.dropdown, styles.dropdownLoading]}>
+                    <Text style={styles.loadingText}>{loadingLabel ?? placeholder}</Text>
+                </View>
+            );
+        }
+
         return (
             <ScrollView style={styles.dropdown}>{options.map((option) => renderItemWithChildren(option))}</ScrollView>
         );
     };
 
     const renderChips = () => {
+        if (loading && selectedOptions.length === 0) {
+            return <Text style={styles.placeholder}>{loadingLabel ?? placeholder}</Text>;
+        }
+
         if (selectedOptions.length === 0) {
             return <Text style={styles.placeholder}>{placeholder}</Text>;
         }
@@ -191,6 +216,17 @@ const styles = StyleSheet.create({
         backgroundColor: Color.EXTRA_DARK_GRAY,
         maxHeight: 200,
         borderRadius: 5,
+    },
+    dropdownLoading: {
+        minHeight: 120,
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 16,
+    },
+    loadingText: {
+        marginTop: 8,
+        color: Color.WHITE,
+        textAlign: 'center',
     },
     dropdownItemContainer: {
         flexDirection: 'row',

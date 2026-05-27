@@ -1,8 +1,10 @@
 import { create } from 'apisauce';
 import { API } from 'shared';
-import { FiltersResponse } from './filters.model';
+import { FiltersLocale, FiltersResponse, resolveFiltersLocale } from './filters.model';
 
-export async function fetchFiltersRu(): Promise<FiltersResponse> {
+export { resolveFiltersLocale };
+
+export async function fetchFilters(locale: FiltersLocale): Promise<FiltersResponse> {
     const api = create({
         baseURL: API.BASE_URL,
         headers: {
@@ -11,9 +13,14 @@ export async function fetchFiltersRu(): Promise<FiltersResponse> {
         },
     });
 
-    const response = await api.get<FiltersResponse>('/filters', { locale: 'ru' });
+    const response = await api.get<FiltersResponse>('/filters', { locale });
     if (!response.ok || !response.data) {
         throw new Error('Failed to fetch filters');
     }
     return response.data;
+}
+
+/** @deprecated Use fetchFilters(locale) */
+export async function fetchFiltersRu(): Promise<FiltersResponse> {
+    return fetchFilters('ru');
 }
