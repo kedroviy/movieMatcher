@@ -1,14 +1,16 @@
 import { FC } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { Color } from 'styles/colors';
 
 export type SMMovieChipsType = {
     label: string | number | null | undefined;
     color: string;
     labelColor: string;
     type?: 'time' | 'age';
+    variant?: 'solid' | 'glass';
 };
 
-export const SMMovieChips: FC<SMMovieChipsType> = ({ label, color, labelColor, type }) => {
+export const SMMovieChips: FC<SMMovieChipsType> = ({ label, color, labelColor, type, variant = 'solid' }) => {
     if (label === null || label === undefined) {
         return null;
     }
@@ -28,12 +30,23 @@ export const SMMovieChips: FC<SMMovieChipsType> = ({ label, color, labelColor, t
 
     const display = type === 'time' ? `${label} мин` : type === 'age' ? `${label}+` : String(label);
 
+    const isGlass = variant === 'glass';
+
     return (
-        <View style={[styles.chip, { backgroundColor: color }]}>
+        <View
+            style={[
+                styles.chip,
+                isGlass ? styles.chipGlass : { backgroundColor: color },
+            ]}
+        >
             <Text
                 numberOfLines={1}
                 ellipsizeMode="tail"
-                style={[styles.chipText, { color: labelColor }, !type && styles.chipTextLong]}
+                style={[
+                    styles.chipText,
+                    { color: isGlass ? Color.WHITE : labelColor },
+                    !type && styles.chipTextLong,
+                ]}
             >
                 {display}
             </Text>
@@ -47,10 +60,15 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         justifyContent: 'center',
         alignItems: 'center',
-        borderRadius: 6,
+        borderRadius: 999,
         marginRight: 8,
         marginBottom: 4,
         maxWidth: '100%',
+    },
+    chipGlass: {
+        backgroundColor: 'rgba(255, 255, 255, 0.08)',
+        borderWidth: 1,
+        borderColor: 'rgba(255, 255, 255, 0.14)',
     },
     chipText: {
         fontSize: 13,
