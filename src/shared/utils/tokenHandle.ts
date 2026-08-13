@@ -28,6 +28,14 @@ export const removeToken = async () => {
     await Keychain.resetGenericPassword({ service: 'token_guard' });
 };
 
+const decodeBase64 = (value: string): string => {
+    if (typeof globalThis.atob === 'function') {
+        return globalThis.atob(value);
+    }
+    // Jest / Node fallback
+    return Buffer.from(value, 'base64').toString('utf8');
+};
+
 const decodeJwtPayloadJson = (token: string): Record<string, unknown> | null => {
     try {
         const payloadPart = token.split('.')[1];
@@ -37,7 +45,7 @@ const decodeJwtPayloadJson = (token: string): Record<string, unknown> | null => 
         const normalized = payloadPart.replace(/-/g, '+').replace(/_/g, '/');
         const padLength = (4 - (normalized.length % 4)) % 4;
         const padded = normalized + '='.repeat(padLength);
-        const json = globalThis.atob(padded);
+        const json = decodeBase64(padded);
         return JSON.parse(json) as Record<string, unknown>;
     } catch {
         return null;

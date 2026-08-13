@@ -9,13 +9,14 @@ import { Colors } from 'react-native/Libraries/NewAppScreen';
 
 import { AppNavigation } from './Navigation';
 import { AppDispatch, RootState } from '../redux/configure-store';
-import { initializeApp } from '../redux/authSlice';
+import { initializeApp, logout } from '../redux/authSlice';
 import { LoginNavigator } from './LoginNavigator';
 import { StartMessage } from 'shared';
 import { Color } from 'styles/colors';
 import useNetworkStatus from 'shared/hooks/useNetworkStatus';
 import NetworkStatus from 'shared/ui/network-status';
 import { useTranslation } from 'react-i18next';
+import { registerSessionExpiredHandler } from 'shared/api/session-expired';
 
 export default function AppContainer() {
     const dispatch: AppDispatch = useDispatch();
@@ -28,6 +29,9 @@ export default function AppContainer() {
     useNetworkStatus();
 
     useEffect(() => {
+        registerSessionExpiredHandler(() => {
+            dispatch(logout());
+        });
         dispatch(initializeApp());
     }, [dispatch]);
 

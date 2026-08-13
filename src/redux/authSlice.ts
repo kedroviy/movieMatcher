@@ -1,9 +1,8 @@
 import { createAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import * as Keychain from 'react-native-keychain';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { removeToken, saveToken } from '../shared';
+import { removeToken, saveToken, getToken, isAccessTokenExpired, readAccessTokenPayload } from '../shared';
 import { loginUser, registrationUser, sendGoogleCodeToServer } from 'features';
 
 function googleSignInErrorMessage(error: unknown): string {
@@ -113,11 +112,16 @@ export const authRegistrationUser = createAsyncThunk(
 
 export const checkAuthStatus = createAsyncThunk('auth/CHECK_STATUS', async () => {
     try {
-        const credentials = await Keychain.getGenericPassword({ service: 'token_guard' });
-        if (credentials) {
-            return { isAuthenticated: true };
+        const token = await getToken();
+        if (!token) {
+            return { isAuthenticated: false };
         }
-        return { isAuthenticated: false };
+        const payload = readAccessTokenPayload(token);
+        if (!payload || isAccessTokenExpired(payload)) {
+            await removeToken();
+            return { isAuthenticated: false };
+        }
+        return { isAuthenticated: true };
     } catch (error) {
         return { isAuthenticated: false };
     }

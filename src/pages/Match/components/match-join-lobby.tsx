@@ -16,14 +16,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import { AppDispatch } from 'redux/configure-store';
 import { openMatchLobby } from 'features/match/match-session';
 import { joinRoom } from 'redux/matchSlice';
-import { logout } from 'redux/authSlice';
-import {
-    AppConstants,
-    NumericOtpInput,
-    SimpleButton,
-    isStoredAccessTokenExpired,
-    resolveUserIdFromToken,
-} from 'shared';
+import { AppConstants, NumericOtpInput, SimpleButton, resolveUserIdFromToken } from 'shared';
+import { notifySessionExpired } from 'shared/api/session-expired';
 import { Color } from 'styles/colors';
 import useFetchUserProfile from 'shared/hooks/getUserProfile';
 import { MovieLoader } from 'shared/ui/movie-loader';
@@ -73,23 +67,8 @@ export const MatchJoinLobby: FC = () => {
         };
     }, [user?.id]);
 
-    const promptReLogin = (message: string) => {
-        Alert.alert(labels.joinFailed, message, [
-            {
-                text: 'OK',
-                onPress: () => {
-                    dispatch(logout());
-                },
-            },
-        ]);
-    };
-
     const executeJoin = async (roomKey: string) => {
         if (!isCompleteKey(roomKey) || isSubmittingRef.current || loading) {
-            return;
-        }
-        if (await isStoredAccessTokenExpired()) {
-            promptReLogin('Сессия истекла. Войдите в аккаунт снова.');
             return;
         }
         let userId = resolvedUserId ?? user?.id ?? null;
@@ -100,7 +79,7 @@ export const MatchJoinLobby: FC = () => {
             }
         }
         if (userId == null) {
-            promptReLogin('Не удалось определить пользователя. Войдите снова.');
+            notifySessionExpired();
             return;
         }
         isSubmittingRef.current = true;
@@ -120,7 +99,7 @@ export const MatchJoinLobby: FC = () => {
                     message.includes('401') ||
                     message.includes('403');
                 if (isSessionError) {
-                    promptReLogin(message);
+                    notifySessionExpired();
                     return;
                 }
                 Alert.alert(labels.joinFailed, message);

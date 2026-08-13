@@ -1,6 +1,4 @@
-import { create } from 'apisauce';
-import * as Keychain from 'react-native-keychain';
-
+import { createAuthenticatedApi } from '../../shared/api/create-authenticated-api';
 import { API, UserModelType } from '../../shared';
 
 export type UpdateUsernameArgs = {
@@ -15,46 +13,29 @@ export type ApiResponse<T = unknown> = {
     message?: string;
 };
 
-const api = create({
-    baseURL: API.BASE_URL,
-    headers: { Accept: 'application/vnd.github.v3+json' },
-});
-
-const setAuthToken = async () => {
-    const credentials = await Keychain.getGenericPassword({ service: 'token_guard' });
-    if (credentials) {
-        api.setHeader('Authorization', `Bearer ${credentials.password}`);
-    }
-};
-
 export const getUserProfile = async () => {
-    await setAuthToken();
+    const api = await createAuthenticatedApi();
     const response = await api.get<UserModelType>(API.GET_USER_PROFILE_INFO);
     if (response.ok && response.data) {
         return { success: true, data: response.data };
-    } else {
-        throw new Error(response.problem || 'Unknown API error');
     }
+    throw new Error(response.problem || 'Unknown API error');
 };
 
 export const putUpdateUsername = async (args: UpdateUsernameArgs): Promise<ApiResponse> => {
-    await setAuthToken();
+    const api = await createAuthenticatedApi();
     const response = await api.patch('/user/update-username', args);
-
     if (!response.ok || !response.data) {
         throw new Error(response.problem || 'Unknown API error');
     }
-
     return response;
 };
 
 export const deleteUserAccount = async (email: string): Promise<ApiResponse> => {
-    await setAuthToken();
+    const api = await createAuthenticatedApi();
     const response = await api.delete(`/user/${email}`);
-
     if (!response.ok || !response.data) {
         throw new Error(response.problem || 'Unknown API error');
     }
-
     return response;
 };
