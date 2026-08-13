@@ -39,6 +39,7 @@ export const SimpleButton: FC<SimpleButtonType> = ({
                     justifyContent: 'center',
                     paddingVertical: 12,
                     paddingHorizontal: 12,
+                    opacity: disabled ? 0.5 : 1,
                 },
                 buttonStyle,
             ]}

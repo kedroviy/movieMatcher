@@ -29,26 +29,49 @@ export const NumericOtpInput: FC<NumericOtpInputProps> = ({
         refs.current[i]?.focus();
     };
 
+    const buildCells = (code: string): string[] =>
+        Array.from({ length }, (_, i) => code.replace(/\D/g, '')[i] ?? '');
+
+    const commitCells = (cells: string[]) => {
+        onChangeText(cells.filter((c) => c !== '').join('').slice(0, length));
+    };
+
+    const setDigitAt = (index: number, digit: string) => {
+        const cells = buildCells(value);
+        cells[index] = digit;
+        commitCells(cells);
+        if (digit && index < length - 1) {
+            focusCell(index + 1);
+        }
+    };
+
     const handleChange = (index: number, text: string) => {
         if (disabled) {
             return;
         }
         const digits = text.replace(/\D/g, '');
-        if (digits.length > 1) {
-            onChangeText(digits.slice(0, length));
-            focusCell(Math.min(digits.length, length) - 1);
+        if (digits.length === 0) {
+            const cells = buildCells(value);
+            cells[index] = '';
+            commitCells(cells);
             return;
         }
         if (digits.length === 1) {
-            const next = (value.slice(0, index) + digits + value.slice(index + 1)).slice(0, length);
-            onChangeText(next);
-            if (index < length - 1) {
-                focusCell(index + 1);
-            }
+            setDigitAt(index, digits);
             return;
         }
-        const next = value.slice(0, index) + value.slice(index + 1);
-        onChangeText(next);
+        // Android typing quirk: cell had "5", user types "6" → onChangeText("56")
+        const previous = value[index] ?? '';
+        const isAndroidAppendQuirk =
+            digits.length === 2 && previous !== '' && digits.startsWith(previous);
+        if (isAndroidAppendQuirk) {
+            setDigitAt(index, digits.slice(-1));
+            return;
+        }
+        // Clipboard paste / autofill — fill the whole OTP from the copied digits
+        const pasted = digits.slice(0, length);
+        onChangeText(pasted);
+        focusCell(Math.min(pasted.length, length) - 1);
     };
 
     const handleKeyPress = (index: number, e: NativeSyntheticEvent<TextInputKeyPressEventData>) => {
@@ -58,10 +81,15 @@ export const NumericOtpInput: FC<NumericOtpInputProps> = ({
         if (e.nativeEvent.key !== 'Backspace') {
             return;
         }
-        const ch = value[index];
-        if (!ch && index > 0) {
-            const next = value.slice(0, index - 1) + value.slice(index);
-            onChangeText(next);
+        const cells = buildCells(value);
+        if (cells[index]) {
+            cells[index] = '';
+            commitCells(cells);
+            return;
+        }
+        if (index > 0) {
+            cells[index - 1] = '';
+            commitCells(cells);
             focusCell(index - 1);
         }
     };
@@ -92,6 +120,8 @@ export const NumericOtpInput: FC<NumericOtpInputProps> = ({
                         selectTextOnFocus
                         caretHidden
                         importantForAutofill="no"
+                        textContentType="oneTimeCode"
+                        autoComplete="sms-otp"
                     />
                 ))}
             </View>

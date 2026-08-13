@@ -29,10 +29,41 @@ export const createRoomService = async (userId: number): Promise<any> => {
     }
 };
 
+const readApiErrorMessage = (data: unknown): string | null => {
+    if (data == null) {
+        return null;
+    }
+    if (typeof data === 'string' && data.trim()) {
+        return data;
+    }
+    if (typeof data === 'object') {
+        const body = data as { message?: string | string[]; error?: string };
+        if (Array.isArray(body.message)) {
+            return body.message.join(', ');
+        }
+        if (typeof body.message === 'string' && body.message.trim()) {
+            return body.message;
+        }
+        if (typeof body.error === 'string' && body.error.trim()) {
+            return body.error;
+        }
+    }
+    return null;
+};
+
 export const joinRoomService = async (key: string, userId: number): Promise<any> => {
     const api = await createApi();
     const response = await api.post<ApiResponse<Room>>(`/rooms/join/${key}`, { userId });
-    if (!response.ok) throw new Error(`Failed to join room: ${response.problem}`);
+    if (!response.ok) {
+        const serverMessage = readApiErrorMessage(response.data);
+        if (response.status === 401 || response.status === 403) {
+            throw new Error(serverMessage || 'Сессия истекла. Войдите в аккаунт снова.');
+        }
+        if (response.status === 404) {
+            throw new Error(serverMessage || 'Комната не найдена. Проверьте код лобби.');
+        }
+        throw new Error(serverMessage || `Не удалось войти в лобби (${response.status ?? response.problem})`);
+    }
     return handleApiResponse(response);
 };
 
