@@ -14,7 +14,7 @@ type AppState = {
 };
 
 const initialState: AppState = {
-    appVersion: '0.22.1',
+    appVersion: '0.22.2',
     error: null,
     loading: false,
     loadingApplication: false,
