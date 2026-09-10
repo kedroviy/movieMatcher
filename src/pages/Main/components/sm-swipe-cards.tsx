@@ -3,10 +3,11 @@ import { useTranslation } from 'react-i18next';
 
 import { SMMovieChips } from '../ui/sm-movie-chips';
 import { SwipeMovieCard } from '../ui/swipe-movie-card';
+import { resolveMoviePosterUri, resolveMovieTitle } from '../utils/movie-card-media';
 import { Color } from '../../../styles/colors';
 
 type SMSwipeCardType = {
-    card: any;
+    card: unknown;
 };
 
 const glassChip = { color: Color.LIGHT_RED, labelColor: Color.WHITE, variant: 'glass' as const };
@@ -29,28 +30,39 @@ export const SMSwipeCards: FC<SMSwipeCardType> = ({ card }) => {
         );
     }
 
+    const movie = card as {
+        ageRating?: unknown;
+        movieLength?: unknown;
+        countries?: Array<{ name?: string }>;
+        genres?: Array<{ name?: string }>;
+        poster?: unknown;
+        rating?: { kp?: number };
+        year?: string | number | null;
+        description?: string | null;
+    };
+
     const chips = (
         <>
-            {card?.ageRating != null && Number(card.ageRating) > 0 ? (
-                <SMMovieChips label={card.ageRating} type="age" {...glassChip} />
+            {movie.ageRating != null && Number(movie.ageRating) > 0 ? (
+                <SMMovieChips label={Number(movie.ageRating)} type="age" {...glassChip} />
             ) : null}
-            {card?.movieLength != null && Number(card.movieLength) > 0 ? (
-                <SMMovieChips label={card.movieLength} type="time" {...glassChip} />
+            {movie.movieLength != null && Number(movie.movieLength) > 0 ? (
+                <SMMovieChips label={Number(movie.movieLength)} type="time" {...glassChip} />
             ) : null}
-            {card?.countries?.[0]?.name ? (
-                <SMMovieChips label={card.countries[0].name} {...glassChip} />
+            {movie.countries?.[0]?.name ? (
+                <SMMovieChips label={movie.countries[0].name} {...glassChip} />
             ) : null}
-            {card?.genres?.[0]?.name ? <SMMovieChips label={card.genres[0].name} {...glassChip} /> : null}
+            {movie.genres?.[0]?.name ? <SMMovieChips label={movie.genres[0].name} {...glassChip} /> : null}
         </>
     );
 
     return (
         <SwipeMovieCard
-            posterUri={card?.poster?.previewUrl}
-            rating={card?.rating?.kp}
-            title={card?.name ?? '—'}
-            year={card?.year}
-            description={card?.description}
+            posterUri={resolveMoviePosterUri(movie.poster)}
+            rating={movie.rating?.kp}
+            title={resolveMovieTitle(card)}
+            year={movie.year}
+            description={movie.description}
             isExpanded={isExpanded}
             onToggleExpand={() => setIsExpanded((prev) => !prev)}
             expandLabel={t('general.expand')}

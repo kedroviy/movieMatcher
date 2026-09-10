@@ -21,6 +21,8 @@ import {
 } from 'redux/matchSlice';
 import { useWebSocket } from '../hooks';
 import { Role } from 'features/match/match.model';
+import { getRoomFilters } from 'features/match/match-service';
+import { ISMFormData, RoomFiltersUpdatedEvent } from 'pages/Main/sm.model';
 import { roomMoviesQueryKey } from 'features/match/query-client';
 import { refetchRoomMoviesToRedux, useRoomMoviesSync, useRoomStateSync } from 'features/match/use-room-movies-sync';
 import { LobbyOnboardingModal, useLobbyOnboarding } from 'features/lobby-onboarding';
@@ -42,7 +44,7 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
     const { user } = useSelector((state: any) => state.userSlice);
     const [refreshing, setRefreshing] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
-    const [, setFilters] = useState<any>({});
+    const [filters, setFilters] = useState<ISMFormData | null>(null);
     const dataFromSocket = useWebSocket();
     const { visible: lobbyOnboardingVisible, dismiss: dismissLobbyOnboarding } = useLobbyOnboarding();
 
@@ -94,6 +96,27 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
     }, [lobbyRoomKey, dispatch]);
 
     useEffect(() => {
+        if (!lobbyRoomKey) {
+            return;
+        }
+        let cancelled = false;
+        void getRoomFilters(lobbyRoomKey)
+            .then((next) => {
+                if (!cancelled) {
+                    setFilters(next);
+                }
+            })
+            .catch(() => {
+                if (!cancelled) {
+                    setFilters(null);
+                }
+            });
+        return () => {
+            cancelled = true;
+        };
+    }, [lobbyRoomKey]);
+
+    useEffect(() => {
         if (lobbyRoomKey && user?.id != null) {
             socketService.joinRoom(lobbyRoomKey, String(user.id));
         }
@@ -114,8 +137,8 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
     }, [movies.data?.docs?.length, matchStatus, navigation, currentMovie, lobbyRoomKey]);
 
     useEffect(() => {
-        const handleFiltersUpdated = (data: any) => {
-            setFilters(data.filters);
+        const handleFiltersUpdated = (data: RoomFiltersUpdatedEvent) => {
+            setFilters(data.filters ?? null);
         };
 
         const unsubBroadcastMatch = socketService.subscribeToBroadcastMatchUpdate(
@@ -174,30 +197,24 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
         }
     };
 
-    const handleModalClose = async (filters: any) => {
-        if (filters) {
-            try {
-                setFilters(filters);
-                await dispatch(
-                    updateRoomFiltersRedux({
-                        userId: user.id,
-                        roomId: myRoomIdForFilters,
-                        filters: filters,
-                    } as any),
-                )
-                    .unwrap()
-                    .then(() => {
-                        Alert.alert('Success', 'Filters updated successfully.');
-                    })
-                    .catch((error) => {
-                        Alert.alert(
-                            'Error',
-                            typeof error === 'string' ? error : 'Failed to update filters due to an unexpected error',
-                        );
-                    });
-            } catch (error) {
-                throw new Error(error as string);
-            }
+    const handleModalClose = async (nextFilters: ISMFormData) => {
+        if (!myRoomIdForFilters) {
+            return;
+        }
+        try {
+            setFilters(nextFilters);
+            await dispatch(
+                updateRoomFiltersRedux({
+                    roomId: String(myRoomIdForFilters),
+                    filters: nextFilters,
+                }),
+            ).unwrap();
+            Alert.alert('Success', 'Filters updated successfully.');
+        } catch (error) {
+            Alert.alert(
+                'Error',
+                typeof error === 'string' ? error : 'Failed to update filters due to an unexpected error',
+            );
         }
     };
 
@@ -212,7 +229,8 @@ export const MatchLobby: FC<MatchLobbyProps> = ({ route }) => {
             <MatchFilterModal
                 modalVisible={modalVisible}
                 setModalVisible={() => setModalVisible(false)}
-                onFiltersChange={(filtersData) => handleModalClose(filtersData)}
+                onFiltersChange={handleModalClose}
+                initialFilters={filters}
             />
             <View style={styles.mainContainer}>
                 <View style={styles.headerContainer}>

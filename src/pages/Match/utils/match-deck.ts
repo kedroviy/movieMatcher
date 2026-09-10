@@ -1,23 +1,30 @@
 /** Normalizes apisauce `/rooms/:key/get-movies` payload into a swipe deck. */
+
+function readDocs(value: unknown, depth = 0): unknown[] | null {
+    if (depth > 3 || value == null) {
+        return null;
+    }
+    if (Array.isArray(value)) {
+        return value;
+    }
+    if (typeof value !== 'object') {
+        return null;
+    }
+    const record = value as Record<string, unknown>;
+    if (Array.isArray(record.docs)) {
+        return record.docs;
+    }
+    if ('data' in record) {
+        return readDocs(record.data, depth + 1);
+    }
+    return null;
+}
+
 export function getMatchDeckDocs(movies: unknown): Record<string, unknown>[] {
-    if (movies == null) {
+    const docs = readDocs(movies);
+    if (!docs) {
         return [];
     }
-
-    let payload: unknown = movies;
-    if (typeof movies === 'object' && movies !== null && 'data' in movies) {
-        payload = (movies as { data?: unknown }).data;
-    }
-
-    const docs =
-        payload && typeof payload === 'object' && payload !== null && 'docs' in payload
-            ? (payload as { docs?: unknown }).docs
-            : undefined;
-
-    if (!Array.isArray(docs)) {
-        return [];
-    }
-
     return docs.filter(
         (card): card is Record<string, unknown> =>
             card != null && typeof card === 'object' && 'id' in card && (card as { id?: unknown }).id != null,

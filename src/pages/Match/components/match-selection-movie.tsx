@@ -10,6 +10,7 @@ import { SMControlBar } from 'pages/Main/components/sm-control-bar';
 import { NotificationType, WaitingSvgIcon } from 'shared';
 import { Color } from 'styles/colors';
 import { SMSwipeCards } from 'pages/Main/components/sm-swipe-cards';
+import { SwipeDeck } from 'pages/Main/components/swipe-deck';
 import { AppDispatch, store } from 'redux/configure-store';
 import { useIsLastCard, useLikeMovieQueue } from '../hooks';
 import { checkStatusRedux, updateUserStatusRedux } from 'redux/matchSlice';
@@ -372,28 +373,16 @@ export const MatchSelectionMovie: FC = () => {
                 />
             ) : canShowSwiper ? (
                 <>
-                    <View style={styles.swiperClip}>
-                        <Swiper
-                            key={`match-deck-${selectionRoomKey ?? 'none'}-${deckSignature}`}
-                            ref={useSwiper}
-                            animateCardOpacity
-                            containerStyle={styles.swiperContainer}
-                            cards={deckDocs}
-                            renderCard={(card) => <SMSwipeCards card={card} />}
-                            cardIndex={currentCardIndex}
-                            backgroundColor={Color.BACKGROUND_GREY}
-                            stackSize={2}
-                            stackSeparation={-20}
-                            horizontalSwipe
-                            verticalSwipe={false}
-                            showSecondCard
-                            animateOverlayLabelsOpacity
-                            onSwipedLeft={() => undefined}
-                            onSwipedRight={handleLike}
-                            onSwiped={handleOnSwiped}
-                            overlayLabels={overlayLabels}
-                        />
-                    </View>
+                    <SwipeDeck
+                        deckKey={`match-deck-${selectionRoomKey ?? 'none'}-${deckSignature}`}
+                        cards={deckDocs}
+                        swiperRef={useSwiper}
+                        renderCard={(card) => <SMSwipeCards card={card} />}
+                        onSwipedLeft={() => undefined}
+                        onSwipedRight={handleLike}
+                        onSwiped={handleOnSwiped}
+                        overlayLabels={overlayLabels}
+                    />
                     <View style={styles.controlsBar}>
                         <SMControlBar
                             onHandleLike={() => useSwiper.current?.swipeRight()}
@@ -424,18 +413,13 @@ const styles = StyleSheet.create({
     container: {
         backgroundColor: Color.BACKGROUND_GREY,
         flex: 1,
-        alignItems: 'center',
+        alignSelf: 'stretch',
+        width: '100%',
+        alignItems: 'stretch',
         justifyContent: 'space-between',
     },
-    swiperClip: {
-        width,
-        flex: 1,
-        overflow: 'hidden',
-    },
-    swiperContainer: {
-        flex: 1,
-    },
     controlsBar: {
+        alignSelf: 'center',
         flexShrink: 0,
         flexDirection: 'row',
         alignItems: 'center',

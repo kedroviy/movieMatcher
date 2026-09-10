@@ -11,5 +11,7 @@ export {
     getRoomState,
     getMyRoomMembershipsService,
     leaveMyRoomMembershipService,
+    getRoomFilters,
+    updateRoomFilters,
 } from './match-service';
 export type { UserRoomMembership } from './match-service';

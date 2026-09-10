@@ -2,8 +2,9 @@ import { Slider } from '@miblanchard/react-native-slider';
 import { FILTERS_DATA } from 'pages/Main/constants';
 import { useKpGenresRu, prefetchKpGenres } from 'pages/Main/hooks/use-kp-genres-ru';
 import { resolveFiltersLocale } from 'features/filters/filters.model';
-import { FilterOption, initialState, reducer } from 'pages/Main/sm.model';
+import { FilterOption, ISMFormData, initialState, reducer } from 'pages/Main/sm.model';
 import { mapFiltersPayloadToKpNames } from 'pages/Main/utils/kp-filter-mapping';
+import { fromRoomFiltersPayload } from 'pages/Main/utils/from-room-filters-payload';
 import { SMMultiSelectInput } from 'pages/Main/ui/sm-multi-select-input';
 import { FC, useEffect, useMemo, useReducer, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -15,12 +16,18 @@ import { Color } from 'styles/colors';
 type MatchFilterModalType = {
     modalVisible: boolean;
     setModalVisible: (visible: boolean) => void;
-    onFiltersChange: (filters: any) => void;
+    onFiltersChange: (filters: ISMFormData) => void;
+    initialFilters?: ISMFormData | null;
 };
 
 const { width } = Dimensions.get('window');
 
-export const MatchFilterModal: FC<MatchFilterModalType> = ({ modalVisible, setModalVisible, onFiltersChange }) => {
+export const MatchFilterModal: FC<MatchFilterModalType> = ({
+    modalVisible,
+    setModalVisible,
+    onFiltersChange,
+    initialFilters,
+}) => {
     const { t, i18n } = useTranslation();
     const { genreOptions, countryOptions, loading: filtersLoading, localizeCountries } = useKpGenresRu();
     const [state, SMdispatch] = useReducer(reducer<FilterOption>, initialState);
@@ -39,26 +46,41 @@ export const MatchFilterModal: FC<MatchFilterModalType> = ({ modalVisible, setMo
         }
     }, [modalVisible, i18n.language]);
 
-    const handleRangeChange = (values: number[]) => {
-        if (values.length === 2) {
-            setRange([values[0], values[1]]);
-            SMdispatch({ type: 'SET_SELECTED_RATING', payload: [values[0], values[1]] });
+    useEffect(() => {
+        if (!modalVisible) {
+            return;
         }
+        const next = fromRoomFiltersPayload(initialFilters, {
+            genres: genreOptions,
+            countries: countryOptions,
+            years: FILTERS_DATA.year.options,
+        });
+        SMdispatch({ type: 'HYDRATE_FILTERS', payload: next });
+        setRange(next.selectedRating);
+    }, [modalVisible, initialFilters, genreOptions, countryOptions]);
+
+    const handleRangeChange = (values: number[] | number) => {
+        if (!Array.isArray(values) || values.length !== 2) {
+            return;
+        }
+        const nextRange: [number, number] = [values[0], values[1]];
+        setRange(nextRange);
+        SMdispatch({ type: 'SET_SELECTED_RATING', payload: nextRange });
     };
 
-    const handleCountrySelectionChange = (selectedCountries: any[]) => {
+    const handleCountrySelectionChange = (selectedCountries: FilterOption[]) => {
         SMdispatch({ type: 'SET_SELECTED_COUNTRIES', payload: selectedCountries });
     };
 
-    const handleYearSelectionChange = (selectedYears: any[]) => {
+    const handleYearSelectionChange = (selectedYears: FilterOption[]) => {
         SMdispatch({ type: 'SET_SELECTED_YEARS', payload: selectedYears });
     };
 
-    const handleGenreSelectionChange = (selectedGenres: any[]) => {
+    const handleGenreSelectionChange = (selectedGenres: FilterOption[]) => {
         SMdispatch({ type: 'SET_SELECTED_GENRES', payload: selectedGenres });
     };
 
-    const handleExcludeGenreChange = (excludeGenre: any[]) => {
+    const handleExcludeGenreChange = (excludeGenre: FilterOption[]) => {
         SMdispatch({ type: 'SET_EXCLUDE_GENRE', payload: excludeGenre });
     };
 

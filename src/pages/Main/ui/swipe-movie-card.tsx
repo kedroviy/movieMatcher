@@ -15,8 +15,8 @@ import { Color } from 'styles/colors';
 import { getRatingColor, roundDownToOneTenth } from '../utils';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const CARD_WIDTH = SCREEN_WIDTH - 28;
-const CARD_HEIGHT = 560;
+export const CARD_WIDTH = SCREEN_WIDTH - 28;
+export const CARD_HEIGHT = 560;
 const POSTER_HEIGHT_COLLAPSED = 340;
 const POSTER_HEIGHT_EXPANDED = 272;
 
@@ -188,6 +188,7 @@ const styles = StyleSheet.create({
     card: {
         width: CARD_WIDTH,
         height: CARD_HEIGHT,
+        maxHeight: '100%',
         alignSelf: 'center',
         borderRadius: 28,
         backgroundColor: '#141418',

@@ -2,6 +2,7 @@ import { Alert } from 'react-native';
 import { addNotification } from 'redux/appSlice';
 import { store } from 'redux/configure-store';
 import io, { Socket } from 'socket.io-client';
+import { RoomFiltersUpdatedEvent } from 'pages/Main/sm.model';
 
 class SocketService {
     constructor() {
@@ -81,9 +82,9 @@ class SocketService {
         });
     };
 
-    private filtersUpdatedSubscribers = new Set<(data: any) => void>();
+    private filtersUpdatedSubscribers = new Set<(data: RoomFiltersUpdatedEvent) => void>();
     private filtersUpdatedAttached = false;
-    private readonly filtersUpdatedPipe = (data: any) => {
+    private readonly filtersUpdatedPipe = (data: RoomFiltersUpdatedEvent) => {
         this.filtersUpdatedSubscribers.forEach((cb) => {
             try {
                 cb(data);
@@ -287,7 +288,7 @@ class SocketService {
     }
 
     /** @returns unsubscribe for this callback only */
-    filtersUpdateBroadcast(callback: (data: any) => void): () => void {
+    filtersUpdateBroadcast(callback: (data: RoomFiltersUpdatedEvent) => void): () => void {
         this.filtersUpdatedSubscribers.add(callback);
         this.attachFiltersUpdatedListener();
         return () => {

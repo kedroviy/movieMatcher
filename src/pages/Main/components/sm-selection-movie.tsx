@@ -7,6 +7,7 @@ import { NavigationProp, ParamListBase, useNavigation } from '@react-navigation/
 
 import { SMControlBar } from './sm-control-bar';
 import { SMSwipeCards } from './sm-swipe-cards';
+import { SwipeDeck } from './swipe-deck';
 import { OverlayLabel } from '../ui/overlay-label';
 import { Color } from 'styles/colors';
 import { AppDispatch } from 'redux/configure-store';
@@ -39,8 +40,8 @@ export const SMSelectionMovie: FC = () => {
 
     useEffect(() => {}, [loading, data]);
 
-    const handleOnSwipedLeft = (cardIndex: any) => {
-        console.log(`Свайп влево на карточке с индексом ${cardIndex}`);
+    const handleOnSwipedLeft = (_cardIndex: number) => {
+        return;
     };
 
     const handleOnSwipedRight = async (cardIndex: number) => {
@@ -60,7 +61,7 @@ export const SMSelectionMovie: FC = () => {
             };
         }
 
-        const alreadySaved = storageData[currentSessionLabel].movies.some((m) => m.id === likedMovie.id);
+        const alreadySaved = storageData[currentSessionLabel].movies.some((m: Movie) => m.id === likedMovie.id);
         if (!alreadySaved) {
             storageData[currentSessionLabel].movies.push(likedMovie);
             await AsyncStorage.setItem('@mymovies', JSON.stringify(storageData));
@@ -139,51 +140,43 @@ export const SMSelectionMovie: FC = () => {
                         />
                     </View>
                 </>
+            ) : deckDocs.length === 0 ? (
+                <View style={styles.loaderScreen}>
+                    <MovieLoader />
+                </View>
             ) : (
                 <>
                     {!loading ? (
                         <>
-                            <View style={styles.swiperClip}>
-                                <Swiper
-                                    key={`solo-deck-${currentSessionLabel ?? 'none'}-${currentPage}`}
-                                    ref={useSwiper}
-                                    animateCardOpacity
-                                    containerStyle={styles.swiperContainer}
-                                    cards={deckDocs}
-                                    renderCard={(card) => <SMSwipeCards card={card} />}
-                                    cardIndex={currentCardIndex}
-                                    backgroundColor={Color.BACKGROUND_GREY}
-                                    stackSize={2}
-                                    stackSeparation={-20}
-                                    horizontalSwipe
-                                    verticalSwipe={false}
-                                    showSecondCard
-                                    animateOverlayLabelsOpacity
-                                    onSwipedLeft={handleOnSwipedLeft}
-                                    onSwipedRight={handleOnSwipedRight}
-                                    onSwiped={handleOnSwiped}
-                                    overlayLabels={{
-                                        left: {
-                                            title: 'NOPE',
-                                            element: <OverlayLabel label="NOPE" color="#E5566D" />,
-                                            style: {
-                                                wrapper: styles.overlayWrapper,
+                            <SwipeDeck
+                                deckKey={`solo-deck-${currentSessionLabel ?? 'none'}-${currentPage}`}
+                                cards={deckDocs}
+                                swiperRef={useSwiper}
+                                renderCard={(card) => <SMSwipeCards card={card} />}
+                                onSwipedLeft={handleOnSwipedLeft}
+                                onSwipedRight={handleOnSwipedRight}
+                                onSwiped={handleOnSwiped}
+                                overlayLabels={{
+                                    left: {
+                                        title: 'NOPE',
+                                        element: <OverlayLabel label="NOPE" color="#E5566D" />,
+                                        style: {
+                                            wrapper: styles.overlayWrapper,
+                                        },
+                                    },
+                                    right: {
+                                        title: 'LIKE',
+                                        element: <OverlayLabel label="LIKE" color="#4CCC93" />,
+                                        style: {
+                                            wrapper: {
+                                                ...styles.overlayWrapper,
+                                                alignItems: 'flex-start',
+                                                marginLeft: 30,
                                             },
                                         },
-                                        right: {
-                                            title: 'LIKE',
-                                            element: <OverlayLabel label="LIKE" color="#4CCC93" />,
-                                            style: {
-                                                wrapper: {
-                                                    ...styles.overlayWrapper,
-                                                    alignItems: 'flex-start',
-                                                    marginLeft: 30,
-                                                },
-                                            },
-                                        },
-                                    }}
-                                />
-                            </View>
+                                    },
+                                }}
+                            />
                             <View style={styles.controlsBar}>
                                 <SMControlBar
                                     onHandleLike={() => useSwiper.current?.swipeRight()}
@@ -204,18 +197,20 @@ const styles = StyleSheet.create({
     container: {
         backgroundColor: Color.BACKGROUND_GREY,
         flex: 1,
-        alignItems: 'center',
+        alignSelf: 'stretch',
+        width: '100%',
+        alignItems: 'stretch',
         justifyContent: 'space-between',
     },
-    swiperClip: {
-        width,
+    loaderScreen: {
         flex: 1,
-        overflow: 'hidden',
-    },
-    swiperContainer: {
-        flex: 1,
+        alignSelf: 'stretch',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: Color.BACKGROUND_GREY,
     },
     controlsBar: {
+        alignSelf: 'center',
         flexShrink: 0,
         flexDirection: 'row',
         alignItems: 'center',

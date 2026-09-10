@@ -1,9 +1,11 @@
+import { ISMFormData } from 'pages/Main/sm.model';
+
 export interface Room {
     id: string;
     authorId: string;
     key: string;
     name?: string;
-    filters?: any;
+    filters?: ISMFormData;
     createdAt: Date;
     users: User[];
     matches: Match[];

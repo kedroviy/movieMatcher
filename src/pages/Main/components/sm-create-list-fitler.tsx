@@ -1,4 +1,4 @@
-import { FC, useEffect, useMemo, useReducer, useState } from 'react';
+import { FC, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { NavigationProp, ParamListBase, useNavigation } from '@react-navigation/native';
 import { View, StyleSheet, Dimensions, Text } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -29,6 +29,7 @@ export const SMCreateMovieListFilter: FC = () => {
     const navigation = useNavigation<NavigationProp<ParamListBase>>();
     const [isNotificationHide, setIsNotificationHide] = useState<boolean>(true);
     const [range, setRange] = useState<[number, number]>([0, 10]);
+    const shouldOpenSelectionRef = useRef(false);
 
     const handleRangeChange = (values: number[]) => {
         if (values.length === 2) {
@@ -38,7 +39,9 @@ export const SMCreateMovieListFilter: FC = () => {
     };
 
     useEffect(() => {
-        if (!loading && data.total > 0) {
+        const total = !Array.isArray(data) && typeof data?.total === 'number' ? data.total : 0;
+        if (shouldOpenSelectionRef.current && !loading && total > 0) {
+            shouldOpenSelectionRef.current = false;
             navigation.navigate(AppRoutes.SELF_SELECT_NAVIGATOR, {
                 screen: AppRoutes.SM_SELECTION_MOVIE,
             });
@@ -54,6 +57,7 @@ export const SMCreateMovieListFilter: FC = () => {
     }, [loading, data, error, navigation, isNotificationHide]);
 
     const handleSubmit = async () => {
+        shouldOpenSelectionRef.current = true;
         await dispatch(clearResponse());
         const formData = transformToISMFormData(state);
 
@@ -70,8 +74,7 @@ export const SMCreateMovieListFilter: FC = () => {
     };
 
     function transformToISMFormData(state: SelectMovieType<FilterOption>): ISMFormData {
-        // Map to stable Kinopoisk names for sending / URL construction.
-        return mapFiltersStateToKpFormData(state) as unknown as ISMFormData;
+        return mapFiltersStateToKpFormData(state);
     }
 
     const handleCountrySelectionChange = (selectedCountries: any[]) => {

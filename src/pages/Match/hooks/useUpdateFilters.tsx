@@ -2,11 +2,12 @@ import { Alert } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from 'redux/configure-store';
 import { updateRoomFiltersRedux } from 'redux/matchSlice';
+import { ISMFormData } from 'pages/Main/sm.model';
 
 export const useUpdateFilters = () => {
     const dispatch: AppDispatch = useDispatch();
 
-    const updateFilters = async (roomId: string, filters: any) => {
+    const updateFilters = async (roomId: string, filters: ISMFormData) => {
         if (Object.keys(filters).length > 0) {
             await dispatch(updateRoomFiltersRedux({ roomId: roomId, filters: filters }))
                 .unwrap()

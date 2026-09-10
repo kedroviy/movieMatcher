@@ -19,7 +19,6 @@ import {
 } from 'features/match/match-service';
 import { Match, MatchLikeFields, MatchUserStatus, MatchUserStatusEnum, Role, Room } from 'features/match/match.model';
 import { ISMFormData } from 'pages';
-import { FilterOption } from 'pages/Main/sm.model';
 import { RootState } from './configure-store';
 
 interface MatchState {
@@ -123,14 +122,11 @@ export const handleReduxMatchUpdate =
 
 export const updateRoomFiltersRedux = createAsyncThunk(
     'match/updateRoomFilters',
-    async ({ roomId, filters }: { roomId: string; filters: FilterOption }, { rejectWithValue }) => {
+    async ({ roomId, filters }: { roomId: string; filters: ISMFormData }, { rejectWithValue }) => {
         try {
-            const response = await updateRoomFilters(roomId, filters);
-            if (response.ok) {
-                return response.data;
-            }
+            return await updateRoomFilters(roomId, filters);
         } catch (error) {
-            return rejectWithValue(error || 'An unexpected error occurred');
+            return rejectWithValue(error instanceof Error ? error.message : 'An unexpected error occurred');
         }
     },
 );
@@ -335,9 +331,8 @@ const matchSlice = createSlice({
             state.loading = true;
             state.error = null;
         });
-        builder.addCase(updateRoomFiltersRedux.fulfilled, (state, action) => {
+        builder.addCase(updateRoomFiltersRedux.fulfilled, (state) => {
             state.loading = false;
-            state.data = action.payload;
         });
         builder.addCase(updateRoomFiltersRedux.rejected, (state, action) => {
             state.loading = false;

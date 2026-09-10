@@ -23,9 +23,14 @@ function toKpCountry(option: FilterOption): FilterOption {
     return { ...option, label: name ?? option.label, kpName: name ?? option.kpName };
 }
 
+function toKpYear(option: FilterOption): FilterOption {
+    const name = option.kpName ?? option.label;
+    return { ...option, label: name, kpName: name };
+}
+
 /**
  * Prepare filters for backend / Kinopoisk query building.
- * Keeps ids but forces `label` to be stable Kinopoisk name where possible.
+ * Keeps ids but forces `label`/`kpName` to be stable Kinopoisk values.
  */
 export function mapFiltersStateToKpFormData(state: SelectMovieType<FilterOption>): ISMFormData {
     return {
@@ -33,20 +38,12 @@ export function mapFiltersStateToKpFormData(state: SelectMovieType<FilterOption>
         genres: state.genres?.map(toKpGenre),
         selectedCountries: state.selectedCountries.map(toKpCountry),
         selectedGenres: state.selectedGenres.map(toKpGenre),
-        selectedYears: state.selectedYears,
+        selectedYears: state.selectedYears.map(toKpYear),
         selectedRating: state.selectedRating,
     };
 }
 
-/**
- * Same idea as above, but for match lobby filters payload shape (not strict-typed there).
- */
-export function mapFiltersPayloadToKpNames(payload: SelectMovieType<FilterOption>): SelectMovieType<FilterOption> {
-    return {
-        ...payload,
-        selectedCountries: payload.selectedCountries.map(toKpCountry),
-        selectedGenres: payload.selectedGenres.map(toKpGenre),
-        excludeGenre: payload.excludeGenre.map(toKpGenre),
-        genres: payload.genres?.map(toKpGenre),
-    };
+/** Match lobby payload uses the same ISMFormData contract as solo filters. */
+export function mapFiltersPayloadToKpNames(payload: SelectMovieType<FilterOption>): ISMFormData {
+    return mapFiltersStateToKpFormData(payload);
 }

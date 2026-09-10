@@ -1,4 +1,4 @@
-import { FilterOption } from 'pages/Main/sm.model';
+import { ISMFormData } from 'pages/Main/sm.model';
 import { createApi } from './match-api';
 import { ApiResponse, Match, MatchLikeFields, MatchUserStatus, MatchUserStatusEnum, Room } from './match.model';
 import { handleApiResponse } from './match.utils';
@@ -95,14 +95,27 @@ export const getMyRoomMembershipsService = async (): Promise<UserRoomMembership[
     return Array.isArray(response.data) ? response.data : [];
 };
 
-export const updateRoomFilters = async (roomId: string, filters: FilterOption): Promise<any> => {
+export const updateRoomFilters = async (roomId: string, filters: ISMFormData): Promise<{ message?: string }> => {
     const api = await createApi();
-    const response = await api.put<ApiResponse<any>>(`/rooms/${roomId}/filters`, filters);
+    const response = await api.put<{ message?: string }>(`/rooms/${roomId}/filters`, filters);
     if (response.ok) {
-        return response.data;
-    } else {
-        throw new Error('Failed to update filters');
+        return response.data ?? { message: 'Filters updated successfully.' };
     }
+    throw new Error('Failed to update filters');
+};
+
+type RoomFiltersResponse = {
+    statusCode?: number;
+    filters?: ISMFormData | null;
+};
+
+export const getRoomFilters = async (roomKey: string): Promise<ISMFormData | null> => {
+    const api = await createApi();
+    const response = await api.get<RoomFiltersResponse>(`/rooms/${roomKey}/get-filters`);
+    if (!response.ok) {
+        throw new Error('Failed to get filters');
+    }
+    return response.data?.filters ?? null;
 };
 
 export const doesUserHaveRoomService = async (userId: number): Promise<Match | null> => {
