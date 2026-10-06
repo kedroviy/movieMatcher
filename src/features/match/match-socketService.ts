@@ -3,6 +3,7 @@ import { addNotification } from 'redux/appSlice';
 import { store } from 'redux/configure-store';
 import io, { Socket } from 'socket.io-client';
 import { RoomFiltersUpdatedEvent } from 'pages/Main/sm.model';
+import type { CommonUpdatedPayload } from './match.model';
 
 class SocketService {
     constructor() {
@@ -94,6 +95,18 @@ class SocketService {
         });
     };
 
+    private commonUpdatedSubscribers = new Set<(data: CommonUpdatedPayload) => void>();
+    private commonUpdatedAttached = false;
+    private readonly commonUpdatedPipe = (data: CommonUpdatedPayload) => {
+        this.commonUpdatedSubscribers.forEach((cb) => {
+            try {
+                cb(data);
+            } catch (e) {
+                console.error('commonUpdated subscriber error', e);
+            }
+        });
+    };
+
     connect(serverUrl: string): void {
         this.socket = io(serverUrl + '/rooms', {
             reconnection: true,
@@ -134,6 +147,7 @@ class SocketService {
         this.attachBroadcastMatchListener();
         this.attachSendNextMovieListener();
         this.attachFiltersUpdatedListener();
+        this.attachCommonUpdatedListener();
     }
 
     private notifyConnectionStatus(isConnected: boolean): void {
@@ -275,6 +289,23 @@ class SocketService {
         this.filtersUpdatedAttached = false;
     }
 
+    private attachCommonUpdatedListener(): void {
+        if (!this.socket || this.commonUpdatedSubscribers.size === 0) {
+            return;
+        }
+        this.socket.off('commonUpdated', this.commonUpdatedPipe);
+        this.socket.on('commonUpdated', this.commonUpdatedPipe);
+        this.commonUpdatedAttached = true;
+    }
+
+    private detachCommonUpdatedListener(): void {
+        if (!this.socket || !this.commonUpdatedAttached) {
+            return;
+        }
+        this.socket.off('commonUpdated', this.commonUpdatedPipe);
+        this.commonUpdatedAttached = false;
+    }
+
     /** @returns unsubscribe for this callback only */
     subscribeToRequestMatchUpdate(callback: (data: any) => void): () => void {
         this.sendNextMovieSubscribers.add(callback);
@@ -295,6 +326,18 @@ class SocketService {
             this.filtersUpdatedSubscribers.delete(callback);
             if (this.filtersUpdatedSubscribers.size === 0) {
                 this.detachFiltersUpdatedListener();
+            }
+        };
+    }
+
+    /** Live «Общих: N» — @returns unsubscribe for this callback only */
+    subscribeToCommonUpdated(callback: (data: CommonUpdatedPayload) => void): () => void {
+        this.commonUpdatedSubscribers.add(callback);
+        this.attachCommonUpdatedListener();
+        return () => {
+            this.commonUpdatedSubscribers.delete(callback);
+            if (this.commonUpdatedSubscribers.size === 0) {
+                this.detachCommonUpdatedListener();
             }
         };
     }
@@ -390,6 +433,7 @@ class SocketService {
             this.detachBroadcastMatchListener();
             this.detachSendNextMovieListener();
             this.detachFiltersUpdatedListener();
+            this.detachCommonUpdatedListener();
             this.socket.disconnect();
             this.socket = null;
             this.lastJoinedRoom = null;
@@ -398,6 +442,7 @@ class SocketService {
             this.broadcastMatchSubscribers.clear();
             this.sendNextMovieSubscribers.clear();
             this.filtersUpdatedSubscribers.clear();
+            this.commonUpdatedSubscribers.clear();
             this.notifyConnectionStatus(false);
         }
     }

@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { removeToken, saveToken, getToken, isAccessTokenExpired, readAccessTokenPayload } from '../shared';
 import { loginUser, registrationUser, sendGoogleCodeToServer } from 'features';
+import { getStoredUserLanguage } from 'shared/utils/user-language';
 
 function googleSignInErrorMessage(error: unknown): string {
     if (typeof error === 'string') {
@@ -53,7 +54,8 @@ export const authUser = createAsyncThunk(
     'auth/LOGIN',
     async (userData: { email: string; password: string }, { rejectWithValue }) => {
         try {
-            const response = await loginUser(userData);
+            const language = await getStoredUserLanguage();
+            const response = await loginUser({ ...userData, language });
 
             if (response.success) {
                 saveToken(response.token as string);
@@ -80,7 +82,8 @@ export const authenticateWithGoogle = createAsyncThunk('auth/GOOGLE', async (_, 
             );
         }
 
-        const response = await sendGoogleCodeToServer(idToken);
+        const language = await getStoredUserLanguage();
+        const response = await sendGoogleCodeToServer(idToken, language);
 
         if (response.success) {
             saveToken(response.token as string);

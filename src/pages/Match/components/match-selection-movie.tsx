@@ -12,10 +12,10 @@ import { Color } from 'styles/colors';
 import { SMSwipeCards } from 'pages/Main/components/sm-swipe-cards';
 import { SwipeDeck } from 'pages/Main/components/swipe-deck';
 import { AppDispatch, store } from 'redux/configure-store';
-import { useIsLastCard, useLikeMovieQueue } from '../hooks';
+import { useIsLastCard, useLikeMovieQueue, useMatchCommonProgress } from '../hooks';
 import { checkStatusRedux, updateUserStatusRedux } from 'redux/matchSlice';
-import { refetchRoomMoviesToRedux, useRoomMoviesSync, useRoomStateSync } from 'features/match/use-room-movies-sync';
-import { MatchStatusCard } from '../ui/match-status-card';
+import { refetchRoomMoviesToRedux, useRoomMoviesSync } from 'features/match/use-room-movies-sync';
+import { MatchCommonProgressPanel, MatchStatusCard } from '../ui';
 import { MatchUserStatusEnum } from 'features/match/match.model';
 import { NavigationProp, ParamListBase, RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from 'app/constants';
@@ -58,7 +58,8 @@ export const MatchSelectionMovie: FC = () => {
     roomKeyRef.current = selectionRoomKey;
 
     useRoomMoviesSync(selectionRoomKey);
-    useRoomStateSync(selectionRoomKey);
+    const { commonMovies, commonLabelCount, showFirstCommonToast } =
+        useMatchCommonProgress(selectionRoomKey);
 
     /** Deck finished when entering wait; if Redux gets a new list (e.g. lobby refreshed movies), leave wait. */
     const deckSnapshotAtWaitRef = useRef<string | null>(null);
@@ -341,6 +342,14 @@ export const MatchSelectionMovie: FC = () => {
 
     const showWaitUi = isWaitStatus || isDeckExhaustedForUi;
 
+    const commonPanel = (
+        <MatchCommonProgressPanel
+            commonLabelCount={commonLabelCount}
+            commonMovies={commonMovies}
+            showFirstCommonToast={showFirstCommonToast}
+        />
+    );
+
     if (isInitialLoading) {
         return (
             <View style={styles.loaderScreen}>
@@ -365,6 +374,7 @@ export const MatchSelectionMovie: FC = () => {
 
     return (
         <View style={styles.container}>
+            {commonPanel}
             {showWaitUi ? (
                 <MatchStatusCard
                     imageSource={<WaitingSvgIcon />}

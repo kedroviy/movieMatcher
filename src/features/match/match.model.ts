@@ -84,3 +84,34 @@ export interface MatchUserStatus {
     userId: number;
     userStatus: MatchUserStatusEnum;
 }
+
+/** Shared-interest movie ref (Общих) — matches backend CommonMovieRefDto. */
+export type CommonMovieRef = {
+    readonly id: number;
+    readonly title: string;
+};
+
+/** Server → client WS `commonUpdated` payload. */
+export type CommonUpdatedPayload = {
+    readonly roomKey: string;
+    readonly matchPhase: string;
+    readonly roomStatus: string;
+    readonly count: number;
+    readonly movies: readonly CommonMovieRef[];
+    readonly targetCount: number | null;
+};
+
+/** Commons fields on GET /rooms/:key/state (RoomStateDto). */
+export type RoomStateCommons = {
+    readonly commonCount?: number;
+    readonly commonMovies?: readonly CommonMovieRef[];
+    readonly commonTargetCount?: number | null;
+};
+
+/** Minimal typed room aggregate used by commons hydrate. */
+export type RoomStateSnapshot = RoomStateCommons & {
+    readonly roomKey: string;
+    readonly aggregateVersion?: number;
+    readonly matchPhase?: string;
+    readonly roomStatus?: string;
+};

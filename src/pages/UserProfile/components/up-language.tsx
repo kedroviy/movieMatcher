@@ -1,35 +1,58 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { FC, useEffect, useState } from 'react';
+import { FC, useCallback, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
-import { View, StyleSheet, Dimensions, Text } from 'react-native';
-import { MovieLoader, RadioButton } from 'shared';
+import { View, StyleSheet, Dimensions, Text, ActivityIndicator } from 'react-native';
+import { MovieLoader, RadioButton, saveToken } from 'shared';
 import { Color } from 'styles/colors';
+import { updateUserLanguage } from 'features/auth/authAPI';
+import {
+    applyUserLanguageLocally,
+    getStoredUserLanguage,
+    type UserLanguage,
+} from 'shared/utils/user-language';
+import type { RootState } from 'redux/configure-store';
 
 export const UPLanguage: FC = () => {
     const windowWidth = Dimensions.get('window').width;
-    const [language, setLanguage] = useState<string | null>(null);
+    const [language, setLanguage] = useState<UserLanguage | null>(null);
+    const [isSaving, setIsSaving] = useState(false);
     const { i18n } = useTranslation();
+    const isAuthenticated = useSelector((state: RootState) => state.authSlice.isAuthenticated);
 
     useEffect(() => {
         const loadLanguage = async () => {
-            const savedLanguage = await AsyncStorage.getItem('language');
-            if (savedLanguage) {
-                setLanguage(savedLanguage);
-                i18n.changeLanguage(savedLanguage);
-            }
+            const savedLanguage = await getStoredUserLanguage();
+            setLanguage(savedLanguage);
+            await i18n.changeLanguage(savedLanguage);
         };
-        loadLanguage();
+        void loadLanguage();
     }, [i18n]);
 
-    useEffect(() => {
-        if (language) {
-            const saveLanguage = async (newLanguage: string) => {
-                await AsyncStorage.setItem('language', newLanguage);
-                i18n.changeLanguage(newLanguage);
-            };
-            saveLanguage(language as string);
-        }
-    }, [language, i18n]);
+    const selectLanguage = useCallback(
+        async (next: UserLanguage) => {
+            if (language === next || isSaving) {
+                return;
+            }
+            const previous = language;
+            setLanguage(next);
+            setIsSaving(true);
+            try {
+                await applyUserLanguageLocally(next);
+                if (isAuthenticated) {
+                    const result = await updateUserLanguage(next);
+                    if (result.success) {
+                        await saveToken(result.token);
+                    } else if (previous != null) {
+                        setLanguage(previous);
+                        await applyUserLanguageLocally(previous);
+                    }
+                }
+            } finally {
+                setIsSaving(false);
+            }
+        },
+        [isAuthenticated, isSaving, language],
+    );
 
     if (language === null) {
         return (
@@ -60,13 +83,26 @@ export const UPLanguage: FC = () => {
                     gap: 16,
                 }}
             >
+                {isSaving ? <ActivityIndicator color={Color.ACCENT_2} /> : null}
                 <View style={styles.radioContainer}>
                     <Text style={{ color: Color.WHITE }}>English</Text>
-                    <RadioButton containerSize={24} selected={language === 'en'} onChange={() => setLanguage('en')} />
+                    <RadioButton
+                        containerSize={24}
+                        selected={language === 'en'}
+                        onChange={() => {
+                            void selectLanguage('en');
+                        }}
+                    />
                 </View>
                 <View style={styles.radioContainer}>
                     <Text style={{ color: Color.WHITE }}>Русский</Text>
-                    <RadioButton containerSize={24} selected={language === 'ru'} onChange={() => setLanguage('ru')} />
+                    <RadioButton
+                        containerSize={24}
+                        selected={language === 'ru'}
+                        onChange={() => {
+                            void selectLanguage('ru');
+                        }}
+                    />
                 </View>
             </View>
         </View>

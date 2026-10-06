@@ -1,0 +1,100 @@
+---
+description: Senior React Native + strict TypeScript for movieMatcher — no any, build on prior work
+globs: src/**/*.{ts,tsx},App.tsx,index.js
+alwaysApply: false
+---
+
+# React Native (movieMatcher) — senior standards
+
+Write like a senior RN engineer on a live production app: **small diffs, match existing patterns, do not rewrite architecture casually**.
+
+## Before you change anything
+
+1. Read what was already decided/shipped: `docs/product-experiments.md` (this repo) and, for match/rooms, `../movie-match/docs/product-experiments.md`.
+2. Look at the closest existing implementation in this app (`pages/`, `features/`, `shared/`) and — for product parity — the web client (`dashboard-movie-match` match play) / backend contracts.
+3. Extend that path. Do not invent a parallel stack or re-solve a shipped experiment differently without updating the journal.
+
+## TypeScript (non-negotiable)
+
+- **No `any`.** Not in new code, not in “quick” socket handlers, not in Redux selectors, not as escape hatches.
+- Prefer **inference** when obvious; otherwise explicit types on public functions, props, API DTOs, and socket payloads.
+- When the type is uncertain: use **`unknown`**, then narrow with type guards / discriminated unions / schema parsing.
+- Ban equivalents that erase safety: `as any`, broad `as unknown as T` without a guard, `//@ts-ignore` / `@ts-expect-error` unless fixing a known upstream bug (one-line comment why).
+- Model API/WS payloads as named types/interfaces (e.g. `CommonUpdatedPayload`). Reuse shared types when they already exist.
+- Typing legacy code you touch: **narrow or replace `any` in the edited region**; do not spread new `any` to “match neighbors”.
+- Generics over `any` for reusable helpers.
+
+```typescript
+// BAD
+const { movies } = useSelector((state: any) => state.matchSlice);
+socket.on('commonUpdated', (data: any) => { ... });
+
+// GOOD
+const { movies } = useSelector((state: RootState) => state.matchSlice);
+socket.on('commonUpdated', (data: CommonUpdatedPayload) => { ... });
+```
+
+## Stack (do not invent alternatives)
+
+- React Native **0.78** + React **19**, TypeScript
+- Navigation: **React Navigation** (`app/*Navigator.tsx`)
+- Server state: **TanStack Query** where already used
+- Client/global: **Redux Toolkit** (`src/redux/*`) — typed `RootState` / `AppDispatch`
+- HTTP: **apisauce** via `shared/api` / feature `*API.ts` / `*-service.ts`
+- Realtime: **socket.io-client** — primarily `features/match/match-socketService.ts`
+- UI: **react-native-ui-lib** + local `shared/ui`, theme in `styles/`
+- i18n: **i18next** / `react-i18next` — user-facing strings via `t(...)`, not hard-coded RU/EN
+
+Do **not** introduce Expo, NativeBase/Paper, Zustand/Jotai/Recoil, axios-as-default, or a second socket client without an explicit request.
+
+## Project layout (follow existing)
+
+```text
+src/
+  app/          # navigators, app entry wiring
+  pages/        # screens by domain (Match, Main, Login, …)
+  features/     # domain API, sockets, session helpers
+  shared/       # ui, api helpers, hooks, utils
+  redux/        # slices + store
+  styles/       # colors, theme
+```
+
+- Colocate under the page: `components/`, `hooks/`, `ui/`, `utils/`
+- Prefer existing import style (`features/...`, `pages/...`, `shared/...`) over deep `../../../`
+- One concern per module; no drive-by folder renames or “architecture cleanup” in a product PR
+
+## Components and hooks
+
+- Function components + hooks only (no new class components)
+- Prefer **custom hooks** for reusable logic; avoid new HOCs / render-props unless matching an existing pattern
+- Keep swipe/deck/socket logic out of dumb presentational UI when practical
+- Props: typed; events and callbacks explicitly typed
+
+## State and data
+
+- Do not mutate Redux state or React state in place
+- Derive UI from store/query when possible; local `useState` for ephemeral UI only
+- Match/room deck sync: through existing `features/match/*` and Redux match slice — no duplicate fetch/socket pipelines in a screen
+- Socket listeners: subscribe/unsubscribe in `useEffect` cleanup; prefer fan-out helpers on `match-socketService`
+
+## Performance (pragmatic)
+
+- Long lists: `FlatList` / `SectionList` — not `ScrollView` + `.map` for large data
+- `React.memo` / `useCallback` / `useMemo`: when lists/profiles need it — not on every function by default
+- Clean up timers, gestures, and socket subscriptions on unmount
+- Prefer `StyleSheet.create` in hot swipe/list paths
+
+## Platform, security, tests
+
+- Consider **iOS and Android**; safe area, back button, permissions
+- Match-critical failures: visible feedback via existing notification patterns
+- No secrets in source; HTTPS; never log tokens/passwords
+- Jest + Testing Library for utils/hooks/pure UI when changing deck/match sync or parsers
+
+## What NOT to do
+
+- Do not add `any` “temporarily”
+- Do not ignore `docs/product-experiments.md` / shipped web+backend behavior
+- Do not migrate to Expo / new state library / new UI kit “while here”
+- Do not mass-rename to a textbook `components/screens` tree
+- Do not expand scope beyond the task

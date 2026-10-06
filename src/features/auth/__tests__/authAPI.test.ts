@@ -11,6 +11,10 @@ jest.mock('apisauce', () => {
     };
 });
 
+jest.mock('../../../shared/api/create-authenticated-api', () => ({
+    createAuthenticatedApi: jest.fn(),
+}));
+
 const mockPost = create({ baseURL: 'https://movie-api.moviematch.space' }).post as jest.MockedFunction<
     typeof create
 >['prototype']['post'];
@@ -23,9 +27,13 @@ describe('sendGoogleCodeToServer', () => {
         };
         mockPost.mockResolvedValueOnce(mockResponse);
 
-        const result = await sendGoogleCodeToServer('mockIdToken');
-        expect(mockPost).toHaveBeenCalledWith('/auth/verify-id-token', expect.any(String), expect.any(Object));
-        console.log('Result:', result);
+        const result = await sendGoogleCodeToServer('mockIdToken', 'en');
+        expect(mockPost).toHaveBeenCalledWith(
+            '/auth/verify-id-token',
+            expect.stringContaining('idToken=mockIdToken'),
+            expect.any(Object),
+        );
+        expect(mockPost.mock.calls[0][1]).toContain('language=en');
         expect(result).toEqual({ success: true, token: 'mockToken' });
     });
 
@@ -56,8 +64,16 @@ describe('loginUser', () => {
         };
         mockPost.mockResolvedValueOnce(mockResponse);
 
-        const result = await loginUser({ email: 'test@example.com', password: 'password123' });
-        expect(mockPost).toHaveBeenCalledWith(API.LOGIN, expect.any(Object));
+        const result = await loginUser({
+            email: 'test@example.com',
+            password: 'password123',
+            language: 'en',
+        });
+        expect(mockPost).toHaveBeenCalledWith(API.LOGIN, {
+            email: 'test@example.com',
+            password: 'password123',
+            language: 'en',
+        });
         expect(result).toEqual({ success: true, token: 'mockToken' });
     });
 

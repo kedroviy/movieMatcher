@@ -1,7 +1,16 @@
 import { ISMFormData } from 'pages/Main/sm.model';
 import { createApi } from './match-api';
-import { ApiResponse, Match, MatchLikeFields, MatchUserStatus, MatchUserStatusEnum, Room } from './match.model';
+import {
+    ApiResponse,
+    Match,
+    MatchLikeFields,
+    MatchUserStatus,
+    MatchUserStatusEnum,
+    Room,
+    RoomStateSnapshot,
+} from './match.model';
 import { handleApiResponse } from './match.utils';
+import type { ApiResponse as ApisauceResponse } from 'apisauce';
 
 export type UserRoomMembership = {
     roomKey: string;
@@ -215,10 +224,12 @@ export const checkStatus = async (roomKey: string, userId: number, idempotencyKe
     }
 };
 
-/** Room aggregate (phase, version, participants, deck summary) — prefer over ad-hoc joins of several calls. */
-export const getRoomState = async (roomKey: string): Promise<any> => {
+/** Room aggregate (phase, version, participants, deck summary, commons) — prefer over ad-hoc joins of several calls. */
+export const getRoomState = async (
+    roomKey: string,
+): Promise<ApisauceResponse<RoomStateSnapshot>> => {
     const api = await createApi();
-    const response = await api.get<any>(`/rooms/${roomKey}/state`);
+    const response = await api.get<RoomStateSnapshot>(`/rooms/${roomKey}/state`);
     if (response.ok) {
         return response;
     }

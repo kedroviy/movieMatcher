@@ -7,27 +7,32 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import AppContainer from './src/app';
 import { store } from './src/redux/configure-store';
 import { queryClient } from './src/features/match/query-client';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import socketService from 'features/match/match-socketService';
 import { API } from 'shared';
 import { useInAppUpdate } from 'shared/hooks/useInAppUpdate';
+import {
+    applyUserLanguageLocally,
+    getStoredUserLanguage,
+    normalizeUserLanguage,
+    USER_LANGUAGE_STORAGE_KEY,
+} from 'shared/utils/user-language';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function App(): React.JSX.Element {
     useInAppUpdate();
 
     useEffect(() => {
         const setLocalization = async () => {
-            let currentLanguage = await AsyncStorage.getItem('language');
-
-            if (!currentLanguage) {
-                currentLanguage = RNLocalize.getLocales()[0].languageCode;
-                i18n.changeLanguage(currentLanguage);
-                await AsyncStorage.setItem('language', currentLanguage);
+            const stored = await AsyncStorage.getItem(USER_LANGUAGE_STORAGE_KEY);
+            if (!stored) {
+                const deviceCode = RNLocalize.getLocales()[0]?.languageCode;
+                await applyUserLanguageLocally(normalizeUserLanguage(deviceCode));
+                return;
             }
-
-            i18n.changeLanguage(currentLanguage);
+            const language = await getStoredUserLanguage();
+            await i18n.changeLanguage(language);
         };
-        setLocalization();
+        void setLocalization();
         socketService.connect(API.BASE_URL);
 
         return () => {

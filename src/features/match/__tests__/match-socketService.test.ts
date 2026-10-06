@@ -128,6 +128,28 @@ describe('SocketService', () => {
         expect(mockSocket.off).toHaveBeenCalledWith('broadcastMovies', expect.any(Function));
     });
 
+    it('should subscribe to commonUpdated without snackbar', () => {
+        const callback = jest.fn();
+        const data = {
+            roomKey: 'room-1',
+            matchPhase: 'SET',
+            roomStatus: 'ACTIVE',
+            count: 1,
+            movies: [{ id: 42, title: 'Arrival' }],
+            targetCount: 4,
+        };
+
+        socketService.connect('http://localhost');
+        const unsub = socketService.subscribeToCommonUpdated(callback);
+
+        const handler = mockSocket.on.mock.calls.find((call: string[]) => call[0] === 'commonUpdated')[1];
+        handler(data);
+
+        expect(callback).toHaveBeenCalledWith(data);
+        unsub();
+        expect(mockSocket.off).toHaveBeenCalledWith('commonUpdated', expect.any(Function));
+    });
+
     it('should fan out broadcastMovies to multiple subscribers', () => {
         const a = jest.fn();
         const b = jest.fn();

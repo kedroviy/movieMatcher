@@ -1,0 +1,27 @@
+---
+description: Read prior product work before Match/Rooms client changes; keep TS parity with web/backend
+globs: src/pages/Match/**/*,src/features/match/**/*,src/redux/matchSlice.ts,docs/product-experiments.md
+alwaysApply: false
+---
+
+# Match / Rooms product context (movieMatcher)
+
+Before changing multiplayer match UX, swipe session, likes, check-status, or room sockets:
+
+1. Read `docs/product-experiments.md` in this repo (what mobile still owes vs backend/web).
+2. Read the **canonical** backend journal — what was already shipped (A/B contracts):
+   `../movie-match/docs/product-experiments.md`
+   (multi-root: `movie-match` → `docs/product-experiments.md`).
+3. Skim the web parity implementation when relevant:
+   `dashboard-movie-match` → `MatchPlaySessionService`, `match-lobby-play`, socket `commonUpdated`.
+4. If a touched folder has `CONTEXT.md`, read it.
+5. Then edit code — **reuse the same payload shapes/types**; do not invent a second WS contract.
+
+## TypeScript on this path
+
+- Socket and REST payloads for commons/state must be typed (`CommonUpdatedPayload`, room state fields, etc.).
+- **No `any`** in new match/socket handlers or selectors (see `react-native-senior` rule).
+
+## After shipping
+
+Update this repo’s `docs/product-experiments.md` and the backend journal (e.g. B-mobile → shipped) in the same change set when practical.

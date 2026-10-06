@@ -126,7 +126,7 @@ const resources = {
                     onboarding: {
                         title: 'Welcome to the lobby',
                         description:
-                            'Invite friends with the room code, set filters as host, and start the match when everyone is ready.\n\nThe game has 2 stages: Stage 1 — like movies until you collect 8 matches. Stage 2 — elimination: every movie you do not like is removed.',
+                            'Invite friends with the room code, set filters as host, and start the match when everyone is ready.\n\nThe game has 2 stages: Stage 1 — like movies until you collect 4 matches. Stage 2 — elimination: every movie you do not like is removed.',
                         close: 'Got it',
                     },
                 },
@@ -148,6 +148,11 @@ const resources = {
                     loading_deck: 'Loading movies…',
                     waiting_title: 'Waiting for others',
                     waiting_description: 'Finish your picks or wait until everyone is ready for the next round.',
+                    common_count: 'In common: {{count}}',
+                    common_title: 'Shared movies',
+                    common_hint: 'Matches update in real time',
+                    common_empty: 'No shared likes yet',
+                    first_common_toast: 'First match!',
                 },
             },
             movie_filters: {
@@ -351,7 +356,7 @@ const resources = {
                     onboarding: {
                         title: 'Добро пожаловать в лобби',
                         description:
-                            'Пригласите друзей по коду комнаты, настройте фильтры (если вы ведущий) и запустите матч, когда все готовы.\n\nИгра идёт в 2 этапа: 1 этап — вы лайкаете фильмы, пока не наберётся 8 совпадений. 2 этап — игра на исключение: каждый нелайкнутый фильм удаляется.',
+                            'Пригласите друзей по коду комнаты, настройте фильтры (если вы ведущий) и запустите матч, когда все готовы.\n\nИгра идёт в 2 этапа: 1 этап — вы лайкаете фильмы, пока не наберётся 4 совпадения. 2 этап — игра на исключение: каждый нелайкнутый фильм удаляется.',
                         close: 'Понятно',
                     },
                 },
@@ -374,6 +379,11 @@ const resources = {
                     waiting_title: 'Ожидаем остальных',
                     waiting_description:
                         'Завершите выбор или подождите, пока все участники будут готовы к следующему раунду.',
+                    common_count: 'Общих: {{count}}',
+                    common_title: 'Общие фильмы',
+                    common_hint: 'Совпадения обновляются в реальном времени',
+                    common_empty: 'Пока нет общих лайков',
+                    first_common_toast: 'Первое совпадение!',
                 },
             },
             movie_filters: {

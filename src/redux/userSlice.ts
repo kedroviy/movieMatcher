@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { ApiResponse, UpdateUsernameArgs, getUserProfile, putUpdateUsername } from 'features';
 import { deleteUserAccount } from 'features/user/userAPI';
 import { UserModelType } from 'shared';
+import { applyUserLanguageLocally } from 'shared/utils/user-language';
 
 type UserState = {
     user: UserModelType | null;
@@ -27,6 +28,11 @@ export const fetchUserProfile = createAsyncThunk('user/GET_USER', async (_, { re
 
         if (!response.success) {
             return rejectWithValue('Failed to fetch user profile');
+        }
+
+        // Authenticated source of truth for catalog language (parity with Angular CurrentUserService).
+        if (typeof response.data?.language === 'string' && response.data.language.trim()) {
+            await applyUserLanguageLocally(response.data.language);
         }
 
         return response.data;

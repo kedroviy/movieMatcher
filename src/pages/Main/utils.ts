@@ -1,9 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Color } from 'styles/colors';
+import { USER_LANGUAGE_STORAGE_KEY, normalizeUserLanguage } from 'shared/utils/user-language';
 
 const getCurrentLanguage = async () => {
-    const language = await AsyncStorage.getItem('currentLanguage');
-    return language || 'en';
+    const language = await AsyncStorage.getItem(USER_LANGUAGE_STORAGE_KEY);
+    return normalizeUserLanguage(language);
 };
 
 const matchesLanguage = (name: string, isCyrillic: boolean) => {
