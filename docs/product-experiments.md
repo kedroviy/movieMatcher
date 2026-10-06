@@ -55,3 +55,9 @@ Web (Angular): `../../dashboard-movie-match/docs/product-experiments.md`
 - **Parity ref:** `dashboard-movie-match` → `MatchPlaySessionService` + `match-lobby-play`
 - **Metric:** как у B на backend
 - **Result:** —
+
+### Play release bump (2026-10-06)
+
+- **Status:** shipped
+- **Change:** Android `versionCode` **90 → 91**, `versionName` **0.23.0 → 0.24.0** (`android/app/build.gradle`) — for Play in-app update
+- **Result:** —
