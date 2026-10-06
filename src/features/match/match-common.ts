@@ -9,15 +9,21 @@ export function normalizeCommonMovies(
     if (!movies?.length) {
         return [];
     }
-    return movies
-        .map((movie) => ({
-            id: Number(movie.id),
+    const unique = new Map<number, CommonMovieRef>();
+    for (const movie of movies) {
+        const id = Number(movie.id);
+        if (!Number.isFinite(id) || unique.has(id)) {
+            continue;
+        }
+        unique.set(id, {
+            id,
             title:
                 typeof movie.title === 'string' && movie.title.trim()
                     ? movie.title.trim()
-                    : `#${movie.id}`,
-        }))
-        .filter((movie) => Number.isFinite(movie.id));
+                    : `#${id}`,
+        });
+    }
+    return [...unique.values()];
 }
 
 /**
@@ -58,20 +64,20 @@ export type CommonProgressState = {
 
 export function commonProgressFromRoomState(roomState: RoomStateCommons): CommonProgressState {
     const movies = normalizeCommonMovies(roomState.commonMovies);
-    const count = roomState.commonCount ?? movies.length;
     const targetCount =
         roomState.commonTargetCount === undefined ? null : roomState.commonTargetCount;
     return {
-        commonCount: count,
+        commonCount: movies.length,
         commonMovies: movies,
         commonTargetCount: targetCount,
     };
 }
 
 export function commonProgressFromUpdated(message: CommonUpdatedPayload): CommonProgressState {
+    const movies = normalizeCommonMovies(message.movies);
     return {
-        commonCount: message.count,
-        commonMovies: normalizeCommonMovies(message.movies),
+        commonCount: movies.length,
+        commonMovies: movies,
         commonTargetCount: message.targetCount,
     };
 }
