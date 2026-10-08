@@ -29,6 +29,10 @@ export const createRoomService = async (userId: number): Promise<any> => {
         const response = await api.post<ApiResponse<Room>>('/rooms/create', { userId });
 
         if (!response.ok) {
+            const apiMessage = readApiErrorMessage(response.data);
+            if (apiMessage) {
+                throw new Error(apiMessage);
+            }
             throw new Error(`Network request failed with status ${response.status} and problem ${response.problem}`);
         }
 
@@ -66,12 +70,12 @@ export const joinRoomService = async (key: string, userId: number): Promise<any>
     if (!response.ok) {
         const serverMessage = readApiErrorMessage(response.data);
         if (response.status === 401 || response.status === 403) {
-            throw new Error(serverMessage || 'Сессия истекла. Войдите в аккаунт снова.');
+            throw new Error(serverMessage || 'SESSION_EXPIRED');
         }
         if (response.status === 404) {
-            throw new Error(serverMessage || 'Комната не найдена. Проверьте код лобби.');
+            throw new Error(serverMessage || 'ROOM_NOT_FOUND');
         }
-        throw new Error(serverMessage || `Не удалось войти в лобби (${response.status ?? response.problem})`);
+        throw new Error(serverMessage || 'JOIN_FAILED');
     }
     return handleApiResponse(response);
 };

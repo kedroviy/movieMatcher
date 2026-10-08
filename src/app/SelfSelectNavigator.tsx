@@ -68,7 +68,7 @@ export const SelfSelectNavigator: FC = () => {
                 name={AppRoutes.SM_MOVIE_FULL_LIST}
                 component={SMMovieFullList}
                 options={({ route }: { route: RouteProp<RootStackParamList, `${AppRoutes.SM_MOVIE_FULL_LIST}`> }) => ({
-                    headerTitle: `Подборка #${route.params.headerText}`,
+                    headerTitle: t('lists.header', { name: route.params.headerText }),
                     headerStyle: {
                         backgroundColor: Color.BACKGROUND_GREY,
                     },

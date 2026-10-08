@@ -1,16 +1,22 @@
-import { FC } from 'react';
+import { FC, useEffect } from 'react';
 import { CardStyleInterpolators, createStackNavigator } from '@react-navigation/stack';
 import { useTranslation } from 'react-i18next';
 import { RouteProp } from '@react-navigation/native';
 
 import { AppRoutes, RootStackParamList, animationOptions, defaultScreenOptions } from './constants';
+import { resolveFiltersLocale } from 'features/filters/filters.model';
 import { MatchJoinLobby, MatchLobby, MatchResult, MatchSelectionMovie } from 'pages';
+import { prefetchKpGenres } from 'pages/Main/hooks/use-kp-genres-ru';
 import { Color } from 'styles/colors';
 
 const MatchStack = createStackNavigator<RootStackParamList>();
 
 export const MatchNavigator: FC = () => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
+
+    useEffect(() => {
+        prefetchKpGenres(resolveFiltersLocale(i18n.language));
+    }, [i18n.language]);
 
     return (
         <MatchStack.Navigator screenOptions={defaultScreenOptions}>

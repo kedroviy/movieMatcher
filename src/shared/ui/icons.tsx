@@ -261,6 +261,26 @@ export const GoogleSvgIcon: FC = () => (
     </Svg>
 );
 
+export const ShareSvgIcon: FC = () => (
+    <Svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <Path
+            d="M7.5 8.75 10 6.25 12.5 8.75"
+            stroke="#FAFAFA"
+            strokeWidth="1.25"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        />
+        <Path d="M10 6.25v7.5" stroke="#FAFAFA" strokeWidth="1.25" strokeLinecap="round" />
+        <Path
+            d="M6.25 11.25v3.125c0 .69.56 1.25 1.25 1.25h5c.69 0 1.25-.56 1.25-1.25V11.25"
+            stroke="#FAFAFA"
+            strokeWidth="1.25"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        />
+    </Svg>
+);
+
 export const SettingSvgIcon: FC = () => (
     <Svg width="20" height="20" viewBox="0 0 20 20" fill="none">
         <G clip-path="url(#clip0_2718_10296)">

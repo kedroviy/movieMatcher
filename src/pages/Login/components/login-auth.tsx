@@ -20,7 +20,6 @@ import { translateAuthError } from 'features/auth/authErrorI18n';
 import { AppConstants } from '@shared/index';
 import { useTranslation } from 'react-i18next';
 import { Input } from '../ui';
-import { STRINGS } from '../constants';
 import { MovieLoader } from 'shared/ui/movie-loader';
 
 export const LoginAuth: FC = () => {
@@ -73,25 +72,25 @@ export const LoginAuth: FC = () => {
                         top: 24,
                     }}
                 >
-                    <Text style={[styles.text, styles.headerText, { marginBottom: 24 }]}>Войти в аккаунт</Text>
+                    <Text style={[styles.text, styles.headerText, { marginBottom: 24 }]}>{t('forms.sign_in_title')}</Text>
 
                     <Input
                         type="email"
-                        label="Почта"
+                        label={t('forms.email')}
                         onChangeText={onChangeEmail}
                         value={email}
                         onValidationChange={handleValidationEmail}
-                        placeholder="Введите ваш email"
-                        textError="Формат почты name@mail.com"
+                        placeholder={t('forms.email_placeholder')}
+                        textError={t('forms.email_invalid')}
                     />
                     <Input
                         type="password"
-                        label="Пароль"
+                        label={t('forms.password')}
                         onChangeText={onChangePassword}
                         onValidationChange={handleValidationPassword}
                         value={password}
-                        placeholder="Введите ваш пароль"
-                        textError="Пароль должен быть от 6 символов"
+                        placeholder={t('forms.password_placeholder')}
+                        textError={t('forms.password_short')}
                     />
 
                     <TouchableOpacity
@@ -105,7 +104,7 @@ export const LoginAuth: FC = () => {
                         onPress={() => onLoginUser({ email, password })}
                         testID="myButton"
                     >
-                        <Text style={styles.text}>Войти</Text>
+                        <Text style={styles.text}>{t('forms.sign_in')}</Text>
                     </TouchableOpacity>
                 </View>
 
@@ -124,7 +123,7 @@ export const LoginAuth: FC = () => {
                     onPress={() => navigation.navigate('LoginAccRecovery')}
                     testID="myButton"
                 >
-                    <Text style={styles.text}>{STRINGS.PASSWORD_RECOVERY}</Text>
+                    <Text style={styles.text}>{t('forms.recover_password')}</Text>
                 </TouchableOpacity>
             </ScrollView>
             {loading ? <MovieLoader /> : null}

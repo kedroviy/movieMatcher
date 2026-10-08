@@ -1,4 +1,5 @@
 import { FC, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Dimensions, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from 'redux/configure-store';
@@ -21,6 +22,7 @@ type UPDAModalType = {
 
 export const UPDAModal: FC<UPDAModalType> = ({ onHandlePress }) => {
     const { user } = useSelector((state: RootState) => state.userSlice);
+    const { t } = useTranslation();
 
     const dispatch: AppDispatch = useDispatch();
     const [deleteState, setDeleteState] = useState<DeleteState>(DeleteState.INITIAL);
@@ -39,14 +41,14 @@ export const UPDAModal: FC<UPDAModalType> = ({ onHandlePress }) => {
                     if (deleteUser.fulfilled.match(resultAction)) {
                         dispatch(logout());
                     } else {
-                        setError('Failed to delete account. Please try again.');
+                        setError(t('account_delete.delete_failed'));
                     }
                 } catch (error) {
-                    setError('An error occurred during account deletion.');
+                    setError(t('account_delete.delete_error'));
                     console.error(error);
                 }
             } else {
-                setError('Incorrect email. Please enter your correct email.');
+                setError(t('account_delete.incorrect_email'));
             }
         }
     };
@@ -89,7 +91,7 @@ export const UPDAModal: FC<UPDAModalType> = ({ onHandlePress }) => {
                             fontSize: 16,
                         }}
                     >
-                        Delete {user?.username}
+                        {t('account_delete.title', { name: user?.username })}
                     </Text>
                     <TouchableOpacity
                         style={{
@@ -140,7 +142,7 @@ export const UPDAModal: FC<UPDAModalType> = ({ onHandlePress }) => {
                             }}
                         >
                             <SimpleButton
-                                title="I want to delete my account"
+                                title={t('account_delete.want_delete')}
                                 color={Color.SYSTEM_GREY}
                                 titleColor={Color.WHITE}
                                 onHandlePress={handleDeleteClick}
@@ -168,10 +170,10 @@ export const UPDAModal: FC<UPDAModalType> = ({ onHandlePress }) => {
                                 marginBottom: 10,
                             }}
                         >
-                            Are you sure? Clicking again will delete your account permanently.
+                            {t('account_delete.confirm_permanent')}
                         </Text>
                         <SimpleButton
-                            title="Yes, delete my account"
+                            title={t('account_delete.yes_delete')}
                             color={Color.SYSTEM_GREY}
                             titleColor={Color.WHITE}
                             onHandlePress={handleDeleteClick}
@@ -196,7 +198,7 @@ export const UPDAModal: FC<UPDAModalType> = ({ onHandlePress }) => {
                                 marginBottom: 10,
                             }}
                         >
-                            To confirm, type "{user?.email}" in the box below
+                            {t('account_delete.type_email', { email: user?.email })}
                         </Text>
                         <TextInput
                             style={{
@@ -210,12 +212,12 @@ export const UPDAModal: FC<UPDAModalType> = ({ onHandlePress }) => {
                             }}
                             value={email}
                             onChangeText={setEmail}
-                            placeholder="Enter your email"
+                            placeholder={t('account_delete.enter_email')}
                             placeholderTextColor={Color.GRAY_BROWN}
                         />
                         {error && <Text style={{ color: Color.RED, marginBottom: 10 }}>{error}</Text>}
                         <SimpleButton
-                            title="Confirm and delete"
+                            title={t('account_delete.confirm_delete')}
                             color={Color.RED}
                             titleColor={Color.WHITE}
                             onHandlePress={handleDeleteClick}

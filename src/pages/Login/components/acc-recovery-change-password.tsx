@@ -95,7 +95,7 @@ export const LoginAccRecoveryChangePassword: FC = () => {
                     top: 24,
                 }}
             >
-                <Text style={[styles.text, styles.headerText, { marginBottom: 12 }]}>Новый пароль</Text>
+                <Text style={[styles.text, styles.headerText, { marginBottom: 12 }]}>{t('forms.new_password_title')}</Text>
                 <Text
                     style={{
                         fontFamily: 'Roboto',
@@ -107,23 +107,23 @@ export const LoginAccRecoveryChangePassword: FC = () => {
                         marginBottom: 12,
                     }}
                 >
-                    Создайте новый пароль для своего аккаунта
+                    {t('forms.new_password_hint')}
                 </Text>
                 <Input
                     type="password"
-                    label="Пароль"
+                    label={t('forms.password')}
                     onChangeText={handleChangePassword}
                     value={state.password}
-                    placeholder="Введите ваш пароль"
-                    textError="Пароль должен быть от 6 символов"
+                    placeholder={t('forms.password_placeholder')}
+                    textError={t('forms.password_short')}
                 />
                 <Input
                     type="confirm"
-                    label="Повторите пароль"
+                    label={t('forms.confirm_password')}
                     onChangeText={handleChangeConfirmPassword}
                     value={state.confirmPassword}
-                    placeholder="Повторите ваш пароль"
-                    textError="Пароли не совпадают"
+                    placeholder={t('forms.confirm_password_placeholder')}
+                    textError={t('forms.passwords_mismatch')}
                 />
 
                 <TouchableOpacity
@@ -137,7 +137,7 @@ export const LoginAccRecoveryChangePassword: FC = () => {
                     testID="myButton"
                     onPress={() => onSubmitComponent(email, code, state.password)}
                 >
-                    <Text style={styles.text}>Восстановить пароль</Text>
+                    <Text style={styles.text}>{t('forms.recover_password')}</Text>
                 </TouchableOpacity>
             </View>
             {loading ? <MovieLoader /> : null}

@@ -7,12 +7,14 @@ import { AppDispatch, RootState } from '../../../redux/configure-store';
 import { AppConstants, MovieLoader } from '../../../shared';
 import { sendEmailForRecoveryEffect } from 'redux/recoveryPasswordSlice';
 import { NavigationProp, ParamListBase, useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 
 export const LoginAccRecovery: FC = () => {
     const windowWidth = Dimensions.get('window').width;
     const dispatch: AppDispatch = useDispatch();
     const navigation: NavigationProp<ParamListBase> = useNavigation();
     const { loading } = useSelector((state: RootState) => state.recoveryPasswordSlice);
+    const { t } = useTranslation();
     const [inputEmail, onChangeInputEmail] = useState<string>(AppConstants.EMPTY_VALUE);
     const [isFormValidEmail, setIsFormValidEmail] = useState<boolean>(false);
 
@@ -48,7 +50,7 @@ export const LoginAccRecovery: FC = () => {
                     top: 24,
                 }}
             >
-                <Text style={[styles.text, styles.headerText, { marginBottom: 12 }]}>Введите ваш email</Text>
+                <Text style={[styles.text, styles.headerText, { marginBottom: 12 }]}>{t('forms.recovery_email_title')}</Text>
                 <Text
                     style={{
                         fontFamily: 'Roboto',
@@ -60,16 +62,16 @@ export const LoginAccRecovery: FC = () => {
                         marginBottom: 12,
                     }}
                 >
-                    Для восстановления пароля введите ваш адрес электронной почты.
+                    {t('forms.recovery_email_hint')}
                 </Text>
                 <Input
                     type="email"
-                    label="Почта"
+                    label={t('forms.email')}
                     onChangeText={onChangeInputEmail}
                     value={inputEmail}
                     onValidationChange={handleValidationEmail}
-                    placeholder="Введите ваш email"
-                    textError="формат почты name@mail.com"
+                    placeholder={t('forms.email_placeholder')}
+                    textError={t('forms.email_invalid')}
                 />
 
                 <TouchableOpacity
@@ -83,7 +85,7 @@ export const LoginAccRecovery: FC = () => {
                     testID="myButton"
                     onPress={() => onSendEmail(inputEmail)}
                 >
-                    <Text style={styles.text}>Продолжить</Text>
+                    <Text style={styles.text}>{t('general.continue')}</Text>
                 </TouchableOpacity>
             </View>
             {loading ? <MovieLoader /> : null}

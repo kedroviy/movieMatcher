@@ -14,7 +14,10 @@ import { SwipeDeck } from 'pages/Main/components/swipe-deck';
 import { AppDispatch, store } from 'redux/configure-store';
 import { useIsLastCard, useLikeMovieQueue, useMatchCommonProgress } from '../hooks';
 import { checkStatusRedux, updateUserStatusRedux } from 'redux/matchSlice';
+import { getRoomState } from 'features/match/match-service';
+import { readDeckAggregateVersion } from 'features/match/room-version-utils';
 import { refetchRoomMoviesToRedux, useRoomMoviesSync } from 'features/match/use-room-movies-sync';
+import { isDeckSnapshotCurrent, shouldLeaveWaitingRound } from 'features/match/waiting-round';
 import { MatchCommonProgressPanel, MatchStatusCard } from '../ui';
 import { MatchUserStatusEnum } from 'features/match/match.model';
 import { NavigationProp, ParamListBase, RouteProp, useNavigation, useRoute } from '@react-navigation/native';
@@ -65,6 +68,11 @@ export const MatchSelectionMovie: FC = () => {
     const deckSnapshotAtWaitRef = useRef<string | null>(null);
     const waitingCheckSubmittedRef = useRef(false);
     const lastProcessedBroadcastVersionRef = useRef<number | null>(null);
+    /** Room version at the moment this device entered the waiting screen. */
+    const waitingSinceVersionRef = useRef<number | null>(null);
+    /** ACTIVE only means "round reopened" after the server has shown this user as WAITING. */
+    const seenServerWaitingRef = useRef(false);
+    const reconcileInFlightRef = useRef(false);
 
     useEffect(() => {
         if (selectionRoomKey && user?.id != null) {
@@ -114,7 +122,8 @@ export const MatchSelectionMovie: FC = () => {
             if (
                 incomingVersion != null &&
                 lastProcessedBroadcastVersionRef.current === incomingVersion &&
-                data?.messageForClient !== 'Final movie selected'
+                data?.messageForClient !== 'Final movie selected' &&
+                data?.roundRestart !== true
             ) {
                 return;
             }
@@ -125,16 +134,21 @@ export const MatchSelectionMovie: FC = () => {
 
             refetchRoomMoviesToRedux(queryClient, dispatch, roomKey)
                 .then(() => {
-                    if (incomingVersion != null) {
-                        lastProcessedBroadcastVersionRef.current = incomingVersion;
-                    }
-
                     const moviesAfter = (store.getState() as { matchSlice: { movies: unknown } }).matchSlice.movies;
                     const signatureAfter = getMatchDeckSignature(getMatchDeckDocs(moviesAfter));
+                    const fetchedVersion = readDeckAggregateVersion(moviesAfter) ?? null;
+                    const deckIsCurrent = isDeckSnapshotCurrent(incomingVersion ?? null, fetchedVersion);
                     const phaseAfter =
                         data?.matchPhase ?? getMatchPhaseFromMoviesPayload(moviesAfter) ?? undefined;
                     const isFinal =
                         data?.messageForClient === 'Final movie selected' || phaseAfter === 'FINAL_PICK';
+
+                    if (incomingVersion != null && !deckIsCurrent && !isFinal) {
+                        return;
+                    }
+                    if (incomingVersion != null && deckIsCurrent) {
+                        lastProcessedBroadcastVersionRef.current = incomingVersion;
+                    }
 
                     dispatch(
                         addNotification({
@@ -150,11 +164,17 @@ export const MatchSelectionMovie: FC = () => {
                         return;
                     }
 
-                    if (signatureAfter !== signatureBefore) {
+                    const baseline = waitingSinceVersionRef.current;
+                    const roundMoved =
+                        signatureAfter !== signatureBefore ||
+                        data?.roundRestart === true ||
+                        (fetchedVersion != null && baseline != null && fetchedVersion > baseline);
+                    if (roundMoved) {
                         setCurrentCardIndex(0);
                         setIsWaitStatus(false);
                         deckSnapshotAtWaitRef.current = null;
                         waitingCheckSubmittedRef.current = false;
+                        waitingSinceVersionRef.current = null;
                     }
                 })
                 .catch((error: Error) => {
@@ -194,10 +214,95 @@ export const MatchSelectionMovie: FC = () => {
         const snap = getMatchDeckSignature(deckDocs);
         if (snap !== baseline) {
             deckSnapshotAtWaitRef.current = null;
+            waitingSinceVersionRef.current = null;
             setCurrentCardIndex(0);
             setIsWaitStatus(false);
         }
     }, [deckDocs, isWaitStatus]);
+
+    useEffect(() => {
+        if (!isWaitStatus || !selectionRoomKey || user?.id == null) {
+            return;
+        }
+        let cancelled = false;
+        const reconcile = async () => {
+            if (cancelled || reconcileInFlightRef.current) {
+                return;
+            }
+            reconcileInFlightRef.current = true;
+            try {
+                const response = await getRoomState(selectionRoomKey);
+                if (cancelled) {
+                    return;
+                }
+                const snapshot = response.data;
+                const localUserStatus =
+                    snapshot?.participants?.find((participant) => participant.userId === user.id)?.userStatus ??
+                    null;
+                if (localUserStatus === 'WAITING') {
+                    seenServerWaitingRef.current = true;
+                }
+                const matchPhase = snapshot?.matchPhase ?? null;
+                const shouldLeave = shouldLeaveWaitingRound({
+                    waitingSinceVersion: waitingSinceVersionRef.current,
+                    aggregateVersion: snapshot?.aggregateVersion ?? null,
+                    matchPhase,
+                    localUserStatus: seenServerWaitingRef.current ? localUserStatus : null,
+                });
+                if (!shouldLeave) {
+                    return;
+                }
+                if (matchPhase === 'FINAL_PICK') {
+                    waitingCheckSubmittedRef.current = false;
+                    try {
+                        await refetchRoomMoviesToRedux(queryClient, dispatch, selectionRoomKey);
+                    } catch {
+                        // The result screen still opens from the deck already in the store.
+                    }
+                    if (!cancelled) {
+                        navigation.navigate('MatchResult');
+                    }
+                    return;
+                }
+                const signatureBefore = getMatchDeckSignature(
+                    getMatchDeckDocs((store.getState() as { matchSlice: { movies: unknown } }).matchSlice.movies),
+                );
+                await refetchRoomMoviesToRedux(queryClient, dispatch, selectionRoomKey);
+                if (cancelled) {
+                    return;
+                }
+                const moviesAfter = (store.getState() as { matchSlice: { movies: unknown } }).matchSlice.movies;
+                const fetchedVersion = readDeckAggregateVersion(moviesAfter) ?? null;
+                const roomVersion = snapshot?.aggregateVersion ?? null;
+                const signatureAfter = getMatchDeckSignature(getMatchDeckDocs(moviesAfter));
+                const deckIsCurrent =
+                    isDeckSnapshotCurrent(roomVersion, fetchedVersion) || signatureAfter !== signatureBefore;
+                if (!deckIsCurrent) {
+                    return;
+                }
+                waitingSinceVersionRef.current = null;
+                deckSnapshotAtWaitRef.current = null;
+                waitingCheckSubmittedRef.current = false;
+                setCurrentCardIndex(0);
+                setIsWaitStatus(false);
+            } catch {
+                // The next tick retries. A missed socket event must not stick this screen.
+            } finally {
+                if (!cancelled) {
+                    reconcileInFlightRef.current = false;
+                }
+            }
+        };
+        void reconcile();
+        const timerId = setInterval(() => {
+            void reconcile();
+        }, 2000);
+        return () => {
+            cancelled = true;
+            reconcileInFlightRef.current = false;
+            clearInterval(timerId);
+        };
+    }, [dispatch, isWaitStatus, navigation, queryClient, selectionRoomKey, user?.id]);
 
     useEffect(() => {
         if (!isLastCard) {
@@ -212,6 +317,11 @@ export const MatchSelectionMovie: FC = () => {
         }
         waitingCheckSubmittedRef.current = true;
         deckSnapshotAtWaitRef.current = deckDocs.length ? getMatchDeckSignature(deckDocs) : null;
+        waitingSinceVersionRef.current =
+            readDeckAggregateVersion(
+                (store.getState() as { matchSlice: { movies: unknown } }).matchSlice.movies,
+            ) ?? null;
+        seenServerWaitingRef.current = false;
         setIsWaitStatus(true);
         const checkUserStatus = async () => {
             try {
@@ -319,15 +429,15 @@ export const MatchSelectionMovie: FC = () => {
     const overlayLabels = useMemo(
         () => ({
             left: {
-                title: 'NOPE',
-                element: <OverlayLabel label="NOPE" color="#E5566D" />,
+                title: t('swipe.nope'),
+                element: <OverlayLabel label={t('swipe.nope')} color="#E5566D" />,
                 style: {
                     wrapper: styles.overlayWrapper,
                 },
             },
             right: {
-                title: 'LIKE',
-                element: <OverlayLabel label="LIKE" color="#4CCC93" />,
+                title: t('swipe.like'),
+                element: <OverlayLabel label={t('swipe.like')} color="#4CCC93" />,
                 style: {
                     wrapper: {
                         ...styles.overlayWrapper,
@@ -337,7 +447,7 @@ export const MatchSelectionMovie: FC = () => {
                 },
             },
         }),
-        [],
+        [t],
     );
 
     const showWaitUi = isWaitStatus || isDeckExhaustedForUi;

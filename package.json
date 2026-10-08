@@ -1,6 +1,6 @@
 {
   "name": "movieMatcher",
-  "version": "0.22.3",
+  "version": "0.25.0",
   "private": true,
   "scripts": {
     "android": "react-native run-android",

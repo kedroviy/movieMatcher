@@ -263,6 +263,10 @@ const matchSlice = createSlice({
         setMoviesPayload(state, action) {
             state.movies = action.payload;
         },
+        /** Remote start (web or another client) does not go through `startMatchRedux`. */
+        setMatchStatus(state, action: { payload: string }) {
+            state.matchStatus = action.payload;
+        },
     },
     extraReducers: (builder) => {
         builder.addCase(createRoom.pending, (state) => {
@@ -451,5 +455,6 @@ export const {
     resetMatchSession,
     setRoomKey,
     setMoviesPayload,
+    setMatchStatus,
 } = matchSlice.actions;
 export default matchSlice.reducer;

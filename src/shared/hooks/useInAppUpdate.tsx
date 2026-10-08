@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Platform } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import SpInAppUpdates, {
@@ -25,6 +26,8 @@ function compareAndroidVersionCodes(storeVersion: string, currentVersion: string
 }
 
 export const useInAppUpdate = () => {
+    const { t } = useTranslation();
+
     useEffect(() => {
         if (__DEV__) {
             return;
@@ -76,10 +79,10 @@ export const useInAppUpdate = () => {
                 }
 
                 const iosOptions: StartUpdateOptions = {
-                    title: 'Доступно обновление',
-                    message: 'Вышла новая версия приложения. Обновить?',
-                    buttonUpgradeText: 'Обновить',
-                    buttonCancelText: 'Позже',
+                    title: t('prompts.update_title'),
+                    message: t('prompts.update_message'),
+                    buttonUpgradeText: t('prompts.update_now'),
+                    buttonCancelText: t('prompts.later'),
                 };
                 await inAppUpdates.startUpdate(iosOptions);
             } catch (error) {
@@ -92,5 +95,5 @@ export const useInAppUpdate = () => {
         return () => {
             removeFlexStatusListener?.();
         };
-    }, []);
+    }, [t]);
 };

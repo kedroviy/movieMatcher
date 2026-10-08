@@ -1,27 +1,25 @@
 const PAGES = [
     {
         id: 0,
-        header: 'Следи за лентой',
-        subHeader: 'На главной странице ты сможешь найти последние новости о фильмах, а также различные подборки.',
+        headerKey: 'onboarding.feed_title',
+        subHeaderKey: 'onboarding.feed_body',
         imageUrl: 'https://drive.google.com/uc?export=download&id=1YR-R0JJaY2wQ2yHz1AVg61HQQOiwVTSL',
-        buttonText: 'Продолжить',
+        buttonKey: 'general.continue',
     },
     {
         id: 1,
-        header: 'Подбор фильма',
-        subHeader:
-            'Сделай подбор фильма на вечер, выбрав нужные фильтры, и мы случайно сгенерируем фильм для просмотра.',
+        headerKey: 'onboarding.selection_title',
+        subHeaderKey: 'onboarding.selection_body',
         imageUrl: 'https://drive.google.com/uc?export=download&id=1XyvtSH--FxiGK67-Q9pPcKRCYxDfqGfF',
-        buttonText: 'Продолжить',
+        buttonKey: 'general.continue',
     },
     {
         id: 2,
-        header: 'Соревнование фильмов',
-        subHeader:
-            'Прими участие в совместном подборе фильма с другими пользователями: победителем станет только один фильм.',
+        headerKey: 'onboarding.match_title',
+        subHeaderKey: 'onboarding.match_body',
         imageUrl: 'https://drive.google.com/uc?export=download&id=1tECPZmWrcO1kiAaAzf-YLX8A-zAqLwvI',
-        buttonText: 'Начать',
+        buttonKey: 'onboarding.start',
     },
-];
+] as const;
 
 export { PAGES };

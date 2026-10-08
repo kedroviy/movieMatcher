@@ -157,7 +157,7 @@ export const SMCreateMovieListFilter: FC = () => {
                 />
 
                 <View style={styles.sliderContainer}>
-                    <Text style={styles.sliderLabelText}>Rating</Text>
+                    <Text style={styles.sliderLabelText}>{t('prompts.rating')}</Text>
                     <View style={styles.sliderLabel}>
                         <Text style={styles.label}>{range[0]}</Text>
                         <Text style={styles.label}>{range[1]}</Text>
@@ -191,9 +191,9 @@ export const SMCreateMovieListFilter: FC = () => {
             {!isNotificationHide ? (
                 <SimpleNotification
                     icon={<AlertCircleSvgIcon />}
-                    label="Упс, что-то пошло не так"
-                    description="По вашему запросу ничего не найдено"
-                    buttonText="Назад"
+                    label={t('lists.empty_title')}
+                    description={t('lists.empty_description')}
+                    buttonText={t('lists.back')}
                     buttonColor={Color.BUTTON_RED}
                     onHandlePress={handleClearError}
                 />

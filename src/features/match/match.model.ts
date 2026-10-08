@@ -108,10 +108,24 @@ export type RoomStateCommons = {
     readonly commonTargetCount?: number | null;
 };
 
-/** Minimal typed room aggregate used by commons hydrate. */
+export type RoomParticipantSnapshot = {
+    readonly userId: number;
+    readonly userStatus?: string;
+};
+
+export type RoomDeckSummary = {
+    readonly docCount?: number;
+    readonly firstMovieId?: number;
+    readonly lastMovieId?: number;
+    readonly hasDeck?: boolean;
+};
+
+/** Minimal typed room aggregate used by commons hydrate and waiting-round reconcile. */
 export type RoomStateSnapshot = RoomStateCommons & {
     readonly roomKey: string;
     readonly aggregateVersion?: number;
     readonly matchPhase?: string;
     readonly roomStatus?: string;
+    readonly participants?: readonly RoomParticipantSnapshot[];
+    readonly deck?: RoomDeckSummary;
 };

@@ -41,7 +41,7 @@ export const SMMovieDetails: FC<SMMovieDetailsType> = ({ route }) => {
         try {
             await Linking.openURL(url);
         } catch (error) {
-            Alert.alert('Не удалось открыть URL: ' + url);
+            Alert.alert(t('prompts.url_open_failed', { url }));
         }
     };
 
@@ -169,11 +169,11 @@ export const SMMovieDetails: FC<SMMovieDetailsType> = ({ route }) => {
                     </Text>
                     <TouchableOpacity onPress={toggleExpanded}>
                         <Text style={{ color: Color.GREY, fontSize: 16 }}>
-                            {isExpanded ? 'Свернуть' : 'Развернуть'}
+                            {isExpanded ? t('general.collapse') : t('general.expand')}
                         </Text>
                     </TouchableOpacity>
                 </View>
-                <Text style={[styles.text, { fontSize: 20 }]}>Актёры</Text>
+                <Text style={[styles.text, { fontSize: 20 }]}>{t('selection_movie.movie_details.actors')}</Text>
                 {loading ? (
                     <MovieLoader />
                 ) : (

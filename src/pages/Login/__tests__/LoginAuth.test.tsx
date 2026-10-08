@@ -1,6 +1,12 @@
 import 'react-native';
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
+
+jest.mock('react-native-localize', () => ({
+    getLocales: () => [{ languageCode: 'ru' }],
+}));
+
+import i18n from '../../../../i18n';
 import { LoginAuth } from '../components/login-auth';
 import { useDispatch, useSelector } from 'react-redux';
 import { it } from '@jest/globals';
@@ -26,7 +32,8 @@ jest.mock('react-redux', () => ({
 const mockDispatch: MockDispatchFn = useDispatch as any;
 const mockSelector: MockSelectorFn = useSelector as any;
 
-beforeEach(() => {
+beforeEach(async () => {
+    await i18n.changeLanguage('ru');
     jest.clearAllMocks();
 
     (mockDispatch as jest.Mock).mockReturnValue({

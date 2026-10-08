@@ -15,6 +15,7 @@ export {
     CrossSvgIcon,
     AlertCircleSvgIcon,
     GoogleSvgIcon,
+    ShareSvgIcon,
     SettingSvgIcon,
     DeleteSvgIcon,
     WaitingSvgIcon,

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Platform } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 import { Movie } from 'features';
 import { OnboardingPagination } from 'pages/Onboarding/ui';
@@ -19,6 +20,7 @@ interface MovieCardProps {
 const PAGE_GAP = 0;
 
 export const MovieCard: React.FC<MovieCardProps> = ({ id, label, movies = [], moviesCount, onHandlePress }) => {
+    const { t } = useTranslation();
     const [currentPage, setCurrentPage] = useState<number>(0);
     const preview = movies.slice(0, 3);
     const pageWidth = contentWidth + PAGE_GAP;
@@ -36,7 +38,7 @@ export const MovieCard: React.FC<MovieCardProps> = ({ id, label, movies = [], mo
             <View style={styles.header}>
                 <View style={styles.titleBlock}>
                     <Text style={styles.titleLine} numberOfLines={1}>
-                        <Text style={styles.kicker}>Подборка </Text>
+                        <Text style={styles.kicker}>{t('lists.kicker')}</Text>
                         <Text style={styles.titleHash}>#{label}</Text>
                     </Text>
                     {moviesCount > 0 ? (
@@ -47,13 +49,13 @@ export const MovieCard: React.FC<MovieCardProps> = ({ id, label, movies = [], mo
                 </View>
                 <TouchableOpacity
                     accessibilityRole="button"
-                    accessibilityLabel="Открыть всю подборку"
+                    accessibilityLabel={t('lists.open_a11y')}
                     onPress={onHandlePress}
                     style={styles.allButton}
                     activeOpacity={0.7}
                     hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
                 >
-                    <Text style={styles.allButtonText}>Все</Text>
+                    <Text style={styles.allButtonText}>{t('lists.see_all')}</Text>
                     <ChevronRightSVGIcon />
                 </TouchableOpacity>
             </View>

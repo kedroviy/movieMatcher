@@ -44,7 +44,7 @@ export const UPAccountSettings: FC = () => {
                     gap: 8,
                 }}
             >
-                <Text style={styles.text}>Danger Zone</Text>
+                <Text style={styles.text}>{t('account_delete.danger_zone')}</Text>
                 <View
                     style={{
                         flexDirection: 'row',
@@ -62,10 +62,10 @@ export const UPAccountSettings: FC = () => {
                             fontSize: 14,
                         }}
                     >
-                        Delete your account
+                        {t('account_delete.delete_account')}
                     </Text>
                     <SimpleButton
-                        title="Delete"
+                        title={t('account_delete.delete')}
                         color={Color.SYSTEM_GREY}
                         titleColor={Color.WHITE}
                         onHandlePress={() => setIsModalVisible((prevState) => !prevState)}

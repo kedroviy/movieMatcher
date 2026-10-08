@@ -9,6 +9,7 @@ import { Movie, MoviesSavedType } from 'features/selection-movies/selection-movi
 import { SMCard } from '../ui/sm-card';
 import { SimpleButton } from 'shared';
 import { MovieLoader } from 'shared/ui/movie-loader';
+import { useTranslation } from 'react-i18next';
 
 type SMMovieFullListType = {
     route: RouteProp<RootStackParamList, 'SMMovieFullList'>;
@@ -18,6 +19,7 @@ const { width } = Dimensions.get('window');
 
 export const SMMovieFullList: FC<SMMovieFullListType> = ({ route }) => {
     const { headerText } = route.params;
+    const { t } = useTranslation();
     const navigation: NavigationProp<ParamListBase> = useNavigation();
     const [moviesList, setMoviesList] = useState<Movie[]>([]);
 
@@ -69,7 +71,7 @@ export const SMMovieFullList: FC<SMMovieFullListType> = ({ route }) => {
                         showsHorizontalScrollIndicator={false}
                     />
                     <SimpleButton
-                        title="Удалить список"
+                        title={t('lists.delete')}
                         color={Color.BUTTON_RED}
                         titleColor={Color.WHITE}
                         buttonWidth={width - 32}

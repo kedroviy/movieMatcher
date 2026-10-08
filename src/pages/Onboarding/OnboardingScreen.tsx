@@ -8,11 +8,13 @@ import { AppRoutes } from 'app/constants';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from 'redux/configure-store';
 import { setOnboardedStatus } from 'redux/authSlice';
+import { useTranslation } from 'react-i18next';
 
 export const OnboardingScreen: FC = () => {
     const [currentPageIndex, setCurrentPageIndex] = useState(0);
     const dispatch: AppDispatch = useDispatch();
     const navigation: NavigationProp<ParamListBase> = useNavigation();
+    const { t } = useTranslation();
 
     const handleNextPage = async () => {
         if (currentPageIndex < PAGES.length - 1) {
@@ -24,5 +26,16 @@ export const OnboardingScreen: FC = () => {
         }
     };
 
-    return <OnboardingCard {...PAGES[currentPageIndex]} onHandlePress={handleNextPage} />;
+    const page = PAGES[currentPageIndex];
+
+    return (
+        <OnboardingCard
+            id={page.id}
+            imageUrl={page.imageUrl}
+            header={t(page.headerKey)}
+            subHeader={t(page.subHeaderKey)}
+            buttonText={t(page.buttonKey)}
+            onHandlePress={handleNextPage}
+        />
+    );
 };

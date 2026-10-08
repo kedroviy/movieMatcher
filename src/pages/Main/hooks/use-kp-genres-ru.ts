@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { fetchFilters } from 'features/filters/filters-api';
 import { FiltersLocale, resolveFiltersLocale } from 'features/filters/filters.model';
 import { FilterOption } from '../sm.model';
+import { sortCountriesByFilmPopularity } from '../utils/sort-countries-by-film-popularity';
 
 type CachedFilters = Readonly<{
     genres: FilterOption[];
@@ -137,15 +138,20 @@ export function useKpGenresRu() {
         [countries, localizeSelectedOptions],
     );
 
+    const countryOptions = useMemo(
+        () => sortCountriesByFilmPopularity(countries, locale),
+        [countries, locale],
+    );
+
     return useMemo(
         () => ({
             genreOptions: genres,
-            countryOptions: countries,
+            countryOptions,
             loading,
             error,
             locale,
             localizeCountries,
         }),
-        [genres, countries, loading, error, locale, localizeCountries],
+        [genres, countryOptions, loading, error, locale, localizeCountries],
     );
 }

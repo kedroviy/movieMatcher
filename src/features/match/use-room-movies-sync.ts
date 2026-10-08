@@ -10,14 +10,20 @@ import { setMoviesPayload } from 'redux/matchSlice';
 /** Per-room chain: parallel refetches were racing and the slower (stale) response could win in Redux. */
 const refetchChains = new Map<string, Promise<void>>();
 
-/** Skip applying an older deck snapshot when WS + check-status + TanStack fire refetches at once. */
+/**
+ * Skip an older deck, and skip an unversioned payload once we already show a versioned one.
+ * A late refetch without `_room.aggregateVersion` used to roll the waiting client back.
+ */
 export function shouldApplyMoviesPayload(incoming: unknown, current?: unknown): boolean {
     const nextVersion = readDeckAggregateVersion(incoming);
     const currentVersion = readDeckAggregateVersion(current);
-    if (nextVersion != null && currentVersion != null && nextVersion < currentVersion) {
+    if (currentVersion == null) {
+        return true;
+    }
+    if (nextVersion == null) {
         return false;
     }
-    return true;
+    return nextVersion >= currentVersion;
 }
 
 export function dispatchMoviesIfNewer(dispatch: AppDispatch, incoming: unknown): boolean {

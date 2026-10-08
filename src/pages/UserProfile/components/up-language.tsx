@@ -12,6 +12,12 @@ import {
 } from 'shared/utils/user-language';
 import type { RootState } from 'redux/configure-store';
 
+const LANGUAGE_OPTIONS: ReadonlyArray<{ code: UserLanguage; label: string }> = [
+    { code: 'en', label: 'English' },
+    { code: 'ru', label: 'Русский' },
+    { code: 'es', label: 'Español' },
+];
+
 export const UPLanguage: FC = () => {
     const windowWidth = Dimensions.get('window').width;
     const [language, setLanguage] = useState<UserLanguage | null>(null);
@@ -84,26 +90,18 @@ export const UPLanguage: FC = () => {
                 }}
             >
                 {isSaving ? <ActivityIndicator color={Color.ACCENT_2} /> : null}
-                <View style={styles.radioContainer}>
-                    <Text style={{ color: Color.WHITE }}>English</Text>
-                    <RadioButton
-                        containerSize={24}
-                        selected={language === 'en'}
-                        onChange={() => {
-                            void selectLanguage('en');
-                        }}
-                    />
-                </View>
-                <View style={styles.radioContainer}>
-                    <Text style={{ color: Color.WHITE }}>Русский</Text>
-                    <RadioButton
-                        containerSize={24}
-                        selected={language === 'ru'}
-                        onChange={() => {
-                            void selectLanguage('ru');
-                        }}
-                    />
-                </View>
+                {LANGUAGE_OPTIONS.map((option) => (
+                    <View key={option.code} style={styles.radioContainer}>
+                        <Text style={{ color: Color.WHITE }}>{option.label}</Text>
+                        <RadioButton
+                            containerSize={24}
+                            selected={language === option.code}
+                            onChange={() => {
+                                void selectLanguage(option.code);
+                            }}
+                        />
+                    </View>
+                ))}
             </View>
         </View>
     );

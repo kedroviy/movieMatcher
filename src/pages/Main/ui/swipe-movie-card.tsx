@@ -2,14 +2,18 @@ import React, { FC, ReactNode, useEffect, useMemo, useRef } from 'react';
 import {
     Dimensions,
     Image,
+    LayoutChangeEvent,
+    NativeSyntheticEvent,
     Platform,
     ScrollView,
     StyleSheet,
     Text,
+    TextLayoutEventData,
     TouchableOpacity,
     View,
     ViewStyle,
 } from 'react-native';
+import Animated, { Easing, interpolate, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 import { Color } from 'styles/colors';
 import { getRatingColor, roundDownToOneTenth } from '../utils';
@@ -19,6 +23,13 @@ export const CARD_WIDTH = SCREEN_WIDTH - 28;
 export const CARD_HEIGHT = 560;
 const POSTER_HEIGHT_COLLAPSED = 340;
 const POSTER_HEIGHT_EXPANDED = 272;
+const POSTER_HEIGHT_DELTA = POSTER_HEIGHT_COLLAPSED - POSTER_HEIGHT_EXPANDED;
+const POSTER_SCRIM_HEIGHT = 220;
+const DESCRIPTION_LINE_HEIGHT = 22;
+const DESCRIPTION_COLLAPSED_LINES = 4;
+const DESCRIPTION_COLLAPSED_HEIGHT = DESCRIPTION_LINE_HEIGHT * DESCRIPTION_COLLAPSED_LINES;
+const DESCRIPTION_BUTTON_GAP = 10;
+const EXPAND_DURATION_MS = 340;
 
 export type SwipeMovieCardProps = {
     posterUri?: string | null;
@@ -36,8 +47,8 @@ export type SwipeMovieCardProps = {
     style?: ViewStyle;
 };
 
-const PosterScrim: FC<{ height: number }> = ({ height }) => (
-    <Svg width={CARD_WIDTH} height={height} style={styles.posterScrim}>
+const PosterScrim: FC = () => (
+    <Svg width={CARD_WIDTH} height={POSTER_SCRIM_HEIGHT} style={styles.posterScrim}>
         <Defs>
             <LinearGradient id="posterFade" x1="0" y1="0" x2="0" y2="1">
                 <Stop offset="0" stopColor="#0A0A0C" stopOpacity="0" />
@@ -45,7 +56,7 @@ const PosterScrim: FC<{ height: number }> = ({ height }) => (
                 <Stop offset="1" stopColor="#0A0A0C" stopOpacity="0.92" />
             </LinearGradient>
         </Defs>
-        <Rect x="0" y="0" width={CARD_WIDTH} height={height} fill="url(#posterFade)" />
+        <Rect x="0" y="0" width={CARD_WIDTH} height={POSTER_SCRIM_HEIGHT} fill="url(#posterFade)" />
     </Svg>
 );
 
@@ -85,15 +96,60 @@ export const SwipeMovieCard: FC<SwipeMovieCardProps> = ({
     }, [rating]);
 
     const ratingTint = getRatingColor(rating ?? 0);
-    const posterHeight = isExpanded ? POSTER_HEIGHT_EXPANDED : POSTER_HEIGHT_COLLAPSED;
     const yearSuffix = year != null && String(year).length > 0 ? String(year) : null;
     const descriptionScrollRef = useRef<ScrollView>(null);
+    const expandProgress = useSharedValue(isExpanded ? 1 : 0);
+    const collapsedBlockHeight = useSharedValue(0);
+    const buttonHeight = useSharedValue(0);
+    const collapsedTextHeight = useSharedValue(DESCRIPTION_COLLAPSED_HEIGHT);
+    const fullTextHeight = useSharedValue(DESCRIPTION_COLLAPSED_HEIGHT);
 
     useEffect(() => {
         if (!isExpanded) {
             descriptionScrollRef.current?.scrollTo({ y: 0, animated: false });
         }
-    }, [isExpanded]);
+        expandProgress.value = withTiming(isExpanded ? 1 : 0, {
+            duration: EXPAND_DURATION_MS,
+            easing: Easing.out(Easing.cubic),
+        });
+    }, [expandProgress, isExpanded]);
+
+    const posterAnimatedStyle = useAnimatedStyle(() => ({
+        height: interpolate(expandProgress.value, [0, 1], [POSTER_HEIGHT_COLLAPSED, POSTER_HEIGHT_EXPANDED]),
+    }));
+
+    const descriptionClipStyle = useAnimatedStyle(() => {
+        const collapsedRoom = Math.max(collapsedBlockHeight.value - buttonHeight.value - DESCRIPTION_BUTTON_GAP, 0);
+        const collapsedHeight =
+            collapsedRoom > 0 ? Math.min(collapsedTextHeight.value, collapsedRoom) : collapsedTextHeight.value;
+        const expandedRoom = collapsedRoom > 0 ? collapsedRoom + POSTER_HEIGHT_DELTA : collapsedHeight;
+        const expandedHeight = Math.min(Math.max(fullTextHeight.value, collapsedHeight), expandedRoom);
+        return {
+            height: interpolate(expandProgress.value, [0, 1], [collapsedHeight, expandedHeight]),
+        };
+    });
+
+    const handleDescriptionBlockLayout = (event: LayoutChangeEvent): void => {
+        if (expandProgress.value > 0.001 && collapsedBlockHeight.value > 0) {
+            return;
+        }
+        collapsedBlockHeight.value = event.nativeEvent.layout.height;
+    };
+
+    const handleExpandButtonLayout = (event: LayoutChangeEvent): void => {
+        buttonHeight.value = event.nativeEvent.layout.height;
+    };
+
+    const handleDescriptionTextLayout = (event: NativeSyntheticEvent<TextLayoutEventData>): void => {
+        const lines = event.nativeEvent.lines;
+        if (!lines.length) {
+            return;
+        }
+        const collapsed = lines.slice(0, DESCRIPTION_COLLAPSED_LINES).reduce((sum, line) => sum + line.height, 0);
+        const full = lines.reduce((sum, line) => sum + line.height, 0);
+        collapsedTextHeight.value = collapsed || DESCRIPTION_COLLAPSED_HEIGHT;
+        fullTextHeight.value = full || DESCRIPTION_COLLAPSED_HEIGHT;
+    };
 
     return (
         <View style={[styles.card, style]}>
@@ -101,24 +157,18 @@ export const SwipeMovieCard: FC<SwipeMovieCardProps> = ({
                 <AccentBar />
             </View>
 
-            <View style={[styles.posterFrame, { height: posterHeight }]}>
+            <Animated.View style={[styles.posterFrame, posterAnimatedStyle]}>
                 {unavailable || !posterUri ? (
-                    <View style={[styles.poster, styles.posterPlaceholder, { height: posterHeight }]}>
+                    <View style={[styles.posterFill, styles.posterPlaceholder]}>
                         <View style={styles.placeholderOrb} />
                         <Text style={styles.placeholderLabel}>{title}</Text>
-                        {unavailableHint ? (
-                            <Text style={styles.placeholderHint}>{unavailableHint}</Text>
-                        ) : null}
+                        {unavailableHint ? <Text style={styles.placeholderHint}>{unavailableHint}</Text> : null}
                     </View>
                 ) : (
-                    <Image
-                        style={[styles.poster, { height: posterHeight }]}
-                        source={{ uri: posterUri }}
-                        resizeMode="cover"
-                    />
+                    <Image style={styles.poster} source={{ uri: posterUri }} resizeMode="cover" />
                 )}
 
-                <PosterScrim height={posterHeight} />
+                <PosterScrim />
                 <View style={styles.decorOrb} />
 
                 {!unavailable && rating != null ? (
@@ -135,45 +185,45 @@ export const SwipeMovieCard: FC<SwipeMovieCardProps> = ({
                     </Text>
                     {yearSuffix ? <Text style={styles.year}>{yearSuffix}</Text> : null}
                 </View>
-            </View>
+            </Animated.View>
 
             <View style={styles.body}>
                 {chips ? <View style={styles.chipsRow}>{chips}</View> : null}
 
                 {description ? (
-                    <View style={styles.descriptionBlock}>
-                        <View style={styles.descriptionContent}>
-                            {isExpanded ? (
-                                <ScrollView
-                                    ref={descriptionScrollRef}
-                                    style={styles.descriptionScroll}
-                                    contentContainerStyle={styles.descriptionScrollContent}
-                                    nestedScrollEnabled
-                                    showsVerticalScrollIndicator
-                                    bounces={false}
-                                    keyboardShouldPersistTaps="handled"
-                                >
-                                    <Text style={styles.description}>{description}</Text>
-                                </ScrollView>
-                            ) : (
-                                <Text
-                                    style={styles.description}
-                                    numberOfLines={4}
-                                    ellipsizeMode="tail"
-                                >
-                                    {description}
-                                </Text>
-                            )}
-                        </View>
+                    <View style={styles.descriptionBlock} onLayout={handleDescriptionBlockLayout}>
+                        <Text
+                            accessible={false}
+                            importantForAccessibility="no"
+                            pointerEvents="none"
+                            style={[styles.description, styles.descriptionMeasure]}
+                            onTextLayout={handleDescriptionTextLayout}
+                        >
+                            {description}
+                        </Text>
+                        <Animated.View style={[styles.descriptionClip, descriptionClipStyle]}>
+                            <ScrollView
+                                ref={descriptionScrollRef}
+                                style={styles.descriptionScroll}
+                                contentContainerStyle={styles.descriptionScrollContent}
+                                nestedScrollEnabled
+                                scrollEnabled={isExpanded}
+                                showsVerticalScrollIndicator={isExpanded}
+                                bounces={false}
+                                keyboardShouldPersistTaps="handled"
+                            >
+                                <Text style={styles.description}>{description}</Text>
+                            </ScrollView>
+                        </Animated.View>
+                        <View style={styles.descriptionSpacer} />
                         <TouchableOpacity
                             style={styles.expandPill}
                             onPress={onToggleExpand}
+                            onLayout={handleExpandButtonLayout}
                             activeOpacity={0.75}
                             accessibilityRole="button"
                         >
-                            <Text style={styles.expandPillText}>
-                                {isExpanded ? collapseLabel : expandLabel}
-                            </Text>
+                            <Text style={styles.expandPillText}>{isExpanded ? collapseLabel : expandLabel}</Text>
                         </TouchableOpacity>
                     </View>
                 ) : unavailableHint ? (
@@ -195,7 +245,6 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: 'rgba(255,255,255,0.08)',
         overflow: 'hidden',
-        marginBottom: 24,
         ...Platform.select({
             ios: {
                 shadowColor: '#000',
@@ -221,10 +270,15 @@ const styles = StyleSheet.create({
     },
     posterFrame: {
         width: '100%',
+        overflow: 'hidden',
         backgroundColor: Color.NEW_BLACK,
     },
     poster: {
         width: '100%',
+        height: POSTER_HEIGHT_COLLAPSED,
+    },
+    posterFill: {
+        ...StyleSheet.absoluteFillObject,
     },
     posterScrim: {
         position: 'absolute',
@@ -341,10 +395,20 @@ const styles = StyleSheet.create({
         flex: 1,
         minHeight: 0,
     },
-    descriptionContent: {
+    descriptionMeasure: {
+        position: 'absolute',
+        opacity: 0,
+        left: 0,
+        right: 0,
+        top: 0,
+    },
+    descriptionClip: {
+        overflow: 'hidden',
+        marginBottom: DESCRIPTION_BUTTON_GAP,
+    },
+    descriptionSpacer: {
         flex: 1,
         minHeight: 0,
-        marginBottom: 10,
     },
     descriptionScroll: {
         flex: 1,

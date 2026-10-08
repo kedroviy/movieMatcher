@@ -102,33 +102,33 @@ export const LoginRegistration: FC = () => {
                         flex: 1,
                     }}
                 >
-                    <Text style={[styles.text, styles.headerText, { marginBottom: 24 }]}>Регистрация аккаунта</Text>
+                    <Text style={[styles.text, styles.headerText, { marginBottom: 24 }]}>{t('forms.register_title')}</Text>
                     <Input
                         type="email"
-                        label="Почта"
+                        label={t('forms.email')}
                         onChangeText={onChangeEmail}
                         value={email}
                         onValidationChange={handleValidationEmail}
-                        placeholder="Введите ваш email"
-                        textError="формат почты name@mail.com"
+                        placeholder={t('forms.email_placeholder')}
+                        textError={t('forms.email_invalid')}
                     />
                     <Input
                         type="password"
-                        label="Пароль"
+                        label={t('forms.password')}
                         onChangeText={onChangePassword}
                         onValidationChange={handleValidationPassword}
                         value={password}
-                        placeholder="Введите ваш пароль"
-                        textError="Пароль должен быть от 6 символов"
+                        placeholder={t('forms.password_placeholder')}
+                        textError={t('forms.password_short')}
                     />
                     <Input
                         type="confirm"
-                        label="Повторите пароль"
+                        label={t('forms.confirm_password')}
                         onChangeText={setConfirmPassword}
                         isConfirm={isFormValidConfirmPassword}
                         value={confirmPassword}
-                        placeholder="Повторите ваш пароль"
-                        textError="Пароли не совпадают"
+                        placeholder={t('forms.confirm_password_placeholder')}
+                        textError={t('forms.passwords_mismatch')}
                     />
                     {!isFormValidPassword || !isFormValidConfirmPassword || (!isFormValidEmail && !email.length) ? (
                         <TouchableOpacity
@@ -136,7 +136,7 @@ export const LoginRegistration: FC = () => {
                             disabled={true}
                             testID="myButton"
                         >
-                            <Text style={styles.text}>Создать аккаунт</Text>
+                            <Text style={styles.text}>{t('forms.create_account')}</Text>
                         </TouchableOpacity>
                     ) : (
                         <TouchableOpacity
@@ -144,7 +144,7 @@ export const LoginRegistration: FC = () => {
                             onPress={() => onSubmitForm({ email, password })}
                             testID="myButton"
                         >
-                            <Text style={styles.text}>Создать аккаунт</Text>
+                            <Text style={styles.text}>{t('forms.create_account')}</Text>
                         </TouchableOpacity>
                     )}
                 </View>

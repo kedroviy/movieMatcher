@@ -1,5 +1,6 @@
 import { FC } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Color } from 'styles/colors';
 
 export type SMMovieChipsType = {
@@ -11,6 +12,7 @@ export type SMMovieChipsType = {
 };
 
 export const SMMovieChips: FC<SMMovieChipsType> = ({ label, color, labelColor, type, variant = 'solid' }) => {
+    const { t } = useTranslation();
     if (label === null || label === undefined) {
         return null;
     }
@@ -28,7 +30,7 @@ export const SMMovieChips: FC<SMMovieChipsType> = ({ label, color, labelColor, t
         return null;
     }
 
-    const display = type === 'time' ? `${label} мин` : type === 'age' ? `${label}+` : String(label);
+    const display = type === 'time' ? t('general.minutes', { count: label }) : type === 'age' ? `${label}+` : String(label);
 
     const isGlass = variant === 'glass';
 

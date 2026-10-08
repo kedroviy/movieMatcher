@@ -5,6 +5,11 @@ import Swiper from 'react-native-deck-swiper';
 import { Color } from 'styles/colors';
 import { CARD_HEIGHT, CARD_WIDTH } from '../ui/swipe-movie-card';
 
+/** Library default `cardVerticalMargin` is 60 and sets `top` on the absolute card. */
+const CARD_TOP_INSET = 8;
+/** Keeps the card bottom, including Read more, above the like/dislike bar. */
+const CARD_BOTTOM_GAP = 20;
+
 type OverlayLabels = ComponentProps<typeof Swiper>['overlayLabels'];
 
 type SwipeDeckLayout = {
@@ -51,7 +56,10 @@ export function SwipeDeck<T>({
     }, []);
     const width = measured?.width ?? window.width;
     const height = measured?.height ?? Math.max(window.height - 240, CARD_HEIGHT);
-    const cardHeight = Math.min(CARD_HEIGHT, Math.max(height - 16, 200));
+    const cardHeight = Math.min(
+        CARD_HEIGHT,
+        Math.max(height - CARD_TOP_INSET - CARD_BOTTOM_GAP, 200),
+    );
     if (!cards.length) {
         return <View style={styles.clip} onLayout={handleLayout} />;
     }
@@ -69,6 +77,7 @@ export function SwipeDeck<T>({
                     height,
                     backgroundColor: Color.BACKGROUND_GREY,
                 }}
+                cardVerticalMargin={CARD_TOP_INSET}
                 cardStyle={{
                     width: CARD_WIDTH,
                     height: cardHeight,

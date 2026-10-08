@@ -46,6 +46,9 @@ export const MatchJoinLobby: FC = () => {
             submit: t('match_movie.main_match_screen.join_lobby_submit'),
             incomplete: t('match_movie.main_match_screen.join_lobby_code_incomplete'),
             joinFailed: t('match_movie.main_match_screen.join_lobby_btn'),
+            sessionExpired: t('match_movie.main_match_screen.session_expired'),
+            roomNotFound: t('match_movie.main_match_screen.room_not_found'),
+            joinFailedBody: t('match_movie.main_match_screen.join_failed'),
         }),
         [t],
     );
@@ -95,14 +98,21 @@ export const MatchJoinLobby: FC = () => {
                 lastAttemptedKeyRef.current = null;
                 setKey(AppConstants.EMPTY_VALUE);
                 const isSessionError =
-                    /истекла|Unauthorized|Forbidden|войдите|сессия/i.test(message) ||
+                    message === 'SESSION_EXPIRED' ||
+                    /истекла|Unauthorized|Forbidden|войдите|сессия|session/i.test(message) ||
                     message.includes('401') ||
                     message.includes('403');
                 if (isSessionError) {
                     notifySessionExpired();
                     return;
                 }
-                Alert.alert(labels.joinFailed, message);
+                const body =
+                    message === 'ROOM_NOT_FOUND'
+                        ? labels.roomNotFound
+                        : message === 'JOIN_FAILED'
+                          ? labels.joinFailedBody
+                          : message;
+                Alert.alert(labels.joinFailed, body);
             })
             .finally(() => {
                 isSubmittingRef.current = false;

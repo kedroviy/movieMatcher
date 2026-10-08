@@ -1,3 +1,32 @@
+const KINOPOISK_ORIGIN = 'https://www.kinopoisk.ru';
+const TMDB_ORIGIN = 'https://www.themoviedb.org';
+
+/** Opens the catalog page for the picked movie. Prefers the server `sourceUrl`. */
+export function resolveMatchWatchUrl(movie: unknown): string | null {
+    if (movie == null || typeof movie !== 'object') {
+        return null;
+    }
+    const record = movie as {
+        id?: unknown;
+        isSeries?: unknown;
+        provider?: unknown;
+        sourceUrl?: unknown;
+    };
+    if (typeof record.sourceUrl === 'string' && record.sourceUrl.trim().length > 0) {
+        return record.sourceUrl.trim();
+    }
+    const id = typeof record.id === 'number' ? record.id : Number(record.id);
+    if (!Number.isFinite(id)) {
+        return null;
+    }
+    if (record.provider === 'TMDB') {
+        const kind = record.isSeries === true ? 'tv' : 'movie';
+        return `${TMDB_ORIGIN}/${kind}/${id}`;
+    }
+    const kind = record.isSeries === true ? 'series' : 'film';
+    return `${KINOPOISK_ORIGIN}/${kind}/${id}`;
+}
+
 /** Normalizes apisauce `/rooms/:key/get-movies` payload into a swipe deck. */
 
 function readDocs(value: unknown, depth = 0): unknown[] | null {
@@ -36,6 +65,11 @@ export function getMatchDeckSignature(docs: ReadonlyArray<{ id?: unknown }>): st
         return 'empty';
     }
     return `${docs.length}:${String(docs[0]?.id)}:${String(docs[docs.length - 1]?.id)}`;
+}
+
+/** Room left the lobby and the swipe deck is the active screen. */
+export function isSwipeMatchPhase(matchPhase: string | null | undefined): boolean {
+    return matchPhase === 'SWIPING';
 }
 
 export function getMatchPhaseFromMoviesPayload(movies: unknown): string | undefined {

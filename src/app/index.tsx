@@ -1,12 +1,15 @@
 import 'react-native-gesture-handler';
-import React, { useEffect } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import React, { useEffect, useState } from 'react';
+import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { StatusBar, View, useColorScheme } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 
+import { RootStackParamList } from './constants';
+import { navigationLinking } from './navigation-linking';
+import { usePendingLobbyInvite } from './use-pending-lobby-invite';
 import { AppNavigation } from './Navigation';
 import { AppDispatch, RootState } from '../redux/configure-store';
 import { initializeApp, logout } from '../redux/authSlice';
@@ -22,6 +25,10 @@ export default function AppContainer() {
     const dispatch: AppDispatch = useDispatch();
     const { t } = useTranslation();
     const { isAuthenticated, loadingApplication, onboarded } = useSelector((state: RootState) => state.authSlice);
+    const navigationRef = useNavigationContainerRef<RootStackParamList>();
+    const [isNavigationReady, setIsNavigationReady] = useState(false);
+    const canOpenLobby = isAuthenticated && onboarded;
+    usePendingLobbyInvite(navigationRef, canOpenLobby, isNavigationReady);
     const isDarkMode = useColorScheme() === 'light';
     const backgroundStyle = {
         backgroundColor: isDarkMode ? Color.BACKGROUND_GREY : Colors.lighter,
@@ -34,6 +41,12 @@ export default function AppContainer() {
         });
         dispatch(initializeApp());
     }, [dispatch]);
+
+    useEffect(() => {
+        if (loadingApplication) {
+            setIsNavigationReady(false);
+        }
+    }, [loadingApplication]);
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
@@ -50,7 +63,11 @@ export default function AppContainer() {
                         <StartMessage />
                     </View>
                 ) : (
-                    <NavigationContainer>
+                    <NavigationContainer
+                        ref={navigationRef}
+                        linking={canOpenLobby ? navigationLinking : undefined}
+                        onReady={() => setIsNavigationReady(true)}
+                    >
                         <SafeAreaView
                             style={[backgroundStyle, { flex: 1 }]}
                             testID="appContainer"

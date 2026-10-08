@@ -2,6 +2,7 @@ import { FC, useRef, useState } from 'react';
 import { Dimensions, Pressable, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { NavigationProp, ParamListBase, useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 
 import { AppDispatch, RootState } from '../../../redux/configure-store';
 import { AppConstants, MovieLoader } from '../../../shared';
@@ -14,6 +15,7 @@ export const LoginAccRecoveryCode: FC = () => {
     const dispatch: AppDispatch = useDispatch();
     const navigation: NavigationProp<ParamListBase> = useNavigation();
     const { loading, email } = useSelector((state: RootState) => state.recoveryPasswordSlice);
+    const { t } = useTranslation();
     const [code, setCode] = useState<string>(AppConstants.EMPTY_VALUE);
     const [containerIsFocused, setContainerIsFocused] = useState(false);
     const [isNotAllowRequest] = useState<boolean>(false);
@@ -84,11 +86,8 @@ export const LoginAccRecoveryCode: FC = () => {
                     top: 32,
                 }}
             >
-                <Text style={[styles.text, styles.headerText, { marginBottom: 12 }]}>Письмо отправлено</Text>
-                <Text style={[styles.secondaryText]}>
-                    На адрес {partialEmail} направлен код восстановления пароля, введите его, пожалуйста. Возможно,
-                    письмо с кодом попало в спам.
-                </Text>
+                <Text style={[styles.text, styles.headerText, { marginBottom: 12 }]}>{t('forms.code_sent_title')}</Text>
+                <Text style={[styles.secondaryText]}>{t('forms.code_sent_body', { email: partialEmail })}</Text>
                 <View style={{ width: windowWidth, top: 24 }}>
                     <Pressable style={styles.inputsContainer} onPress={handleOnPress}>
                         {codeDigitsArray.map(toDigitInput)}
@@ -106,7 +105,7 @@ export const LoginAccRecoveryCode: FC = () => {
                     />
                 </View>
                 <TouchableOpacity style={{ width: '100%', alignItems: 'center', top: 48 }} disabled={isNotAllowRequest}>
-                    <Text style={styles.secondaryText}>Запросить код</Text>
+                    <Text style={styles.secondaryText}>{t('forms.request_code')}</Text>
                 </TouchableOpacity>
             </View>
             {loading ? <MovieLoader /> : null}

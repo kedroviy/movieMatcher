@@ -1,6 +1,6 @@
-import { FC, Key, useCallback, useEffect, useState } from 'react';
+import { FC, useCallback, useMemo, useState } from 'react';
 import { Alert, Dimensions, Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { NavigationProp, ParamListBase, useNavigation } from '@react-navigation/native';
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -8,40 +8,62 @@ import { Color } from 'styles/colors';
 import { AppRoutes } from 'app/constants';
 
 import { useTranslation } from 'react-i18next';
-import { AppDispatch } from 'redux/configure-store';
-import { generateKpUrl } from 'pages/Main/sm.utils';
 import { SMMovieChips } from 'pages/Main/ui/sm-movie-chips';
 import { getRatingColor, roundDownToOneTenth } from 'pages/Main/utils';
-import { loadMovieDetails } from 'redux/moviesSlice';
+import { resolveMoviePosterUri, resolveMovieRating, resolveMovieTitle } from 'pages/Main/utils/movie-card-media';
 import { SimpleButton } from 'shared';
+import { getMatchDeckDocs, resolveMatchWatchUrl } from '../utils/match-deck';
 
 const { width } = Dimensions.get('window');
 
 const bottomButtonGap = 12;
 const horizontalPadding = 32;
 
+type NamedItem = {
+    name?: string;
+};
+
+function readChipLabel(value: unknown): string | number | null {
+    if (typeof value === 'number' || typeof value === 'string') {
+        return value;
+    }
+    return null;
+}
+
+function readNamedItems(value: unknown): NamedItem[] {
+    if (!Array.isArray(value)) {
+        return [];
+    }
+    return value.filter((item): item is NamedItem => item != null && typeof item === 'object');
+}
+
 export const MatchResult: FC = () => {
-    const dispatch: AppDispatch = useDispatch();
     const queryClient = useQueryClient();
     const navigation = useNavigation<NavigationProp<ParamListBase>>();
-    const { movies } = useSelector((state: any) => state.matchSlice);
+    const { movies } = useSelector((state: { matchSlice: { movies: unknown } }) => state.matchSlice);
     const { t } = useTranslation();
     const [isExpanded, setIsExpanded] = useState<boolean>(false);
-
-    useEffect(() => {
-        dispatch(loadMovieDetails(movies.data.docs[0].id));
-    }, [dispatch, movies.data.docs[0].id]);
+    const movie = useMemo(() => getMatchDeckDocs(movies)[0], [movies]);
+    const posterUri = movie ? resolveMoviePosterUri(movie.poster) : null;
+    const title = movie ? resolveMovieTitle(movie) : '';
+    const rating = movie ? resolveMovieRating(movie) : null;
+    const description = typeof movie?.description === 'string' ? movie.description : '';
+    const genres = readNamedItems(movie?.genres);
+    const countries = readNamedItems(movie?.countries);
+    const watchUrl = movie ? resolveMatchWatchUrl(movie) : null;
 
     const toggleExpanded = () => {
         setIsExpanded(!isExpanded);
     };
 
     const handlePress = async () => {
-        const url = generateKpUrl(movies.data.docs[0]);
+        if (!watchUrl) {
+            return;
+        }
         try {
-            await Linking.openURL(url);
-        } catch (error) {
-            Alert.alert('Не удалось открыть URL: ' + url);
+            await Linking.openURL(watchUrl);
+        } catch {
+            Alert.alert(t('prompts.url_open_failed', { url: watchUrl }));
         }
     };
 
@@ -61,29 +83,23 @@ export const MatchResult: FC = () => {
     const bottomRowWidth = width - horizontalPadding;
     const bottomButtonWidth = (bottomRowWidth - bottomButtonGap) / 2;
 
-    // const renderActorsInColumns = () => {
-    //     const columns = [];
-    //     const actors = movies.data.docs[0].persons.filter((person: Actor) => person.profession === "актеры");
-
-    //     for (let i = 0; i < actors.length; i += 3) {
-    //         const columnActors = actors.slice(i, i + 3);
-    //         columns.push(
-    //             <View key={`column-${i}`} style={styles.actorColumn}>
-    //                 {columnActors.map((actor: Actor, index: number) => (
-    //                     <View key={`actor-${actor.id}`} style={styles.actorItem}>
-    //                         <Image source={{ uri: actor.photo }} style={styles.actorPhoto} />
-    //                         <View style={{ paddingLeft: 10, }}>
-    //                             <Text style={styles.actorName}>{actor.name}</Text>
-    //                             <Text style={styles.actorRole}>{actor.description}</Text>
-    //                         </View>
-    //                     </View>
-    //                 ))}
-    //             </View>
-    //         );
-    //     }
-
-    //     return columns;
-    // };
+    if (!movie) {
+        return (
+            <View style={styles.container}>
+                <View style={styles.emptyState}>
+                    <Text style={styles.headerText}>{t('match_movie.swipe.unavailable_title')}</Text>
+                    <Text style={[styles.text, styles.emptyHint]}>{t('match_movie.swipe.unavailable_description')}</Text>
+                </View>
+                <SimpleButton
+                    title={t('match_movie.exit_to_match_screen')}
+                    color={Color.INPUT_GREY}
+                    titleColor={Color.WHITE}
+                    buttonWidth={bottomRowWidth}
+                    onHandlePress={handleExitToMatch}
+                />
+            </View>
+        );
+    }
 
     return (
         <View style={styles.container}>
@@ -91,129 +107,76 @@ export const MatchResult: FC = () => {
                 <View>
                     <Image
                         source={
-                            movies.data.docs[0].poster
-                                ? { uri: movies.data.docs[0].poster.previewUrl }
+                            posterUri
+                                ? { uri: posterUri }
                                 : require('../../../../assets/defaultpicture.png')
                         }
-                        style={{
-                            width: width - 32,
-                            height: 260,
-                            resizeMode: 'cover',
-                            borderRadius: 10,
-                        }}
+                        style={styles.poster}
                     />
-                    <View
-                        style={{
-                            position: 'absolute',
-                            width: 41,
-                            height: 30,
-                            paddingVertical: 2,
-                            paddingHorizontal: 4,
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            backgroundColor: getRatingColor(movies.data.docs[0].rating.kp),
-                            borderRadius: 5,
-                            right: 12,
-                            top: 16,
-                        }}
-                    >
-                        <Text
-                            style={[
-                                styles.text,
-                                {
-                                    fontSize: 14,
-                                },
-                            ]}
-                        >
-                            {roundDownToOneTenth(movies.data.docs[0].rating.kp)}
-                        </Text>
-                    </View>
+                    {rating != null ? (
+                        <View style={[styles.ratingBadge, { backgroundColor: getRatingColor(rating) }]}>
+                            <Text style={[styles.text, styles.ratingText]}>{roundDownToOneTenth(rating)}</Text>
+                        </View>
+                    ) : null}
                 </View>
-                <Text
-                    style={[
-                        styles.text,
-                        {
-                            fontFamily: 'Roboto',
-                            fontSize: 24,
-                            fontWeight: '700',
-                            lineHeight: 28.8,
-                            paddingVertical: 24,
-                        },
-                    ]}
-                >
-                    {movies.data.docs[0].name}
-                </Text>
-                <View style={{ width: width - 32 }}>
+                <Text style={styles.title}>{title}</Text>
+                <View style={styles.chipsViewport}>
                     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                         <SMMovieChips
-                            label={movies.data.docs[0].ageRating}
+                            label={readChipLabel(movie.ageRating)}
                             color={Color.LIGHT_RED}
                             labelColor={Color.WHITE}
                             type="age"
                         />
                         <SMMovieChips
-                            label={movies.data.docs[0].movieLength}
+                            label={readChipLabel(movie.movieLength)}
                             color={Color.LIGHT_RED}
                             labelColor={Color.WHITE}
                             type="time"
                         />
-                        {movies.data.docs[0].genres.map((genre: any, index: Key | null | undefined) => (
+                        {genres.map((genre, index) => (
                             <SMMovieChips
-                                key={index}
+                                key={`genre-${genre.name ?? index}`}
                                 label={genre.name}
                                 color={Color.LIGHT_RED}
                                 labelColor={Color.WHITE}
                             />
                         ))}
-                        {movies.data.docs[0].countries.map((countrie: any, index: Key | null | undefined) => (
+                        {countries.map((country, index) => (
                             <SMMovieChips
-                                key={index}
-                                label={countrie.name}
+                                key={`country-${country.name ?? index}`}
+                                label={country.name}
                                 color={Color.LIGHT_RED}
                                 labelColor={Color.WHITE}
                             />
                         ))}
                     </ScrollView>
                 </View>
-                <View style={styles.contentContainer}>
-                    <Text
-                        style={[styles.text, { fontSize: 16, marginBottom: 5 }]}
-                        numberOfLines={isExpanded ? undefined : 4}
-                        ellipsizeMode="tail"
-                    >
-                        {movies.data.docs[0].description}
-                    </Text>
-                    <TouchableOpacity onPress={toggleExpanded}>
-                        <Text style={{ color: Color.GREY, fontSize: 16 }}>
-                            {isExpanded ? 'Свернуть' : 'Развернуть'}
-                        </Text>
-                    </TouchableOpacity>
-                </View>
-                {/* <Text style={[styles.text, { fontSize: 20 }]}>Актёры</Text>
-                {loading ? <ActivityIndicator /> :
-                    <View style={styles.actorContainer}>
-                        <ScrollView
-                            horizontal
-                            showsHorizontalScrollIndicator={false}
+                {description ? (
+                    <View style={styles.contentContainer}>
+                        <Text
+                            style={[styles.text, styles.description]}
+                            numberOfLines={isExpanded ? undefined : 4}
+                            ellipsizeMode="tail"
                         >
-                            {renderActorsInColumns()}
-                        </ScrollView>
+                            {description}
+                        </Text>
+                        <TouchableOpacity onPress={toggleExpanded}>
+                            <Text style={styles.expandLabel}>
+                                {isExpanded ? t('general.collapse') : t('general.expand')}
+                            </Text>
+                        </TouchableOpacity>
                     </View>
-                } */}
+                ) : null}
             </ScrollView>
-            <View
-                style={{
-                    flexDirection: 'row',
-                    width: bottomRowWidth,
-                    justifyContent: 'space-between',
-                }}
-            >
+            <View style={styles.actions}>
                 <SimpleButton
                     title={t('selection_movie.movie_details.watch')}
                     color={Color.BUTTON_RED}
                     titleColor={Color.WHITE}
                     buttonWidth={bottomButtonWidth}
                     onHandlePress={handlePress}
+                    disabled={!watchUrl}
                 />
                 <SimpleButton
                     title={t('match_movie.exit_to_match_screen')}
@@ -235,46 +198,76 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         paddingVertical: 32,
     },
+    emptyState: {
+        flex: 1,
+        width: width - 32,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    emptyHint: {
+        marginTop: 8,
+        textAlign: 'center',
+        fontSize: 16,
+    },
+    poster: {
+        width: width - 32,
+        height: 260,
+        resizeMode: 'cover',
+        borderRadius: 10,
+    },
+    ratingBadge: {
+        position: 'absolute',
+        width: 41,
+        height: 30,
+        paddingVertical: 2,
+        paddingHorizontal: 4,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 5,
+        right: 12,
+        top: 16,
+    },
+    ratingText: {
+        fontSize: 14,
+    },
+    title: {
+        color: Color.WHITE,
+        fontFamily: 'Roboto',
+        fontSize: 24,
+        fontWeight: '700',
+        lineHeight: 28.8,
+        paddingVertical: 24,
+        width: width - 32,
+    },
+    chipsViewport: {
+        width: width - 32,
+    },
     contentContainer: {
         width: width - 32,
         marginVertical: 16,
         borderRadius: 10,
     },
+    description: {
+        fontSize: 16,
+        marginBottom: 5,
+    },
+    expandLabel: {
+        color: Color.GREY,
+        fontSize: 16,
+    },
+    actions: {
+        flexDirection: 'row',
+        width: width - horizontalPadding,
+        justifyContent: 'space-between',
+    },
     text: {
         color: Color.WHITE,
     },
-    actorContainer: {
-        width: width - 32,
-        flex: 0.5,
-        justifyContent: 'space-around',
-        paddingTop: 16,
-    },
-    actorColumn: {
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-    },
-    actorItem: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 20,
-        marginRight: 28,
-    },
-    actorItemContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginRight: 16,
-    },
-    actorPhoto: {
-        width: 70,
-        height: 70,
-        borderRadius: 5,
-    },
-    actorName: {
+    headerText: {
+        fontSize: 24,
+        fontWeight: '700',
+        lineHeight: 28.8,
         color: Color.WHITE,
-        fontSize: 16,
-    },
-    actorRole: {
-        color: Color.WHITE,
-        fontSize: 14,
+        textAlign: 'center',
     },
 });

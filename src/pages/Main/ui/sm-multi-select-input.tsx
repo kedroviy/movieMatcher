@@ -1,10 +1,11 @@
-import React, { FC, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions, ActivityIndicator } from 'react-native';
+import React, { FC, memo, useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions, ActivityIndicator, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { Option } from '../sm.model';
 import { Checkbox, Chip } from 'react-native-ui-lib';
 import { Color } from 'styles/colors';
 import { ChevronSvgDownIcon, ChevronSvgUpIcon, CrossSvgIcon } from 'shared';
+import { getOpenDropdownId, setOpenDropdownId, subscribeOpenDropdown } from './dropdown-open-store';
 
 type MultiSelectInputProps = {
     label: string;
@@ -17,11 +18,79 @@ type MultiSelectInputProps = {
     loadingLabel?: string;
     isOpen?: boolean;
     onOpenChange?: (open: boolean) => void;
+    /** When set, open state lives outside the parent form so siblings do not re-render. */
+    dropdownId?: string;
+};
+
+type OptionRowProps = {
+    option: Option;
+    level: number;
+    selectedIds: ReadonlySet<string | number>;
+    expandedIds: readonly (string | number)[];
+    onSelect: (option: Option) => void;
+    onToggleExpanded: (id: string | number) => void;
 };
 
 const windowWidth = Dimensions.get('window').width;
+const DROPDOWN_VIEWPORT_HEIGHT = 200;
+const WINDOW_OVERSCAN = 4;
+const WINDOW_MIN_LENGTH = 24;
 
-export const SMMultiSelectInput: FC<MultiSelectInputProps> = ({
+const subscribeClosed = (): (() => void) => () => undefined;
+
+const OptionRow: FC<OptionRowProps> = memo(function OptionRow({
+    option,
+    level,
+    selectedIds,
+    expandedIds,
+    onSelect,
+    onToggleExpanded,
+}) {
+    const isSelected = selectedIds.has(option.id);
+    const isExpanded = expandedIds.includes(option.id);
+    const hasChildren = Boolean(option.children?.length);
+
+    return (
+        <View style={{ paddingLeft: level * 20 }}>
+            <View style={styles.dropdownItemContainer}>
+                <Checkbox
+                    value={isSelected}
+                    onValueChange={() => !option.disabled && onSelect(option)}
+                    color={Color.BUTTON_RED}
+                    style={styles.checkbox}
+                    disabled={option.disabled}
+                />
+                <TouchableOpacity
+                    style={styles.dropdownItem}
+                    onPress={() => (hasChildren ? onToggleExpanded(option.id) : onSelect(option))}
+                    disabled={option.disabled}
+                >
+                    <Text style={styles.optionLabel}>{option.label}</Text>
+                </TouchableOpacity>
+                {hasChildren ? (
+                    <TouchableOpacity onPress={() => onToggleExpanded(option.id)}>
+                        {isExpanded ? <ChevronSvgUpIcon /> : <ChevronSvgDownIcon />}
+                    </TouchableOpacity>
+                ) : null}
+            </View>
+            {isExpanded && option.children
+                ? option.children.map((childOption) => (
+                      <OptionRow
+                          key={childOption.id}
+                          option={childOption}
+                          level={level + 1}
+                          selectedIds={selectedIds}
+                          expandedIds={expandedIds}
+                          onSelect={onSelect}
+                          onToggleExpanded={onToggleExpanded}
+                      />
+                  ))
+                : null}
+        </View>
+    );
+});
+
+const SMMultiSelectInputComponent: FC<MultiSelectInputProps> = ({
     label,
     options,
     selectedOptions,
@@ -32,79 +101,110 @@ export const SMMultiSelectInput: FC<MultiSelectInputProps> = ({
     loadingLabel,
     isOpen: isOpenControlled,
     onOpenChange,
+    dropdownId,
 }) => {
     const [isOpenInternal, setIsOpenInternal] = useState<boolean>(false);
     const [expandedIds, setExpandedIds] = useState<Array<string | number>>([]);
+    const [scrollOffset, setScrollOffset] = useState(0);
+    const [rowHeight, setRowHeight] = useState(56);
+    const rowIndexRef = useRef(0);
+    const isOpenFromStore = useSyncExternalStore(
+        dropdownId ? subscribeOpenDropdown : subscribeClosed,
+        () => (dropdownId ? getOpenDropdownId() === dropdownId : false),
+        () => false,
+    );
+    const isOpen = dropdownId ? isOpenFromStore : (isOpenControlled ?? isOpenInternal);
 
-    const isOpen = isOpenControlled ?? isOpenInternal;
+    useEffect(() => {
+        if (isOpen) {
+            return;
+        }
+        rowIndexRef.current = 0;
+        setScrollOffset(0);
+    }, [isOpen]);
+    const selectedIds = useMemo(
+        () => new Set(selectedOptions.map((option) => option.id)),
+        [selectedOptions],
+    );
 
-    const setIsOpen = (open: boolean) => {
+    const setIsOpen = (open: boolean): void => {
+        if (dropdownId) {
+            setOpenDropdownId(open ? dropdownId : null);
+            return;
+        }
         if (onOpenChange) {
             onOpenChange(open);
-        } else {
-            setIsOpenInternal(open);
+            return;
         }
+        setIsOpenInternal(open);
     };
 
-    const toggleExpanded = (id: string | number) => {
-        setExpandedIds(
-            expandedIds.includes(id) ? expandedIds.filter((expandedId) => expandedId !== id) : [...expandedIds, id],
+    const toggleExpanded = useCallback((id: string | number) => {
+        setExpandedIds((current) =>
+            current.includes(id) ? current.filter((expandedId) => expandedId !== id) : [...current, id],
         );
-    };
+    }, []);
 
     const handleToggleDropdown = () => setIsOpen(!isOpen);
 
-    const handleSelectOption = (option: Option) => {
-        if (option.disabled) return;
-        const isSelected = selectedOptions.some((selected) => selected.id === option.id);
-        if (isSelected) {
-            onSelectionChange(selectedOptions.filter((selected) => selected.id !== option.id));
-        } else {
+    const handleSelectOption = useCallback(
+        (option: Option) => {
+            if (option.disabled) {
+                return;
+            }
+            const isSelected = selectedOptions.some((selected) => selected.id === option.id);
+            if (isSelected) {
+                onSelectionChange(selectedOptions.filter((selected) => selected.id !== option.id));
+                return;
+            }
             onSelectionChange([...selectedOptions, option]);
-        }
-    };
+        },
+        [onSelectionChange, selectedOptions],
+    );
 
     const handleRemoveOption = (optionId: string | number) => {
         onSelectionChange(selectedOptions.filter((option) => option.id !== optionId));
     };
 
-    const renderItemWithChildren = (option: Option, level = 0) => {
-        const isSelected = selectedOptions.some((selected) => selected.id === option.id);
-        const isExpanded = expandedIds.includes(option.id);
+    const isWindowedList = options.length > WINDOW_MIN_LENGTH && options.every((option) => !option.children?.length);
+    const visibleOptions = useMemo(() => {
+        if (!isWindowedList) {
+            return { items: options, paddingTop: 0, paddingBottom: 0 };
+        }
+        const start = Math.max(0, Math.floor(scrollOffset / rowHeight) - WINDOW_OVERSCAN);
+        const visibleCount = Math.ceil(DROPDOWN_VIEWPORT_HEIGHT / rowHeight) + WINDOW_OVERSCAN * 2;
+        const end = Math.min(options.length, start + visibleCount);
+        return {
+            items: options.slice(start, end),
+            paddingTop: start * rowHeight,
+            paddingBottom: (options.length - end) * rowHeight,
+        };
+    }, [isWindowedList, options, rowHeight, scrollOffset]);
 
-        return (
-            <View key={option.id} style={{ paddingLeft: level * 20 }}>
-                <View style={styles.dropdownItemContainer}>
-                    <Checkbox
-                        value={isSelected}
-                        onValueChange={() => !option.disabled && handleSelectOption(option)}
-                        color={Color.BUTTON_RED}
-                        style={{ borderRadius: 5 }}
-                        disabled={option.disabled}
-                    />
-                    <TouchableOpacity
-                        style={styles.dropdownItem}
-                        onPress={() => (option.children ? toggleExpanded(option.id) : handleSelectOption(option))}
-                        disabled={option.disabled}
-                    >
-                        <Text style={{ color: Color.WHITE }}>{option.label}</Text>
-                    </TouchableOpacity>
-                    {option.children && (
-                        <TouchableOpacity onPress={() => toggleExpanded(option.id)}>
-                            {isExpanded ? <ChevronSvgUpIcon /> : <ChevronSvgDownIcon />}
-                        </TouchableOpacity>
-                    )}
-                </View>
-                {isExpanded &&
-                    option.children &&
-                    option.children.map((childOption) => renderItemWithChildren(childOption, level + 1))}
-            </View>
-        );
+    const handleDropdownScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+        if (!isWindowedList) {
+            return;
+        }
+        const offset = event.nativeEvent.contentOffset.y;
+        const nextIndex = Math.floor(offset / rowHeight);
+        if (nextIndex === rowIndexRef.current) {
+            return;
+        }
+        rowIndexRef.current = nextIndex;
+        setScrollOffset(offset);
+    };
+
+    const handleRowLayout = (height: number) => {
+        if (!isWindowedList || height <= 0 || Math.abs(height - rowHeight) < 1) {
+            return;
+        }
+        setRowHeight(height);
     };
 
     const renderDropdown = () => {
-        if (!isOpen) return null;
-
+        if (!isOpen) {
+            return null;
+        }
         if (loading) {
             return (
                 <View style={[styles.dropdown, styles.dropdownLoading]}>
@@ -113,7 +213,6 @@ export const SMMultiSelectInput: FC<MultiSelectInputProps> = ({
                 </View>
             );
         }
-
         if (options.length === 0) {
             return (
                 <View style={[styles.dropdown, styles.dropdownLoading]}>
@@ -121,15 +220,38 @@ export const SMMultiSelectInput: FC<MultiSelectInputProps> = ({
                 </View>
             );
         }
-
         return (
             <ScrollView
                 style={styles.dropdown}
                 nestedScrollEnabled
                 keyboardShouldPersistTaps="always"
                 showsVerticalScrollIndicator
+                scrollEventThrottle={16}
+                onScroll={handleDropdownScroll}
+                contentContainerStyle={{
+                    paddingTop: visibleOptions.paddingTop,
+                    paddingBottom: visibleOptions.paddingBottom,
+                }}
             >
-                {options.map((option) => renderItemWithChildren(option))}
+                {visibleOptions.items.map((option, index) => (
+                    <View
+                        key={option.id}
+                        onLayout={
+                            isWindowedList && index === 0
+                                ? (event) => handleRowLayout(event.nativeEvent.layout.height)
+                                : undefined
+                        }
+                    >
+                        <OptionRow
+                            option={option}
+                            level={0}
+                            selectedIds={selectedIds}
+                            expandedIds={expandedIds}
+                            onSelect={handleSelectOption}
+                            onToggleExpanded={toggleExpanded}
+                        />
+                    </View>
+                ))}
             </ScrollView>
         );
     };
@@ -138,13 +260,11 @@ export const SMMultiSelectInput: FC<MultiSelectInputProps> = ({
         if (loading && selectedOptions.length === 0) {
             return <Text style={styles.placeholder}>{loadingLabel ?? placeholder}</Text>;
         }
-
         if (selectedOptions.length === 0) {
             return <Text style={styles.placeholder}>{placeholder}</Text>;
         }
         const chipsToRender = selectedOptions.slice(0, maxChips);
         const extraCount = selectedOptions.length - maxChips;
-
         return (
             <>
                 {chipsToRender.map((option) => (
@@ -152,18 +272,15 @@ export const SMMultiSelectInput: FC<MultiSelectInputProps> = ({
                         key={option.id}
                         label={option.label}
                         onPress={() => handleRemoveOption(option.id)}
-                        dismissIconStyle={{ width: 10, height: 10 }}
-                        containerStyle={{
-                            borderColor: Color.WHITE,
-                            marginHorizontal: 3,
-                        }}
-                        labelStyle={{ color: Color.WHITE }}
+                        dismissIconStyle={styles.dismissIcon}
+                        containerStyle={styles.chip}
+                        labelStyle={styles.chipLabel}
                         rightElement={<CrossSvgIcon />}
                     >
                         {option.label}
                     </Chip>
                 ))}
-                {extraCount > 0 && <Text style={{ marginLeft: 3, color: Color.WHITE }}>+{extraCount} more</Text>}
+                {extraCount > 0 && <Text style={styles.extraCount}>+{extraCount} more</Text>}
             </>
         );
     };
@@ -171,14 +288,14 @@ export const SMMultiSelectInput: FC<MultiSelectInputProps> = ({
     return (
         <View style={styles.container}>
             <Text style={styles.label}>{label}</Text>
-            <View style={styles.input}>
+            <TouchableOpacity activeOpacity={0.85} onPress={handleToggleDropdown} style={styles.input}>
                 <View style={styles.chipsContainer}>
                     {renderChips()}
-                    <TouchableOpacity onPress={handleToggleDropdown} style={styles.toggleButton}>
+                    <View style={styles.toggleButton} pointerEvents="none">
                         {isOpen ? <ChevronSvgUpIcon /> : <ChevronSvgDownIcon />}
-                    </TouchableOpacity>
+                    </View>
                 </View>
-            </View>
+            </TouchableOpacity>
             {isOpen ? (
                 <View style={styles.dropdownAnchor} pointerEvents="box-none">
                     {renderDropdown()}
@@ -187,6 +304,8 @@ export const SMMultiSelectInput: FC<MultiSelectInputProps> = ({
         </View>
     );
 };
+
+export const SMMultiSelectInput = memo(SMMultiSelectInputComponent);
 
 const styles = StyleSheet.create({
     container: {
@@ -263,5 +382,26 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'flex-start',
         padding: 10,
+    },
+    checkbox: {
+        borderRadius: 5,
+    },
+    optionLabel: {
+        color: Color.WHITE,
+    },
+    chip: {
+        borderColor: Color.WHITE,
+        marginHorizontal: 3,
+    },
+    chipLabel: {
+        color: Color.WHITE,
+    },
+    dismissIcon: {
+        width: 10,
+        height: 10,
+    },
+    extraCount: {
+        marginLeft: 3,
+        color: Color.WHITE,
     },
 });

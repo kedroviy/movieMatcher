@@ -5,11 +5,13 @@ import { resolveFiltersLocale } from 'features/filters/filters.model';
 import { FilterOption, ISMFormData, initialState, reducer } from 'pages/Main/sm.model';
 import { mapFiltersPayloadToKpNames } from 'pages/Main/utils/kp-filter-mapping';
 import { fromRoomFiltersPayload } from 'pages/Main/utils/from-room-filters-payload';
+import { setOpenDropdownId } from 'pages/Main/ui/dropdown-open-store';
 import { SMMultiSelectInput } from 'pages/Main/ui/sm-multi-select-input';
-import { FC, useEffect, useMemo, useReducer, useState } from 'react';
+import { FC, useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Modal, View, StyleSheet, Dimensions, Text, TouchableOpacity } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
+import { BackHandler, Modal, View, StyleSheet, Dimensions, Text, TouchableOpacity } from 'react-native';
+import { Gesture, GestureDetector, GestureHandlerRootView, ScrollView } from 'react-native-gesture-handler';
+import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { DeleteSvgIcon, SimpleButton } from 'shared';
 import { Color } from 'styles/colors';
 
@@ -20,7 +22,9 @@ type MatchFilterModalType = {
     initialFilters?: ISMFormData | null;
 };
 
-const { width } = Dimensions.get('window');
+const { width, height: screenHeight } = Dimensions.get('window');
+const DISMISS_DISTANCE = 120;
+const DISMISS_VELOCITY = 900;
 
 export const MatchFilterModal: FC<MatchFilterModalType> = ({
     modalVisible,
@@ -32,19 +36,20 @@ export const MatchFilterModal: FC<MatchFilterModalType> = ({
     const { genreOptions, countryOptions, loading: filtersLoading, localizeCountries } = useKpGenresRu();
     const [state, SMdispatch] = useReducer(reducer<FilterOption>, initialState);
     const [range, setRange] = useState<[number, number]>([0, 10]);
-    const [openFilterId, setOpenFilterId] = useState<string | null>(null);
-
-    const handleFilterOpenChange = (filterId: string) => (open: boolean) => {
-        setOpenFilterId(open ? filterId : null);
-    };
+    const localizedCountries = useMemo(
+        () => localizeCountries(state.selectedCountries),
+        [localizeCountries, state.selectedCountries],
+    );
 
     useEffect(() => {
         if (modalVisible) {
             prefetchKpGenres(resolveFiltersLocale(i18n.language));
-        } else {
-            setOpenFilterId(null);
+            return;
         }
+        setOpenDropdownId(null);
     }, [modalVisible, i18n.language]);
+
+    useEffect(() => () => setOpenDropdownId(null), []);
 
     useEffect(() => {
         if (!modalVisible) {
@@ -68,21 +73,21 @@ export const MatchFilterModal: FC<MatchFilterModalType> = ({
         SMdispatch({ type: 'SET_SELECTED_RATING', payload: nextRange });
     };
 
-    const handleCountrySelectionChange = (selectedCountries: FilterOption[]) => {
+    const handleCountrySelectionChange = useCallback((selectedCountries: FilterOption[]) => {
         SMdispatch({ type: 'SET_SELECTED_COUNTRIES', payload: selectedCountries });
-    };
+    }, []);
 
-    const handleYearSelectionChange = (selectedYears: FilterOption[]) => {
+    const handleYearSelectionChange = useCallback((selectedYears: FilterOption[]) => {
         SMdispatch({ type: 'SET_SELECTED_YEARS', payload: selectedYears });
-    };
+    }, []);
 
-    const handleGenreSelectionChange = (selectedGenres: FilterOption[]) => {
+    const handleGenreSelectionChange = useCallback((selectedGenres: FilterOption[]) => {
         SMdispatch({ type: 'SET_SELECTED_GENRES', payload: selectedGenres });
-    };
+    }, []);
 
-    const handleExcludeGenreChange = (excludeGenre: FilterOption[]) => {
+    const handleExcludeGenreChange = useCallback((excludeGenre: FilterOption[]) => {
         SMdispatch({ type: 'SET_EXCLUDE_GENRE', payload: excludeGenre });
-    };
+    }, []);
 
     const genreOptionsWithDisabled = useMemo(
         () =>
@@ -102,31 +107,121 @@ export const MatchFilterModal: FC<MatchFilterModalType> = ({
         [genreOptions, state.selectedGenres],
     );
 
-    const applyFilters = () => {
-        setOpenFilterId(null);
-        onFiltersChange(mapFiltersPayloadToKpNames(state));
+    const translateY = useSharedValue(screenHeight);
+    const translateX = useSharedValue(0);
+    const isClosing = useSharedValue(false);
+    const closingRef = useRef(false);
+
+    const requestClose = useCallback(() => {
+        if (closingRef.current) {
+            return;
+        }
+        closingRef.current = true;
+        isClosing.value = true;
+        setOpenDropdownId(null);
         setModalVisible(false);
+    }, [isClosing, setModalVisible]);
+
+    useEffect(() => {
+        if (!modalVisible) {
+            return;
+        }
+        closingRef.current = false;
+        isClosing.value = false;
+        translateX.value = 0;
+        translateY.value = screenHeight;
+        translateY.value = withTiming(0, { duration: 280 });
+    }, [isClosing, modalVisible, translateX, translateY]);
+
+    useEffect(() => {
+        if (!modalVisible) {
+            return;
+        }
+        const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
+            requestClose();
+            return true;
+        });
+        return () => subscription.remove();
+    }, [modalVisible, requestClose]);
+
+    const pan = useMemo(
+        () =>
+            Gesture.Pan()
+                .activeOffsetY(8)
+                .failOffsetX([-24, 24])
+                .onUpdate((event) => {
+                    if (isClosing.value) {
+                        return;
+                    }
+                    translateY.value = Math.max(0, event.translationY);
+                })
+                .onEnd((event) => {
+                    if (isClosing.value) {
+                        return;
+                    }
+                    const shouldClose = event.translationY > DISMISS_DISTANCE || event.velocityY > DISMISS_VELOCITY;
+                    if (!shouldClose) {
+                        translateY.value = withSpring(0, { damping: 20, stiffness: 220 });
+                        return;
+                    }
+                    isClosing.value = true;
+                    translateY.value = withTiming(screenHeight, { duration: 180 });
+                    runOnJS(requestClose)();
+                }),
+        [isClosing, requestClose, translateY],
+    );
+
+    const backPan = useMemo(
+        () =>
+            Gesture.Pan()
+                .activeOffsetX([-24, 24])
+                .failOffsetY([-16, 16])
+                .onUpdate((event) => {
+                    if (isClosing.value) {
+                        return;
+                    }
+                    translateX.value = event.translationX;
+                })
+                .onEnd((event) => {
+                    if (isClosing.value) {
+                        return;
+                    }
+                    const shouldClose = Math.abs(event.translationX) > DISMISS_DISTANCE || Math.abs(event.velocityX) > DISMISS_VELOCITY;
+                    if (!shouldClose) {
+                        translateX.value = withSpring(0, { damping: 20, stiffness: 220 });
+                        return;
+                    }
+                    isClosing.value = true;
+                    const direction = event.translationX < 0 ? -width : width;
+                    translateX.value = withTiming(direction, { duration: 180 });
+                    runOnJS(requestClose)();
+                }),
+        [isClosing, requestClose, translateX],
+    );
+
+    const sheetStyle = useAnimatedStyle(() => ({
+        transform: [{ translateX: translateX.value }, { translateY: translateY.value }],
+    }));
+
+    const applyFilters = () => {
+        onFiltersChange(mapFiltersPayloadToKpNames(state));
+        requestClose();
     };
 
+    if (!modalVisible) {
+        return null;
+    }
+
     return (
-        <Modal
-            animationType="slide"
-            transparent={true}
-            visible={modalVisible}
-            onRequestClose={() => {
-                setModalVisible(!modalVisible);
-            }}
-        >
-            <View style={styles.container}>
-                <View
-                    style={{
-                        width: width - 32,
-                        alignItems: 'flex-start',
-                        marginBottom: 12,
-                    }}
-                >
-                    <Text style={styles.textStyle}>{t('match_movie.filters_settings.settings')}</Text>
-                </View>
+        <Modal animationType="none" transparent visible onRequestClose={requestClose}>
+            <GestureHandlerRootView style={styles.gestureRoot}>
+                <Animated.View style={[styles.container, sheetStyle]}>
+                    <GestureDetector gesture={pan}>
+                        <View style={styles.sheetHeader}>
+                            <View style={styles.handle} />
+                            <Text style={styles.textStyle}>{t('match_movie.filters_settings.settings')}</Text>
+                        </View>
+                    </GestureDetector>
                 <View style={styles.filtersScrollArea}>
                     <ScrollView
                         keyboardShouldPersistTaps="handled"
@@ -136,13 +231,12 @@ export const MatchFilterModal: FC<MatchFilterModalType> = ({
                         <SMMultiSelectInput
                             label={t('match_movie.filters_settings.country')}
                             options={countryOptions}
-                            selectedOptions={localizeCountries(state.selectedCountries)}
+                            selectedOptions={localizedCountries}
                             onSelectionChange={handleCountrySelectionChange}
                             placeholder={t('movie_filters.placeholder_country')}
                             loading={filtersLoading}
                             loadingLabel={t('movie_filters.loading_countries')}
-                            isOpen={openFilterId === 'country'}
-                            onOpenChange={handleFilterOpenChange('country')}
+                            dropdownId="country"
                         />
 
                         <SMMultiSelectInput
@@ -151,8 +245,7 @@ export const MatchFilterModal: FC<MatchFilterModalType> = ({
                             selectedOptions={state.selectedYears}
                             onSelectionChange={handleYearSelectionChange}
                             placeholder={t('movie_filters.placeholder_year')}
-                            isOpen={openFilterId === 'year'}
-                            onOpenChange={handleFilterOpenChange('year')}
+                            dropdownId="year"
                         />
 
                         <SMMultiSelectInput
@@ -163,8 +256,7 @@ export const MatchFilterModal: FC<MatchFilterModalType> = ({
                             placeholder={t('movie_filters.placeholder_genre')}
                             loading={filtersLoading}
                             loadingLabel={t('movie_filters.loading_genres')}
-                            isOpen={openFilterId === 'genre'}
-                            onOpenChange={handleFilterOpenChange('genre')}
+                            dropdownId="genre"
                         />
 
                         <SMMultiSelectInput
@@ -175,11 +267,10 @@ export const MatchFilterModal: FC<MatchFilterModalType> = ({
                             placeholder={t('movie_filters.placeholder_genre')}
                             loading={filtersLoading}
                             loadingLabel={t('movie_filters.loading_genres')}
-                            isOpen={openFilterId === 'excludeGenre'}
-                            onOpenChange={handleFilterOpenChange('excludeGenre')}
+                            dropdownId="excludeGenre"
                         />
                         <View style={styles.sliderContainer}>
-                            <Text style={styles.sliderLabelText}>Rating</Text>
+                            <Text style={styles.sliderLabelText}>{t('prompts.rating')}</Text>
                             <View style={styles.sliderLabel}>
                                 <Text style={styles.label}>{range[0]}</Text>
                                 <Text style={styles.label}>{range[1]}</Text>
@@ -238,18 +329,46 @@ export const MatchFilterModal: FC<MatchFilterModalType> = ({
                     </ScrollView>
                 </View>
                 <SimpleButton
-                    title={'Apply and close'}
+                    title={t('prompts.apply_and_close')}
                     color={Color.BUTTON_RED}
                     titleColor={Color.WHITE}
                     buttonWidth={width - 32}
                     onHandlePress={() => applyFilters()}
                 />
-            </View>
+                    <GestureDetector gesture={backPan}>
+                        <View style={styles.backEdge} />
+                    </GestureDetector>
+                </Animated.View>
+            </GestureHandlerRootView>
         </Modal>
     );
 };
 
 const styles = StyleSheet.create({
+    gestureRoot: {
+        flex: 1,
+    },
+    backEdge: {
+        position: 'absolute',
+        left: 0,
+        top: 0,
+        bottom: 0,
+        width: 48,
+        zIndex: 20,
+    },
+    sheetHeader: {
+        width: width - 32,
+        alignItems: 'flex-start',
+        marginBottom: 12,
+    },
+    handle: {
+        alignSelf: 'center',
+        width: 40,
+        height: 4,
+        borderRadius: 2,
+        backgroundColor: Color.EXTRA_LIGHT_GRAY,
+        marginBottom: 12,
+    },
     container: {
         backgroundColor: Color.BACKGROUND_GREY,
         flex: 1,

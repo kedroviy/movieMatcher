@@ -19,7 +19,7 @@ function googleSignInErrorMessage(error: unknown): string {
             return `Google Sign-In (${e.code})`;
         }
     }
-    return 'Не удалось войти через Google';
+    return 'AUTH_GOOGLE_FAILED';
 }
 
 type AuthState = {
@@ -77,9 +77,7 @@ export const authenticateWithGoogle = createAsyncThunk('auth/GOOGLE', async (_, 
             idToken = tokens.idToken;
         }
         if (!idToken) {
-            return rejectWithValue(
-                'Не получен idToken от Google. Проверьте webClientId и настройки OAuth в Google Cloud.',
-            );
+            return rejectWithValue('AUTH_GOOGLE_NO_TOKEN');
         }
 
         const language = await getStoredUserLanguage();
@@ -242,7 +240,7 @@ const authSlice = createSlice({
             })
             .addCase(authenticateWithGoogle.rejected, (state, action) => {
                 state.loading = false;
-                state.error = (action.payload as string) || 'Не удалось войти через Google';
+                state.error = (action.payload as string) || 'AUTH_GOOGLE_FAILED';
             })
             .addCase(authRegistrationUser.pending, (state) => {
                 state.loading = true;

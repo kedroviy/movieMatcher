@@ -13,7 +13,7 @@ import { Color } from 'styles/colors';
 import { AppDispatch } from 'redux/configure-store';
 import { loadMovies, setPage } from 'redux/moviesSlice';
 import { SimpleButton } from 'shared';
-import { t } from 'i18next';
+import { useTranslation } from 'react-i18next';
 import { MovieLoader } from 'shared/ui/movie-loader';
 import { AppRoutes } from 'app/constants';
 import { Movie, SMApiResponse } from 'features';
@@ -28,6 +28,7 @@ function getDeckDocs(data: SMApiResponse | []): Movie[] {
 }
 
 export const SMSelectionMovie: FC = () => {
+    const { t } = useTranslation();
     const navigation = useNavigation<NavigationProp<ParamListBase>>();
     const { loading, data, currentSessionLabel, currentPage, currentFormData } = useSelector(
         (state: any) => state.moviesSlice,
@@ -158,15 +159,15 @@ export const SMSelectionMovie: FC = () => {
                                 onSwiped={handleOnSwiped}
                                 overlayLabels={{
                                     left: {
-                                        title: 'NOPE',
-                                        element: <OverlayLabel label="NOPE" color="#E5566D" />,
+                                        title: t('swipe.nope'),
+                                        element: <OverlayLabel label={t('swipe.nope')} color="#E5566D" />,
                                         style: {
                                             wrapper: styles.overlayWrapper,
                                         },
                                     },
                                     right: {
-                                        title: 'LIKE',
-                                        element: <OverlayLabel label="LIKE" color="#4CCC93" />,
+                                        title: t('swipe.like'),
+                                        element: <OverlayLabel label={t('swipe.like')} color="#4CCC93" />,
                                         style: {
                                             wrapper: {
                                                 ...styles.overlayWrapper,

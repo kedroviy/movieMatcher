@@ -20,7 +20,12 @@ export const LoginScreen = () => {
     const onAuthWithGoogle = async () => {
         const action = await dispatch(authenticateWithGoogle());
         if (authenticateWithGoogle.rejected.match(action)) {
-            Alert.alert(t('auth.errors.alert_title'), (action.payload as string) || t('auth.errors.AUTH_UNKNOWN'));
+            const payload = action.payload as string | undefined;
+            const message =
+                payload && payload.startsWith('AUTH_')
+                    ? translateAuthError(t, payload)
+                    : payload || t('auth.errors.AUTH_UNKNOWN');
+            Alert.alert(t('auth.errors.alert_title'), message);
             return;
         }
         if (authenticateWithGoogle.fulfilled.match(action) && !action.payload.success) {

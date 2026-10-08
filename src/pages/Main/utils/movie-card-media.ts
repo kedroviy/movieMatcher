@@ -19,6 +19,34 @@ export function resolveMoviePosterUri(poster: unknown): string | null {
     return readTrimmedString(record.url);
 }
 
+/** Kinopoisk `rating.kp`, a bare number, or TMDB `vote_average`. */
+export function resolveMovieRating(movie: unknown): number | null {
+    if (movie == null || typeof movie !== 'object') {
+        return null;
+    }
+    const record = movie as { rating?: unknown; vote_average?: unknown };
+    const rating = record.rating;
+    if (typeof rating === 'number' && Number.isFinite(rating)) {
+        return rating;
+    }
+    if (rating != null && typeof rating === 'object' && 'kp' in rating) {
+        const kp = (rating as { kp?: unknown }).kp;
+        if (typeof kp === 'number' && Number.isFinite(kp)) {
+            return kp;
+        }
+        if (typeof kp === 'string' && kp.trim() !== '') {
+            const numeric = Number(kp);
+            if (Number.isFinite(numeric)) {
+                return numeric;
+            }
+        }
+    }
+    if (typeof record.vote_average === 'number' && Number.isFinite(record.vote_average)) {
+        return record.vote_average;
+    }
+    return null;
+}
+
 export function resolveMovieTitle(movie: unknown): string {
     if (movie == null || typeof movie !== 'object') {
         return '—';
